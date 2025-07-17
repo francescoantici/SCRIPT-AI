@@ -1,0 +1,27 @@
+#!/bin/bash
+#COBALT -A XXX
+#COBALT -t 100
+#COBALT -n 2
+#COBALT -q full-node
+export mpirun="/lus/theta-fs0/software/thetagpu/openmpi-4.0.5/bin/mpirun"
+export namd3="/lus/theta-fs0/projects/CompBioAffin/awade/NAMD3/NAMD_3.0alpha9_Linux-x86_64-multicore-CUDA/namd3"
+node1=$(sed "1q;d" $COBALT_NODEFILE)
+node2=$(sed "2q;d" $COBALT_NODEFILE)
+
+cd /lus/theta-fs0/projects/CompBioAffin/awade/many_reps/mcl1/l18-l39/com/replica-confs
+for stage in {0..3}; do
+  $mpirun -host $node1 --cpu-set 0 --bind-to core -np 1 $namd3 +devices 0 --tclmain run$stage.conf 0.00 0&
+  $mpirun -host $node1 --cpu-set 1 --bind-to core -np 1 $namd3 +devices 1 --tclmain run$stage.conf 0.05 0&
+  $mpirun -host $node1 --cpu-set 2 --bind-to core -np 1 $namd3 +devices 2 --tclmain run$stage.conf 0.10 0&
+  $mpirun -host $node1 --cpu-set 3 --bind-to core -np 1 $namd3 +devices 3 --tclmain run$stage.conf 0.20 0&
+  $mpirun -host $node1 --cpu-set 4 --bind-to core -np 1 $namd3 +devices 4 --tclmain run$stage.conf 0.30 0&
+  $mpirun -host $node1 --cpu-set 5 --bind-to core -np 1 $namd3 +devices 5 --tclmain run$stage.conf 0.40 0&
+  $mpirun -host $node1 --cpu-set 6 --bind-to core -np 1 $namd3 +devices 6 --tclmain run$stage.conf 0.50 0&
+  $mpirun -host $node1 --cpu-set 7 --bind-to core -np 1 $namd3 +devices 7 --tclmain run$stage.conf 0.60 0&
+  $mpirun -host $node2 --cpu-set 0 --bind-to core -np 1 $namd3 +devices 0 --tclmain run$stage.conf 0.70 0&
+  $mpirun -host $node2 --cpu-set 1 --bind-to core -np 1 $namd3 +devices 1 --tclmain run$stage.conf 0.80 0&
+  $mpirun -host $node2 --cpu-set 2 --bind-to core -np 1 $namd3 +devices 2 --tclmain run$stage.conf 0.90 0&
+  $mpirun -host $node2 --cpu-set 3 --bind-to core -np 1 $namd3 +devices 3 --tclmain run$stage.conf 0.95 0&
+  $mpirun -host $node2 --cpu-set 4 --bind-to core -np 1 $namd3 +devices 4 --tclmain run$stage.conf 1.00 0&
+wait
+done

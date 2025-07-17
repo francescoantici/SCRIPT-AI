@@ -1,0 +1,15 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 2
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load raxml-ng
+
+raxml-ng \
+  --parse \
+  --msa input_file.phy \
+  --model GTR+G \
+  --prefix T2 \
+  --threads ${NSLOTS}

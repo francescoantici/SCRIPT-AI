@@ -1,0 +1,10 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=4:mem=24gb:ngpus=1:gpu_type=RTX6000
+#PBS -l walltime=01:00:00
+
+module purge
+module add tools/prod
+module add TensorFlow/2.7.1-foss-2021b-CUDA-11.4.1
+
+# Your python code utilising tensorflow e.g.
+python tf2-benchmarks.py --model resnet50 --enable_xla --batch_size 256 --num_gpus 1

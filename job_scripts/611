@@ -1,0 +1,24 @@
+#!/bin/bash -x
+#PJM -L "node=1:torus"
+#PJM --name "laamps_dp"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=1:30:00"
+#PJM -L "retention_state=0"
+#PJM --mpi "max-proc-per-node=48"
+#PJM --llio cn-cache-size=2Gi
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==:/jG5wuqbRoLbDgsh4U8DNjg==:/fSjXVWZ9gBglklF02ESwoQ==
+#PJM -S
+module purge
+module load lang/tcsds-1.2.38
+source venv_deepmd/bin/activate
+. init.sh
+export LANG=C
+export TIMEX="/usr/bin/time -p"
+
+
+if [ `mpirun -h | grep FUJITSU | wc -l` -ge 1 ]; then
+  mpiexec -n 48 -stdout-proc nnp_md_nvt_300K.out -stderr-proc nnp_md_nvt_300K.err lammps-stable_2Aug2023_update1/src/lmp_omp -in nnp_md_nvt_300K.in
+  ln -s nnp_md_nvt_300K.out.1.0 nnp_md_nvt_300K.out
+else
+  mpiexec -n 48 lammps-stable_2Aug2023_update1/src/lmp_omp -in nnp_md_nvt_300K.in > nnp_md_nvt_300K.out 2> nnp_md_nvt_300K.err
+fi

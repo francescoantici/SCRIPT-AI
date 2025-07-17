@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Commands specific to the job scheduler requesting resources, naming your job, and setting up email alerts regarding job status.
+#PBS -l walltime=1:00:00
+#PBS -l nodes=1:ppn=8
+#PBS -N my_matlab_job
+#PBS -m abe
+#PBS -M my_email.@unm.edu
+
+# Change to the directory that you submitted your PBS script from.
+cd $PBS_O_WORKDIR
+
+# Loading the MATLAB software module. The specific module name is system dependent.
+module load matlab/R2017a
+
+# Calling MATLAB in batch mode to run your program. 
+matlab -nojvm -nodisplay -r my_program > /dev/null

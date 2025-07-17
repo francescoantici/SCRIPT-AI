@@ -1,0 +1,36 @@
+#!/bin/bash
+#PJM -N ADVENTURE.REGION0
+#PJM --rsc-list "rscgrp=small"
+#PJM --rsc-list "elapse=00:10:00"
+#PJM --mpi "max-proc-per-node=1"
+#PJM --rsc-list "node=1"
+#PJM -j
+#PJM -S
+
+module list
+set -x
+date
+hostname
+
+TMPDIR=${HOME}/tmp/check_Adventure.region0
+mkdir -p ${TMPDIR}
+cd ${TMPDIR}/
+if [ $? != 0 ] ; then echo '@@@ Directory error @@@'; exit; fi
+rm *
+
+SRC_DIR=${HOME}/fs2020_kernels/src/Adventure.region0.20170821
+cp -rp ${SRC_DIR}/* ./
+
+OPTIMIZE="-Kfast,openmp,ocl,swp_strong -falign-loops -Icommon/include "
+FOPTIMIZE="${OPTIMIZE} -Cpp -fw "
+COPTIMIZE="${OPTIMIZE} --std=c99 -D__ARM_FEATURE_SVE=1 -DDISABLE_VALIDATION "
+
+
+fcc -c ${COPTIMIZE} -o adventure.o adventure_kernel_region0_tune4_arm_pad-acle.c
+fcc -c ${COPTIMIZE} common/src/report.c
+
+fcc ${COPTIMIZE} adventure.o report.o
+
+export OMP_NUM_THREADS=12
+export FLIB_TRACEBACK_MEM_SIZE=128
+time ./a.out

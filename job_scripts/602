@@ -1,0 +1,20 @@
+#!/bin/bash -x
+#PJM -L "rscgrp=small"
+#PJM -L elapse=03:00:00
+#PJM -L "node=3"
+##PJM -L "retention_state=0"
+#PJM --mpi "proc=3"
+#PJM --mpi "max-proc-per-node=1"
+#PJM -j
+#PJM -S
+
+#export OMP_NUM_THREADS=10
+export OMP_NUM_THREADS=48
+export XOS_MMM_L_HPAGE_TYPE=none
+export PREFIX=$HOME/pytorch/PyTorch-1.5.0/build/.local
+export LD_PRELOAD=${PREFIX}/lib/libtcmalloc.so
+
+#export XOS_MMM_L_PAGING_POLICY=demand:demand:demand
+
+#mpiexec -np 3 -mca common_tofu_max_fastmode_procs 0 -mca common_tofu_memory_saving_method 2 ./mdcnnae
+mpiexec -np 3 ./mdcnnae

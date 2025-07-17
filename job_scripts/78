@@ -1,0 +1,15 @@
+#PBS -N job_array
+#PBS -A <project_code>
+### Each array sub-job will be assigned a single CPU with 4 GB of memory
+#PBS -l select=1:ncpus=1:mem=4GB
+#PBS -l walltime=00:10:00
+#PBS -q casper
+### Request 11 sub-jobs with array indices spanning 2010-2020 (input year)
+#PBS -J 2010-2020
+#PBS -j oe
+
+export TMPDIR=${SCRATCH}/temp
+mkdir -p ${TMPDIR}
+
+### Run program on a specific input file:
+./executable_name data.year-${PBS_ARRAY_INDEX}

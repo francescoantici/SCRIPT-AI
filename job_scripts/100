@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#PBS -N parallel_matlab
+#PBS -l walltime=01:00:00
+#PBS -l nodes=1:ppn=8
+#PBS -j oe
+
+cd #PBS_O_WORKDIR
+
+module load matlab/R2019a
+
+matlab -r -nodisplay parallel_matlab > parallel_matlab.out

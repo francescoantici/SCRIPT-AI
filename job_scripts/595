@@ -1,0 +1,35 @@
+#!/bin/bash
+#PJM -N LA10
+#PJM -L rscgrp=small
+#PJM -L elapse=1:00:00
+#PJM -L node=1
+#PJM --llio localtmp-size=80Gi
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==
+#PJM -j
+#PJM -S
+
+set -e
+
+export VENV_DIR=venv   
+export POINTSITE_DIR=PointSite  
+source ${VENV_DIR}/bin/activate
+
+# ----- convert PDB to XYZ files ---#
+for i in 4ek3-fixed_noWater_renumbered
+do
+	${POINTSITE_DIR}/util_arm/PDB_Tool -i LA10_in/${i}.pdb -r _ -R 1 -o LA10_out/tmp_LA10_32560_3679211361_xyz/${i}.pdb
+	${POINTSITE_DIR}/util_arm/PDB_To_XYZ -i LA10_out/tmp_LA10_32560_3679211361_xyz/${i}.pdb -a 1 -o LA10_out/tmp_LA10_32560_3679211361_xyz/${i}_atom.xyz
+done
+
+## model is should copy or link to workspace
+if [ ! -L model ]; then 
+	ln -s ${POINTSITE_DIR}/model ./
+fi
+# ----- run pointsite ----- #
+python ${POINTSITE_DIR}/inference.py --output LA10_out --data LA10_out/tmp_LA10_32560_3679211361_xyz --select_list LA10_in/LA10.list
+
+# ----- post process for pointsite ----- #
+python ${POINTSITE_DIR}/pointsite_analysis.py --type normal --output LA10_out --data LA10_in --select_list LA10_in/LA10.list
+
+#----- remove tmp -----#
+rm -rf LA10_out/tmp_LA10_32560_3679211361_xyz

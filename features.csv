@@ -1,0 +1,653 @@
+jid,label,source,application,domain,lang,sched
+0,0,https://ucl-ccs.github.io/TIES_MD/HPC_submissions.html,namd,chemistry,,slurm
+1,0,https://ucl-ccs.github.io/TIES_MD/HPC_submissions.html,namd,chemistry,,slurm
+2,0,https://ucl-ccs.github.io/TIES_MD/HPC_submissions.html,ties,chemistry,,lsf
+3,0,https://ucl-ccs.github.io/TIES_MD/HPC_submissions.html,blast,bioinformatics,mpi,cobalt
+4,0,https://github.com/ISUgenomics/bioinformatics-workbook/tree/master,blast,bioinformatics,,slurm
+5,1,https://github.com/ISUgenomics/bioinformatics-workbook/tree/master,augustus,bioinformatics,,slurm
+6,0,https://github.com/jdherman/hpc-submission-scripts/blob/master/pbs-serial-batch/multi-jobs-per-proc.sh,echo,,mpi,pbs
+7,0,https://github.com/jdherman/hpc-submission-scripts/blob/master/pbs-serial-batch/multi-jobs-per-proc.sh,wrapper,,mpi,pbs
+8,1,https://github.com/pytorch,multinode_torchrun,machine learning,python,slurm
+9,1,https://github.com/pytorch,multigpu_torchrun,machine learning,python,slurm
+10,1,https://github.com/pytorch,minigpt,machine learning,python,slurm
+11,1,https://github.com/pytorch,gpt2 train,machine learning,python,slurm
+12,1,https://github.com/pytorch,train ,machine learning,python,slurm
+13,1,https://github.com/pytorch,lightning_train,machine learning,python,slurm
+14,1,https://github.com/pytorch,a2c atari,machine learning,python,slurm
+15,1,https://github.com/pytorch,a2c mujoco,machine learning,python,slurm
+16,1,https://github.com/pytorch,cql,machine learning,python,slurm
+17,1,https://github.com/pytorch,cql,machine learning,python,slurm
+18,1,https://github.com/pytorch,crossq,machine learning,python,slurm
+19,1,https://github.com/pytorch,ddpg,machine learning,python,slurm
+20,1,https://github.com/pytorch,discrete sac,machine learning,python,slurm
+21,1,https://github.com/pytorch,dqn atari,machine learning,python,slurm
+22,1,https://github.com/pytorch,dqn cartpole,machine learning,python,slurm
+23,1,https://github.com/pytorch,transformer,machine learning,python,slurm
+24,1,https://github.com/pytorch,transformer,machine learning,python,slurm
+25,1,https://github.com/pytorch,impala,machine learning,python,slurm
+26,1,https://github.com/pytorch,iql,machine learning,python,slurm
+27,1,https://github.com/pytorch,iql,machine learning,python,slurm
+28,1,https://github.com/pytorch,iql,machine learning,python,slurm
+29,1,https://github.com/pytorch,ddpg,machine learning,python,slurm
+30,1,https://github.com/pytorch,ippo,machine learning,python,slurm
+31,1,https://github.com/pytorch,iql,machine learning,python,slurm
+32,1,https://github.com/pytorch,qmix vdn,machine learning,python,slurm
+33,1,https://github.com/pytorch,sac,machine learning,python,slurm
+34,1,https://github.com/pytorch,ppo atari,machine learning,python,slurm
+35,1,https://github.com/pytorch,ppo mujoco,machine learning,python,slurm
+36,1,https://github.com/pytorch,sac,machine learning,python,slurm
+37,1,https://github.com/pytorch,td3,machine learning,python,slurm
+38,1,https://github.com/pytorch,td3,machine learning,python,slurm
+39,1,https://github.com/pytorch,distributed run,machine learning,python,slurm
+40,1,https://github.com/pytorch,torch distributed,machine learning,python,slurm
+41,1,https://github.com/pytorch,torch distributed,machine learning,python,slurm
+42,1,https://github.com/pytorch,torch distributed,machine learning,python,slurm
+43,1,https://github.com/pytorch,torch distributed,machine learning,python,slurm
+44,1,https://github.com/pytorch,llama3,machine learning,python,slurm
+45,1,https://github.com/pytorch,llama3,machine learning,python,slurm
+46,1,https://mit-satori.github.io/index.html,test_pipeline_schedule,machine learning,python,slurm
+47,0,https://mit-satori.github.io/index.html,echo,,,slurm
+48,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+49,0,https://mit-satori.github.io/index.html,clima,,julia,slurm
+50,0,https://mit-satori.github.io/index.html,,,mpi,slurm
+51,0,https://mit-satori.github.io/index.html,launch,,mpi,slurm
+52,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+53,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+54,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+55,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+56,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+57,0,https://mit-satori.github.io/index.html,script,,R,slurm
+58,1,https://mit-satori.github.io/index.html,caffe,machine learning,,lsf
+59,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+60,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+61,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+62,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+63,1,https://mit-satori.github.io/index.html,imagenet mnist,machine learning,python,slurm
+64,0,,cyroem,chemistry,mpi,lsf
+65,0,,echo,,,lsf
+66,0,,echo,,,lsf
+67,1,https://mit-satori.github.io/index.html,mnist ,machine learning,python,lsf
+68,1,https://mit-satori.github.io/index.html,mnist,machine learning,python,lsf
+69,1,https://mit-satori.github.io/index.html,resnet,machine learning,python,lsf
+70,1,https://mit-satori.github.io/index.html,resnet,machine learning,python,lsf
+71,1,https://mit-satori.github.io/index.html,mnist,machine learning,python,lsf
+72,1,https://mit-satori.github.io/index.html,resnet train,machine learning,python,lsf
+73,1,https://mit-satori.github.io/index.html,resnet train,machine learning,python,lsf
+74,1,https://mit-satori.github.io/index.html,ddlrun,machine learning,python,lsf
+75,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,hello world,,mpi,pbs
+76,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,hello world,,mpi,pbs
+77,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,hello world,,python,pbs
+78,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,executable_name,,,pbs
+79,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,myscript,,python,pbs
+80,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,myscript,,python,pbs
+81,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,executable_name,,mpi,pbs
+82,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,executable_name,,mpi,pbs
+83,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,executable_name,,,pbs
+84,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,executable_name,,,pbs
+85,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,executable_name,,mpi,pbs
+86,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,executable_name,,mpi,pbs
+87,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,fasteddy,engineering,mpi,pbs
+88,0,https://ncar-hpc-docs.readthedocs.io/en/latest/pbs/job-scripts/?utm_source=chatgpt.com#derecho,model,,mpi,pbs
+89,0,https://github.com/NCAR/FastEddy-model/tree/main_v2.0,fasteddy,engineering,python:mpi,pbs
+90,0,https://github.com/NCAR/FastEddy-model/tree/main_v2.0,fasteddy,engineering,mpi,pbs
+91,0,https://github.com/NCAR/FastEddy-model/tree/main_v2.0,fasteddy,engineering,mpi,pbs
+92,0,https://carc.unm.edu/user-support-2/running-jobs/sample-pbs-scripts.html?utm_source=chatgpt.com,hello world,,mpi,pbs
+93,0,https://github.com/UNM-CARC/QuickBytes/tree/master,matlab example,math,matlab,pbs
+94,0,https://github.com/UNM-CARC/QuickBytes/tree/master,matrix_inv,math,python,pbs
+95,0,https://github.com/UNM-CARC/QuickBytes/tree/master,gatk,bioinformatics,,pbs
+96,0,https://github.com/UNM-CARC/QuickBytes/tree/master,sleep,,,slurm
+97,0,https://github.com/UNM-CARC/QuickBytes/tree/master,demo,,python,slurm
+98,1,https://github.com/UNM-CARC/QuickBytes/tree/master,deep_learning_example,machine learning,matlab,slurm
+99,1,https://github.com/UNM-CARC/QuickBytes/tree/master,deep_learning_example,machine learning,matlab,slurm
+100,0,https://github.com/UNM-CARC/QuickBytes/tree/master,parallel_matlab,math,matlab,pbs
+101,0,https://github.com/UNM-CARC/QuickBytes/tree/master,upcxx,,,pbs
+102,0,https://github.com/UNM-CARC/QuickBytes/tree/master,matlab gpu,,matlab,pbs
+103,0,https://github.com/UNM-CARC/QuickBytes/tree/master,gpu_logistic_map,math,matlab,slurm
+104,1,https://github.com/UNM-CARC/QuickBytes/tree/master,alphafold,machine learning:chemistry,,slurm
+105,1,https://github.com/UNM-CARC/QuickBytes/tree/master,alphafold,machine learning:chemistry,,slurm
+106,1,https://github.com/UNM-CARC/QuickBytes/tree/master,alphafold,machine learning:chemistry,,slurm
+107,0,https://github.com/UNM-CARC/QuickBytes/tree/master,,,matlab,pbs
+108,0,https://github.com/UNM-CARC/QuickBytes/tree/master,orca,chemistry,,pbs
+109,0,https://github.com/UNM-CARC/QuickBytes/tree/master,orca,chemistry,,slurm
+110,0,https://github.com/UNM-CARC/QuickBytes/tree/master,dask_worker,,python,pbs
+111,0,https://github.com/UNM-CARC/QuickBytes/tree/master,test,,python,pbs
+112,0,https://github.com/UNM-CARC/QuickBytes/tree/master,test,,python,slurm
+113,0,https://github.com/UNM-CARC/QuickBytes/tree/master,hello world,,,pbs
+114,0,https://github.com/UNM-CARC/QuickBytes/tree/master,hostname,,mpi,pbs
+115,0,https://github.com/UNM-CARC/QuickBytes/tree/master,hostname,,mpi,pbs
+116,0,https://github.com/UNM-CARC/QuickBytes/tree/master,my_program,,matlab,pbs
+117,0,https://github.com/UNM-CARC/QuickBytes/tree/master,wordcount.py,,python,pbs
+118,0,https://github.com/UNM-CARC/QuickBytes/tree/master,run_my_program,,,pbs
+119,0,https://github.com/UNM-CARC/QuickBytes/tree/master,my_script,general,R,pbs
+120,0,https://github.com/UNM-CARC/QuickBytes/tree/master,parallel,,R,pbs
+121,0,https://latisresearch.umn.edu/creating-a-PBS-script?utm_source=chatgpt.com,myscript,general,R,pbs
+122,0,https://www.arch.jhu.edu/short-tutorial-how-to-create-a-slurm-script/?utm_source=chatgpt.com,matlab example,math,matlab,slurm
+123,0,https://www.arch.jhu.edu/short-tutorial-how-to-create-a-slurm-script/?utm_source=chatgpt.com,hello_mpi,,mpi,slurm
+124,0,https://www.arch.jhu.edu/short-tutorial-how-to-create-a-slurm-script/?utm_source=chatgpt.com,hello-mix,,mpi,slurm
+125,0,https://www.arch.jhu.edu/short-tutorial-how-to-create-a-slurm-script/?utm_source=chatgpt.com,my_script,,python,slurm
+126,0,https://help.rc.ufl.edu/doc/Sample_SLURM_Scripts?utm_source=chatgpt.com,plot_template,data vis,python,slurm
+127,0,https://help.rc.ufl.edu/doc/Sample_SLURM_Scripts?utm_source=chatgpt.com,raxl,bioinformatics,mpi,slurm
+128,0,https://help.rc.ufl.edu/doc/Sample_SLURM_Scripts?utm_source=chatgpt.com,lmp_gator,engineering,mpi:omp,slurm
+129,0,https://help.rc.ufl.edu/doc/Sample_SLURM_Scripts?utm_source=chatgpt.com,echo,,,slurm
+130,0,https://help.rc.ufl.edu/doc/Sample_SLURM_Scripts?utm_source=chatgpt.com,vasp,chemistry,mpi,slurm
+131,0,https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/running-your-jobs/scheduler-examples/?utm_source=chatgpt.com,a,,omp,slurm
+132,0,https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/running-your-jobs/scheduler-examples/?utm_source=chatgpt.com,a,,,slurm
+133,0,https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/running-your-jobs/scheduler-examples/?utm_source=chatgpt.com,a,,mpi,slurm
+134,0,https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/running-your-jobs/scheduler-examples/?utm_source=chatgpt.com,a,,mpi,slurm
+135,0,https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/running-your-jobs/scheduler-examples/?utm_source=chatgpt.com,a,,mpi:omp,slurm
+136,0,https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/running-your-jobs/scheduler-examples/?utm_source=chatgpt.com,a,,,slurm
+137,0,https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/running-your-jobs/scheduler-examples/?utm_source=chatgpt.com,a,,,slurm
+138,0,https://docs-research-it.berkeley.edu/services/high-performance-computing/user-guide/running-your-jobs/scheduler-examples/?utm_source=chatgpt.com,hello world,,,slurm
+139,1,https://www.nas.nasa.gov,run_vgg,,,pbs
+140,1,https://www.nas.nasa.gov,mnist,machine learning,python,pbs
+141,1,https://www.nas.nasa.gov,mnist,machine learning,python,pbs
+142,1,https://www.nas.nasa.gov,mnist,machine learning,python,pbs
+143,1,https://www.nas.nasa.gov,mnist,machine learning,python,pbs
+144,1,https://www.nas.nasa.gov,mnist,machine learning,python,pbs
+145,1,https://www.nas.nasa.gov,mnist,machine learning,python,pbs
+146,1,https://www.nas.nasa.gov,mnist,machine learning,python,pbs
+147,1,https://www.nas.nasa.gov,mnist,machine learning,python,pbs
+148,0,https://www.nas.nasa.gov,your_python_script,,mpi,pbs
+149,0,https://www.nas.nasa.gov,main,,python,pbs
+150,0,https://www.nas.nasa.gov,a,,mpi,pbs
+151,0,https://www.nas.nasa.gov,a,,mpi,pbs
+152,0,https://www.nas.nasa.gov,a,,mpi,pbs
+153,0,https://www.nas.nasa.gov,a,,mpi,pbs
+154,0,https://www.nas.nasa.gov,a,,mpi,pbs
+155,0,https://www.nas.nasa.gov,a,,mpi,pbs
+156,0,https://www.nas.nasa.gov,a,,mpi,pbs
+157,0,https://www.nas.nasa.gov,a,,mpi,pbs
+158,0,https://www.nas.nasa.gov,your_application,,mpi,pbs
+159,0,https://www.nas.nasa.gov,wrapper,,mpi,pbs
+160,0,https://www.nas.nasa.gov,run_count,,mpi,pbs
+161,0,https://www.nas.nasa.gov,myscript,,,pbs
+162,0,https://www.nas.nasa.gov,hostname,,,pbs
+163,0,https://www.nas.nasa.gov,myscript,,,pbs
+164,0,https://www.nas.nasa.gov,myopenmpscript,,,pbs
+165,0,https://www.nas.nasa.gov,hostname,,omp,pbs
+166,0,https://www.nas.nasa.gov,a,,mpi,pbs
+167,0,https://www.nas.nasa.gov,my_hello,,,pbs
+168,0,https://docs.hpc.qmul.ac.uk,gromacs,chemistry,,univa grid engine
+169,0,https://docs.hpc.qmul.ac.uk,gromacs,chemistry,,univa grid engine
+170,1,https://docs.hpc.qmul.ac.uk,alphafold,machine learning:chemistry,,univa grid engine
+171,1,https://docs.hpc.qmul.ac.uk,DeepLabCut,machine learning,python,univa grid engine
+172,1,https://docs.hpc.qmul.ac.uk,two_layer_net_tensor_gpu,machine learning,python,univa grid engine
+173,1,https://docs.hpc.qmul.ac.uk,transfer_learning_tutorial,machine learning,python,univa grid engine
+174,1,https://docs.hpc.qmul.ac.uk,two_layer_net_tensor_cpu,machine learning,python,univa grid engine
+175,0,https://docs.hpc.qmul.ac.uk,tf test,machine learning,python,univa grid engine
+176,0,https://docs.hpc.qmul.ac.uk,tf test,machine learning,python,univa grid engine
+177,0,https://docs.hpc.qmul.ac.uk,tf test,machine learning,python,univa grid engine
+178,0,https://docs.hpc.qmul.ac.uk,tf test,machine learning,python,univa grid engine
+179,1,https://docs.hpc.qmul.ac.uk,mnist,machine learning,python,univa grid engine
+180,0,https://docs.hpc.qmul.ac.uk,code,code,,univa grid engine
+181,0,https://docs.hpc.qmul.ac.uk,example code,,,univa grid engine
+182,0,https://docs.hpc.qmul.ac.uk,example code,,,univa grid engine
+183,0,https://docs.hpc.qmul.ac.uk,code,,mpi,univa grid engine
+184,0,https://docs.hpc.qmul.ac.uk,code,,,univa grid engine
+185,0,https://docs.hpc.qmul.ac.uk,code,,,univa grid engine
+186,0,https://docs.hpc.qmul.ac.uk,code,,,univa grid engine
+187,0,https://docs.hpc.qmul.ac.uk,code,,,univa grid engine
+188,0,https://docs.hpc.qmul.ac.uk,code,,,univa grid engine
+189,0,https://docs.hpc.qmul.ac.uk,example,,java,univa grid engine
+190,0,https://docs.hpc.qmul.ac.uk,example,,julia,univa grid engine
+191,0,https://docs.hpc.qmul.ac.uk,example,general,julia,univa grid engine
+192,0,https://docs.hpc.qmul.ac.uk,example,general,lua,univa grid engine
+193,0,https://docs.hpc.qmul.ac.uk,example,general,python,univa grid engine
+194,0,https://docs.hpc.qmul.ac.uk,activate env,general,,univa grid engine
+195,0,https://docs.hpc.qmul.ac.uk,example,general,pearl,univa grid engine
+196,0,https://docs.hpc.qmul.ac.uk,example,general,python,univa grid engine
+197,0,https://docs.hpc.qmul.ac.uk,example,general,python,univa grid engine
+198,0,https://docs.hpc.qmul.ac.uk,script,general,R,univa grid engine
+199,0,https://docs.hpc.qmul.ac.uk,ffmpeg,general,,univa grid engine
+200,0,https://docs.hpc.qmul.ac.uk,ghostscript,general,,univa grid engine
+201,0,https://docs.hpc.qmul.ac.uk,gzip,general,,univa grid engine
+202,0,https://docs.hpc.qmul.ac.uk,metis,general,,univa grid engine
+203,0,https://docs.hpc.qmul.ac.uk,mono,general,,univa grid engine
+204,0,https://docs.hpc.qmul.ac.uk,pandoc,general,,univa grid engine
+205,0,https://docs.hpc.qmul.ac.uk,pandoc,general,,univa grid engine
+206,0,https://docs.hpc.qmul.ac.uk,pandoc,general,,univa grid engine
+207,0,https://docs.hpc.qmul.ac.uk,pdftotext,general,,univa grid engine
+208,0,https://docs.hpc.qmul.ac.uk,phonemizer,general,,univa grid engine
+209,0,https://docs.hpc.qmul.ac.uk,phonemizer,general,python,univa grid engine
+210,0,https://docs.hpc.qmul.ac.uk,pigz,general,,univa grid engine
+211,0,https://docs.hpc.qmul.ac.uk,sqlite,db,sql,univa grid engine
+212,0,https://docs.hpc.qmul.ac.uk,zstd,general,,univa grid engine
+213,0,https://docs.hpc.qmul.ac.uk,abyss-pe,bioinformatics,,univa grid engine
+214,0,https://docs.hpc.qmul.ac.uk,angsd,bioinformatics,,univa grid engine
+215,0,https://docs.hpc.qmul.ac.uk,annovar,bioinformatics,,univa grid engine
+216,0,https://docs.hpc.qmul.ac.uk,annovar,bioinformatics,,univa grid engine
+217,0,https://docs.hpc.qmul.ac.uk,mabtools,bioinformatics,,univa grid engine
+218,0,https://docs.hpc.qmul.ac.uk,bamutil,bioinformatics,,univa grid engine
+219,0,https://docs.hpc.qmul.ac.uk,bamutil,bioinformatics,,univa grid engine
+220,0,https://docs.hpc.qmul.ac.uk,bcftools,bioinformatics,,univa grid engine
+221,0,https://docs.hpc.qmul.ac.uk,bcftools,bioinformatics,,univa grid engine
+222,0,https://docs.hpc.qmul.ac.uk,bcl2fastq2,bioinformatics,,univa grid engine
+223,0,https://docs.hpc.qmul.ac.uk,bedops,bioinformatics,,univa grid engine
+224,0,https://docs.hpc.qmul.ac.uk,bedtools,bioinformatics,,univa grid engine
+225,0,https://docs.hpc.qmul.ac.uk,bgen,bioinformatics,,univa grid engine
+226,0,https://docs.hpc.qmul.ac.uk,bismark,bioinformatics,,univa grid engine
+227,0,https://docs.hpc.qmul.ac.uk,bismark,bioinformatics,,univa grid engine
+228,0,https://docs.hpc.qmul.ac.uk,bismark,bioinformatics,,univa grid engine
+229,0,https://docs.hpc.qmul.ac.uk,blast+,bioinformatics,,univa grid engine
+230,0,https://docs.hpc.qmul.ac.uk,bowtie,bioinformatics,,univa grid engine
+231,0,https://docs.hpc.qmul.ac.uk,bowtie,bioinformatics,,univa grid engine
+232,0,https://docs.hpc.qmul.ac.uk,bowtie,bioinformatics,,univa grid engine
+233,0,https://docs.hpc.qmul.ac.uk,bucky,bioinformatics,,univa grid engine
+234,0,https://docs.hpc.qmul.ac.uk,busco,bioinformatics,,univa grid engine
+235,0,https://docs.hpc.qmul.ac.uk,busco,bioinformatics,,univa grid engine
+236,0,https://docs.hpc.qmul.ac.uk,busco,bioinformatics,,univa grid engine
+237,0,https://docs.hpc.qmul.ac.uk,busco,bioinformatics,,univa grid engine
+238,0,https://docs.hpc.qmul.ac.uk,bwa,bioinformatics,,univa grid engine
+239,0,https://docs.hpc.qmul.ac.uk,cellranger,bioinformatics,,univa grid engine
+240,0,https://docs.hpc.qmul.ac.uk,cufflinks,bioinformatics,,univa grid engine
+241,0,https://docs.hpc.qmul.ac.uk,diamond,bioinformatics,,univa grid engine
+242,0,https://docs.hpc.qmul.ac.uk,vep,bioinformatics,,univa grid engine
+243,0,https://docs.hpc.qmul.ac.uk,entrez,bioinformatics,,univa grid engine
+244,0,https://docs.hpc.qmul.ac.uk,entrez,bioinformatics,,univa grid engine
+245,0,https://docs.hpc.qmul.ac.uk,fastme,bioinformatics,,univa grid engine
+246,0,https://docs.hpc.qmul.ac.uk,fastqc,bioinformatics,,univa grid engine
+247,0,https://docs.hpc.qmul.ac.uk,freebayes,bioinformatics,,univa grid engine
+248,0,https://docs.hpc.qmul.ac.uk,freebayes,bioinformatics,,univa grid engine
+249,0,https://docs.hpc.qmul.ac.uk,gatk,bioinformatics,,univa grid engine
+250,0,https://docs.hpc.qmul.ac.uk,genometools,bioinformatics,,univa grid engine
+251,0,https://docs.hpc.qmul.ac.uk,genometools,bioinformatics,,univa grid engine
+252,0,https://docs.hpc.qmul.ac.uk,jellyfish,bioinformatics,,univa grid engine
+253,0,https://docs.hpc.qmul.ac.uk,kraken,bioinformatics,,univa grid engine
+254,0,https://docs.hpc.qmul.ac.uk,mafft,bioinformatics,,univa grid engine
+255,0,https://docs.hpc.qmul.ac.uk,maker,bioinformatics,,univa grid engine
+256,0,https://docs.hpc.qmul.ac.uk,masurca assemble,bioinformatics,,univa grid engine
+257,0,https://docs.hpc.qmul.ac.uk,mcl,bioinformatics,,univa grid engine
+258,0,https://docs.hpc.qmul.ac.uk,minimap2,bioinformatics,,univa grid engine
+259,0,https://docs.hpc.qmul.ac.uk,mira,bioinformatics,,univa grid engine
+260,0,https://docs.hpc.qmul.ac.uk,muscle,bioinformatics,,univa grid engine
+261,0,https://docs.hpc.qmul.ac.uk,muscle,bioinformatics,,univa grid engine
+262,0,https://docs.hpc.qmul.ac.uk,nextflow,bioinformatics,,univa grid engine
+263,0,https://docs.hpc.qmul.ac.uk,nextflow,bioinformatics,mpi,univa grid engine
+264,0,https://docs.hpc.qmul.ac.uk,phylobayes,bioinformatics,mpi,univa grid engine
+265,0,https://docs.hpc.qmul.ac.uk,plink,bioinformatics,,univa grid engine
+266,0,https://docs.hpc.qmul.ac.uk,prank,bioinformatics,,univa grid engine
+267,0,https://docs.hpc.qmul.ac.uk,qctool,bioinformatics,,univa grid engine
+268,0,https://docs.hpc.qmul.ac.uk,qctool,bioinformatics,,univa grid engine
+269,0,https://docs.hpc.qmul.ac.uk,qualimap,bioinformatics,,univa grid engine
+270,0,https://docs.hpc.qmul.ac.uk,quast,bioinformatics,,univa grid engine
+271,0,https://docs.hpc.qmul.ac.uk,raxml,bioinformatics,,univa grid engine
+272,0,https://docs.hpc.qmul.ac.uk,raxml,bioinformatics,,univa grid engine
+273,0,https://docs.hpc.qmul.ac.uk,raxml,bioinformatics,,univa grid engine
+274,0,https://docs.hpc.qmul.ac.uk,raxml,bioinformatics,mpi,univa grid engine
+275,1,https://docs.hpc.qmul.ac.uk,relion,bioinformatics:machine learning,,univa grid engine
+276,1,https://docs.hpc.qmul.ac.uk,relion,bioinformatics:machine learning,mpi,univa grid engine
+277,1,https://docs.hpc.qmul.ac.uk,relion,bioinformatics:machine learning,,univa grid engine
+278,0,https://docs.hpc.qmul.ac.uk,repeatmasker,bioinformatics,,univa grid engine
+279,0,https://docs.hpc.qmul.ac.uk,repeatmasker,bioinformatics,,univa grid engine
+280,0,https://docs.hpc.qmul.ac.uk,rm,bioinformatics,,univa grid engine
+281,0,https://docs.hpc.qmul.ac.uk,rm,bioinformatics,,univa grid engine
+282,0,https://docs.hpc.qmul.ac.uk,rsem,bioinformatics,,univa grid engine
+283,0,https://docs.hpc.qmul.ac.uk,salmon,bioinformatics,,univa grid engine
+284,0,https://docs.hpc.qmul.ac.uk,samtools,bioinformatics,,univa grid engine
+285,0,https://docs.hpc.qmul.ac.uk,seqtk,bioinformatics,,univa grid engine
+286,0,https://docs.hpc.qmul.ac.uk,seqtk,bioinformatics,,univa grid engine
+287,0,https://docs.hpc.qmul.ac.uk,shapeit5,bioinformatics,,univa grid engine
+288,0,https://docs.hpc.qmul.ac.uk,spaceranger,bioinformatics,,univa grid engine
+289,0,https://docs.hpc.qmul.ac.uk,spades,bioinformatics,python,univa grid engine
+290,0,https://docs.hpc.qmul.ac.uk,sra-tools,bioinformatics,,univa grid engine
+291,0,https://docs.hpc.qmul.ac.uk,sra-tools,bioinformatics,,univa grid engine
+292,0,https://docs.hpc.qmul.ac.uk,sra-tools,bioinformatics,,univa grid engine
+293,0,https://docs.hpc.qmul.ac.uk,sra-tools,bioinformatics,,univa grid engine
+294,0,https://docs.hpc.qmul.ac.uk,sra-tools,bioinformatics,,univa grid engine
+295,0,https://docs.hpc.qmul.ac.uk,sra-tools,bioinformatics,,univa grid engine
+296,0,https://docs.hpc.qmul.ac.uk,stacks,bioinformatics,,univa grid engine
+297,0,https://docs.hpc.qmul.ac.uk,star,bioinformatics,,univa grid engine
+298,0,https://docs.hpc.qmul.ac.uk,subread,bioinformatics,,univa grid engine
+299,0,https://docs.hpc.qmul.ac.uk,transdecoder,bioinformatics,,univa grid engine
+300,0,https://docs.hpc.qmul.ac.uk,trimgalore,bioinformatics,,univa grid engine
+301,0,https://docs.hpc.qmul.ac.uk,trimmomatic,bioinformatics,,univa grid engine
+302,0,https://docs.hpc.qmul.ac.uk,vcftools,bioinformatics,,univa grid engine
+303,0,https://docs.hpc.qmul.ac.uk,vcftools,bioinformatics,,univa grid engine
+304,0,https://docs.hpc.qmul.ac.uk,castep,chemistry,mpi,univa grid engine
+305,0,https://docs.hpc.qmul.ac.uk,cp2k,chemistry,,univa grid engine
+306,0,https://docs.hpc.qmul.ac.uk,cp2k,chemistry,,univa grid engine
+307,0,https://docs.hpc.qmul.ac.uk,cp2k,chemistry,mpi,univa grid engine
+308,0,https://docs.hpc.qmul.ac.uk,cp2k,chemistry,,univa grid engine
+309,0,https://docs.hpc.qmul.ac.uk,dl_poly,chemistry,mpi,univa grid engine
+310,0,https://docs.hpc.qmul.ac.uk,dl_poly,chemistry,mpi,univa grid engine
+311,0,https://docs.hpc.qmul.ac.uk,gaussian,chemistry,,univa grid engine
+312,0,https://docs.hpc.qmul.ac.uk,gromacs,chemistry,,univa grid engine
+313,0,https://docs.hpc.qmul.ac.uk,gulp,chemistry,,univa grid engine
+314,0,https://docs.hpc.qmul.ac.uk,laamps,chemistry,mpi,univa grid engine
+315,0,https://docs.hpc.qmul.ac.uk,laamps,chemistry,mpi,univa grid engine
+316,0,https://docs.hpc.qmul.ac.uk,laamps,chemistry,mpi,univa grid engine
+317,0,https://docs.hpc.qmul.ac.uk,laamps,chemistry,mpi,univa grid engine
+318,0,https://docs.hpc.qmul.ac.uk,openbabel,chemistry,,univa grid engine
+319,0,https://docs.hpc.qmul.ac.uk,openmolcas,chemistry,,univa grid engine
+320,0,https://docs.hpc.qmul.ac.uk,openmolcas,chemistry,,univa grid engine
+321,0,https://docs.hpc.qmul.ac.uk,orca,chemistry,,univa grid engine
+322,0,https://docs.hpc.qmul.ac.uk,orca,chemistry,,univa grid engine
+323,0,https://docs.hpc.qmul.ac.uk,plumed,chemistry,,univa grid engine
+324,0,https://docs.hpc.qmul.ac.uk,qe,chemistry,mpi,univa grid engine
+325,0,https://docs.hpc.qmul.ac.uk,vasp,chemistry,mpi,univa grid engine
+326,0,https://docs.hpc.qmul.ac.uk,vasp,chemistry,mpi,univa grid engine
+327,0,https://docs.hpc.qmul.ac.uk,vasp,chemistry,mpi,univa grid engine
+328,0,https://docs.hpc.qmul.ac.uk,vmd,chemistry,,univa grid engine
+329,0,https://docs.hpc.qmul.ac.uk,abaqus,engineering,,univa grid engine
+330,0,https://docs.hpc.qmul.ac.uk,ansys,engineering,,univa grid engine
+331,0,https://docs.hpc.qmul.ac.uk,ansys,engineering,,univa grid engine
+332,0,https://docs.hpc.qmul.ac.uk,ansys,engineering,,univa grid engine
+333,0,https://docs.hpc.qmul.ac.uk,ansys,engineering,,univa grid engine
+334,0,https://docs.hpc.qmul.ac.uk,ansys,engineering,,univa grid engine
+335,0,https://docs.hpc.qmul.ac.uk,comsol,engineering,,univa grid engine
+336,0,https://docs.hpc.qmul.ac.uk,cst_studio,engineering,,univa grid engine
+337,0,https://docs.hpc.qmul.ac.uk,cst_studio,engineering,python,univa grid engine
+338,0,https://docs.hpc.qmul.ac.uk,cst_studio,engineering,python,univa grid engine
+339,0,https://docs.hpc.qmul.ac.uk,openfoam,engineering,,univa grid engine
+340,0,https://docs.hpc.qmul.ac.uk,openfoam,engineering,mpi,univa grid engine
+341,0,https://docs.hpc.qmul.ac.uk,starccm,engineering,,univa grid engine
+342,0,https://docs.hpc.qmul.ac.uk,starccm,engineering,mpi,univa grid engine
+343,0,https://docs.hpc.qmul.ac.uk,maple,math,,univa grid engine
+344,0,https://docs.hpc.qmul.ac.uk,mathematica,math,,univa grid engine
+345,0,https://docs.hpc.qmul.ac.uk,example,math,matlab,univa grid engine
+346,0,https://docs.hpc.qmul.ac.uk,matlab parallel,math,matlab,univa grid engine
+347,0,https://docs.hpc.qmul.ac.uk,gpu_example,math,matlab,univa grid engine
+348,0,https://github.com/pytorch,preprocess,machine learning,python,slurm
+349,1,https://github.com/pytorch,train,machine learning,python,slurm
+350,1,https://github.com/pytorch,train,machine learning,python,slurm
+351,1,https://github.com/pytorch,finetune,machine learning,python,slurm
+352,1,https://github.com/pytorch,evaluate model,machine learning,python,slurm
+353,1,https://github.com/pytorch,train,machine learning,python,slurm
+354,1,https://github.com/pytorch,train librispeech,machine learning,python,slurm
+355,1,https://github.com/pytorch,train tedlium,machine learning,python,slurm
+356,1,https://github.com/pytorch,train mustc,machine learning,python,slurm
+357,1,https://github.com/pytorch,train_hubert,machine learning,python,slurm
+358,1,https://github.com/pytorch,train librispeech,machine learning,python,slurm
+359,1,https://github.com/NVIDIA/DeepLearningExamples,train bert,machine learning,python,slurm
+360,1,https://github.com/NVIDIA/DeepLearningExamples,train eval imagenet,machine learning,python,slurm
+361,1,https://github.com/NVIDIA/DeepLearningExamples,train,machine learning,python,slurm
+362,1,https://github.com/NVIDIA/DeepLearningExamples,train eval imagenet,machine learning,python,slurm
+363,1,https://github.com/NVIDIA/DeepLearningExamples,train,machine learning,python,slurm
+364,1,https://github.com/NVIDIA/DeepLearningExamples,train efficientnet,machine learning,python,slurm
+365,1,https://github.com/NVIDIA/DeepLearningExamples,train electra,machine learning,python,slurm
+366,1,https://github.com/NVIDIA/DeepLearningExamples,train eval imagenet,machine learning,python,slurm
+367,1,https://github.com/NVIDIA/DeepLearningExamples,train transformer,machine learning,python,slurm
+368,1,https://github.com/NVIDIA/DeepLearningExamples,train bert,machine learning,python,slurm
+369,1,https://github.com/NVIDIA/DeepLearningExamples,train bert,machine learning,python,slurm
+370,1,https://github.com/NVIDIA/DeepLearningExamples,train,machine learning,python,slurm
+371,1,https://github.com/NVIDIA/DeepLearningExamples,train bert,machine learning,python,slurm
+372,1,https://github.com/NVIDIA/DeepLearningExamples,train bert,machine learning,python,slurm
+373,1,https://github.com/NVIDIA/DeepLearningExamples,train bert,machine learning,python,slurm
+374,1,https://github.com/NVIDIA/DeepLearningExamples,train dlrm,machine learning,python,slurm
+375,0,https://github.com/UNM-CARC/QuickBytes/tree/master,matlab,math,matlab,slurm
+376,0,https://github.com/UNM-CARC/QuickBytes/tree/master,logistic map,math,matlab,slurm
+377,1,https://github.com/pytorch,evaluate model,machine learning,python,slurm
+378,0,https://github.com/UNM-CARC/QuickBytes/tree/master,sequential,,R,pbs
+379,1,https://github.com/UNM-CARC/QuickBytes/tree/master,beast,machine learning:chemistry,,pbs
+380,0,https://latisresearch.umn.edu/creating-a-PBS-script?utm_source=chatgpt.com,myscript,general,python,pbs
+381,0,https://latisresearch.umn.edu/creating-a-PBS-script?utm_source=chatgpt.com,stata,math,,pbs
+382,0,https://latisresearch.umn.edu/creating-a-PBS-script?utm_source=chatgpt.com,myscript,,,pbs
+383,0,https://www.arch.jhu.edu/short-tutorial-how-to-create-a-slurm-script/?utm_source=chatgpt.com,my_script,,python,slurm
+384,0,https://help.rc.ufl.edu/doc/Sample_SLURM_Scripts?utm_source=chatgpt.com,namd,chemistry,,slurm
+385,1,https://docs.hpc.qmul.ac.uk,colmap,machine learning,,univa grid engine
+386,0,https://docs.hpc.qmul.ac.uk,ffmpeg,,,univa grid engine
+387,0,https://docs.hpc.qmul.ac.uk,zstd,,,univa grid engine
+388,0,https://docs.hpc.qmul.ac.uk,plink,bioinformatics,,univa grid engine
+389,0,https://docs.hpc.qmul.ac.uk,wtdbg2,bioinformatics,,univa grid engine
+390,0,https://docs.hpc.qmul.ac.uk,castep,chemistry,,univa grid engine
+391,0,https://docs.hpc.qmul.ac.uk,stata,math,,univa grid engine
+392,0,https://github.com/flux-framework,hello world,,flux
+393,0,https://github.com/flux-framework,hello world,,flux
+394,0,https://github.com/flux-framework,app,,flux
+395,0,https://github.com/flux-framework,hostname,,flux
+396,0,https://github.com/flux-framework,sleep,,flux
+397,0,https://github.com/flux-framework,mpi_hellosleep,,mpi,flux
+398,0,https://icl-rcs-user-guide.readthedocs.io,imb-mpi1,,mpi,pbs
+399,0,https://icl-rcs-user-guide.readthedocs.io,imb-mpi1,,mpi,pbs
+400,1,https://icl-rcs-user-guide.readthedocs.io,resnet,machine learning,python,pbs
+401,0,https://icl-rcs-user-guide.readthedocs.io,tf test,machine learning,python,pbs
+402,0,https://icl-rcs-user-guide.readthedocs.io,lumerical fdtd,engineering,mpi,pbs
+403,0,https://icl-rcs-user-guide.readthedocs.io,myMfile,math,matlab,pbs
+404,0,https://icl-rcs-user-guide.readthedocs.io,orca,chemistry,,pbs
+405,0,https://icl-rcs-user-guide.readthedocs.io,paraview,,mpi,pbs
+406,0,https://icl-rcs-user-guide.readthedocs.io,some_python_script,,python,pbs
+407,0,https://icl-rcs-user-guide.readthedocs.io,pytorch test,machine learning,python,pbs
+408,0,https://icl-rcs-user-guide.readthedocs.io,star,bioinformatics,mpi,pbs
+409,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain gpt,machine learning,python,slurm
+410,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,lambada gpt,machine learning,python,slurm
+411,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,mnli bert,machine learning,python,slurm
+412,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,race bert,machine learning,python,slurm
+413,0,https://github.com/Fugaku-LLM/DeepSpeedFugaku,generate samples gpt,machine learning,python,slurm
+414,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain bert,machine learning,python,slurm
+415,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain bert,machine learning,python,slurm
+416,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain gpt,machine learning,python,slurm
+417,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain gpt,machine learning,python,slurm
+418,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain t5,machine learning,python,slurm
+419,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain t5,machine learning,python,slurm
+420,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain gpt,machine learning,python:omp,slurm
+421,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain gpt,machine learning,python:mpi,pjsub
+422,0,https://github.com/Fugaku-LLM/DeepSpeedFugaku,preprocess data,machine learning,python,pjsub
+423,1,https://github.com/Fugaku-LLM/DeepSpeedFugaku,pretrain gpt,machine learning,python:omp,pjsub
+424,0,https://github.com/Fugaku-LLM/DeepSpeedFugaku,torch build,machine learning,python,pjsub
+425,0,https://github.com/Fugaku-LLM/DeepSpeedFugaku,torch test,machine learning,python:mpi,univa grid engine
+426,0,https://github.com/Fugaku-LLM/DeepSpeedFugaku,torch test,machine learning,python:mpi,univa grid engine
+427,0,https://github.com/Fugaku-LLM/DeepSpeedFugaku,torch build,machine learning,python,pjsub
+428,0,https://github.com/giordano/julia-on-fugaku,blis-axpy,math,julia:omp,pjsub
+429,0,https://github.com/giordano/julia-on-fugaku,bench,,julia,pjsub
+430,0,https://github.com/giordano/julia-on-fugaku,axpy,math,julia,pjsub
+431,0,https://github.com/giordano/julia-on-fugaku,point-to-point,math,julia:mpi,pjsub
+432,0,https://github.com/giordano/julia-on-fugaku,axpy,math,julia:omp,pjsub
+433,0,https://github.com/giordano/julia-on-fugaku,armpl axpy,math,julia:omp,pjsub
+434,0,https://github.com/giordano/julia-on-fugaku,collective,,julia:mpi,pjsub
+435,0,https://github.com/giordano/julia-on-fugaku,axpy,math,julia:omp,pjsub
+436,0,https://github.com/coolerking/fugaku_sample/tree/main,build python,machine learning,python,slurm
+437,0,https://github.com/coolerking/fugaku_sample/tree/main,build python,machine learning,python,pjsub
+438,0,https://github.com/coolerking/fugaku_sample/tree/main,mpi_pi,,mpi:omp,pjsub
+439,0,https://github.com/coolerking/fugaku_sample/tree/main,c_pi,,mpi:omp,pjsub
+440,1,https://github.com/coolerking/fugaku_sample/tree/main,horovd mnist,machine learning,python:mpi:omp,pjsub
+441,1,https://github.com/BioinfoMachineLearning/deep-learning-hpc-project-template/tree/73f2a2b111f50e54a8ca53462506c22382282965,lit,machine learning,python:omp,lsf
+442,1,https://github.com/BioinfoMachineLearning/deep-learning-hpc-project-template/tree/73f2a2b111f50e54a8ca53462506c22382282965,lit,machine learning,python:omp,lsf
+443,0,https://github.com/RIKEN-RCCS,a,,mpi,pjsub
+444,0,https://github.com/RIKEN-RCCS,convert mmcif,chemistry,python:mpi,pjsub
+445,0,https://github.com/RIKEN-RCCS,fftw,math,,pjsub
+446,0,https://github.com/RIKEN-RCCS,refsyevcl,math,mpi,pjsub
+447,0,https://github.com/RIKEN-RCCS,echo,,,pjsub
+448,0,https://github.com/RIKEN-RCCS,sssp-parallel,math,mpi,pjsub
+449,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+450,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+451,0,https://github.com/RIKEN-RCCS,bench,,mpi,pjsub
+452,0,https://github.com/RIKEN-RCCS,mllib pearson,math,python,pjsub
+453,0,https://github.com/RIKEN-RCCS,streamlike_pattern2,engineering,mpi,pjsub
+454,1,https://github.com/RIKEN-RCCS,mnist,machine learning,python,pjsub
+455,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+456,0,https://github.com/RIKEN-RCCS,setenv,,,pjsub
+457,0,https://github.com/RIKEN-RCCS,hrender,,mpi,pjsub
+458,0,https://github.com/RIKEN-RCCS,imb-pmi1,,mpi,pjsub
+459,0,https://github.com/RIKEN-RCCS,sssp-parallel,math,mpi,pjsub
+460,0,https://github.com/RIKEN-RCCS,sssp-parallel,math,mpi,pjsub
+461,0,https://github.com/RIKEN-RCCS,spack setup,,,pjsub
+462,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+463,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+464,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+465,0,https://github.com/RIKEN-RCCS,blockMesh,,,pjsub
+466,0,https://github.com/RIKEN-RCCS,openfoam,engineering,mpi,pjsub
+467,0,https://github.com/RIKEN-RCCS,openfoam,engineering,,pjsub
+468,0,https://github.com/RIKEN-RCCS,imb-mpi1,,,pjsub
+469,0,https://github.com/RIKEN-RCCS,sssp-parallel,math,mpi,pjsub
+470,0,https://github.com/RIKEN-RCCS,openfoam,engineering,mpi,pjsub
+471,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+472,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+473,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+474,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+475,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+476,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+477,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+478,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+479,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+480,0,https://github.com/RIKEN-RCCS,cat ,,,pjsub
+481,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+482,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+483,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+484,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+485,1,https://github.com/RIKEN-RCCS,mnist,machine learning,python,pjsub
+486,0,https://github.com/RIKEN-RCCS,adventure,,c,pjsub
+487,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+488,0,https://github.com/RIKEN-RCCS,callap_kernel2,,fortrand,pjsub
+489,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+490,0,https://github.com/RIKEN-RCCS,imb-mpi1,,mpi,pjsub
+491,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+492,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+493,0,https://github.com/RIKEN-RCCS,nicam,engineering,fortrand,pjsub
+494,0,https://github.com/RIKEN-RCCS,refsyevcl,math,mpi,pjsub
+495,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+496,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+497,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+498,0,https://github.com/RIKEN-RCCS,kmrgenscript,,mpi,pjsub
+499,0,https://github.com/RIKEN-RCCS,streamlike_pattern1,engineering,fortrand,pjsub
+500,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+501,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+502,0,https://github.com/RIKEN-RCCS,imb-mpi1,,,pjsub
+503,0,https://github.com/RIKEN-RCCS,refsyevcl,math,mpi,pjsub
+504,0,https://github.com/RIKEN-RCCS,qcd ddd,,c,pjsub
+505,0,https://github.com/RIKEN-RCCS,execs,,,pjsub
+506,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+507,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+508,0,https://github.com/RIKEN-RCCS,refsyevcl,math,mpi,pjsub
+509,0,https://github.com/RIKEN-RCCS,refsyevcl,math,mpi,pjsub
+510,0,https://github.com/RIKEN-RCCS,gamera,engineering,fortrand,pjsub
+511,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+512,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+513,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+514,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+515,0,https://github.com/RIKEN-RCCS,sssp-parallel,math,mpi,pjsub
+516,0,https://github.com/RIKEN-RCCS,imb-mpi1,,mpi,pjsub
+517,0,https://github.com/RIKEN-RCCS,imb-mpi1,,,pjsub
+518,0,https://github.com/RIKEN-RCCS,nicam,engineering,fortrand,pjsub
+519,0,https://github.com/RIKEN-RCCS,runnable ,,mpi,pjsub
+520,0,https://github.com/RIKEN-RCCS,python setup,machine learning,python:mpi,pjsub
+521,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+522,0,https://github.com/RIKEN-RCCS,imb-mpi1,,mpi,pjsub
+523,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+524,0,https://github.com/RIKEN-RCCS,runnable,,mpi,pjsub
+525,0,https://github.com/RIKEN-RCCS,nicam,engineering,fortrand,pjsub
+526,0,https://github.com/RIKEN-RCCS,qcd ddd,,c,pjsub
+527,1,https://github.com/RIKEN-RCCS,openfold,machine learning,,pjsub
+528,0,https://github.com/RIKEN-RCCS,imb-128k,,,pjsub
+529,0,https://github.com/RIKEN-RCCS,eigenexa,math,mpi,pjsub
+530,0,https://github.com/RIKEN-RCCS,torch setup,machine learning,python,pjsub
+531,0,https://github.com/WumingCode/fugaku/tree/main,em2d_test,,mpi,pjsub
+532,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,configure,,omp,pjsub
+533,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi,pjsub
+534,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:fortrand,pjsub
+535,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:fortrand,pjsub
+536,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:fortrand,pjsub
+537,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:fortrand,pjsub
+538,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:fortrand,pjsub
+539,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:fortrand,pjsub
+540,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:c,pjsub
+541,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,fortrand,pjsub
+542,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,fortrand,pjsub
+543,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:c,pjsub
+544,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:fortrand,pjsub
+545,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,fftw,math,mpi:fortrand,pjsub
+546,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,ssl2fft,,fortrand:omp,pjsub
+547,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,ssl2fft,,fortrand:omp,pjsub
+548,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,ssl2fft,,fortrand:omp,pjsub
+549,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,ssl2fft,,fortrand:omp,pjsub
+550,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,ssl2fft,,fortrand:omp,pjsub
+551,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,ssl2fft,,fortrand:omp,pjsub
+552,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,ssl2fft,,fortrand:omp,pjsub
+553,0,https://github.com/mikami3heart/FFT-benchmarks-2022/,ssl2fft,,fortrand:omp,pjsub
+554,0,https://github.com/Kitaolab/PaCS-Toolkit,pacs-md,chemistry,python:omp,pjsub
+555,0,https://github.com/Kitaolab/PaCS-Toolkit,pacs-md,chemistry,,pbs
+556,0,https://github.com/Kitaolab/PaCS-Toolkit,pacs-md,chemistry,,slurm
+557,0,https://github.com/Kitaolab/PaCS-Toolkit,pacs-md,chemistry,,univa grid engine
+558,0,https://github.com/Kitaolab/PaCS-Toolkit,pacs-md,chemistry,,univa grid engine
+559,1,https://documentation.sigma2.no,seamless,machine learning,python,slurm
+560,1,https://documentation.sigma2.no,llmtest,machine learning,,slurm
+561,0,https://documentation.sigma2.no,mybinary,,fortrand,slurm
+562,0,https://documentation.sigma2.no,mybinary,,,slurm
+563,0,https://documentation.sigma2.no,mybinary,,,slurm
+564,0,https://documentation.sigma2.no,mybinary,,,slurm
+565,0,https://documentation.sigma2.no,example,,python,slurm
+566,0,https://documentation.sigma2.no,example,,python,slurm
+567,0,https://documentation.sigma2.no,sequential,math,R,slurm
+568,0,https://documentation.sigma2.no,parallel,math,R,slurm
+569,0,https://documentation.sigma2.no,test,,python,slurm
+570,0,https://documentation.sigma2.no,my-binary,,omp,slurm
+571,0,https://documentation.sigma2.no,my-binary,,omp,slurm
+572,1,https://documentation.sigma2.no,mnist,machine learning,python,slurm
+573,1,https://documentation.sigma2.no,mnist,machine learning,python,slurm
+574,1,https://documentation.sigma2.no,mnist,machine learning,python,slurm
+575,0,https://documentation.sigma2.no,hostname,,python,slurm
+576,1,fugaku op data,run_transformer_multi_impl,machine learning,python:mpi,pjsub
+577,0,fugaku op data,infer_decoded_field,,python:mpi,pjsub
+578,1,fugaku op data,deit imagenet,machine learning,python:mpi,pjsub
+579,1,fugaku op data,deit cifar10,machine learning,python:omp,pjsub
+580,1,fugaku op data,mdcnnae,machine learning,python:mpi,pjsub
+581,1,fugaku op data,imagenet resnet50,machine learning,python:mpi,pjsub
+582,0,fugaku op data,torch setup,machine learning,python,pjsub
+583,1,fugaku op data,mcdnnae,machine learning,python:mpi,pjsub
+584,0,fugaku op data,torch setup,machine learning,python,pjsub
+585,0,fugaku op data,torch setup,machine learning,python,pjsub
+586,1,fugaku op data,lango pretrain,machine learning,python,pjsub
+587,1,fugaku op data,train_NN,machine learning,python,pjsub
+588,1,fugaku op data,gpt2,machine learning,python,pjsub
+589,0,fugaku op data,setup pythorch,machine learning,python,pjsub
+590,1,fugaku op data,v100,machine learning,python,pjsub
+591,1,fugaku op data,gpt2,machine learning,python:mpi,pjsub
+592,0,fugaku op data,horovf pytorch tensorflow setup,machine learning,python,pjsub
+593,0,fugaku op data,setup-env,,,pjsub
+594,0,fugaku op data,setup-env,,,pjsub
+595,1,fugaku op data,la10,machine learning,python,pjsub
+596,0,fugaku op data,torch setup,machine learning,python,pjsub
+597,1,fugaku op data,pretrain gpt,machine learning,python,pjsub
+598,1,fugaku op data,pretrain gpt,machine learning,python,pjsub
+599,1,fugaku op data,30b_pp24_tp3_dp2_pytorch1,machine learning,mpi:python,pjsub
+600,1,fugaku op data,pretrain gpt,machine learning,python,pjsub
+601,0,fugaku op data,from_def_pytorch,,,pjsub
+602,1,fugaku op data,mdcnnae,machine learning,mpi,pjsub
+603,1,fugaku op data,mnist,machine learning,python,pjsub
+604,1,fugaku op data,mdcnnae,machine learning,mpi,pjsub
+605,0,fugaku op data,lax,,mpi,pjsub
+606,1,fugaku op data,cifar10,machine learning,mpi:python,pjsub
+607,0,fugaku op data,torch horovd setup,machine learning,python,pjsub
+608,0,fugaku op data,laamps,chemistry,mpi,pjsub
+609,0,fugaku op data,nhm_driver,,mpi,pjsub
+610,0,fugaku op data,gromacs,chemistry,python,pjsub
+611,1,fugaku op data,deepmd laamps,machine learning:chemistry,mpi,pjsub
+612,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+613,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+614,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+615,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+616,0,fugaku op data,genesis,chemistry,python,pjsub
+617,0,fugaku op data,gromacs,chemistry,mpi,pjsub
+618,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+619,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+620,0,fugaku op data,a,,mpi,pjsub
+621,0,fugaku op data,vasp,chemistry,mpi,pjsub
+622,0,fugaku op data,pwave,engineering,mpi,pjsub
+623,0,fugaku op data,genesis,chemistry,python,pjsub
+624,0,fugaku op data,turborvb,engineering,mpi,pjsub
+625,0,fugaku op data,laamps,chemistry,mpi,pjsub
+626,0,fugaku op data,test_mpi,,python:mpi,pjsub
+627,0,fugaku op data,vasp,chemistry,mpi,pjsub
+628,0,fugaku op data,fk3,,mpi,pjsub
+629,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+630,0,fugaku op data,gromacs,chemistry,mpi,pjsub
+631,0,fugaku op data,M005-02_rdvr_use0-5ms_beamblock_sl0_2021Win_Ma,,,pjsub
+632,0,fugaku op data,transit_mpi,engineering,mpi,pjsub
+633,0,fugaku op data,jlst,math,,pjsub
+634,0,fugaku op data,asuca,engineering,omp,pjsub
+635,0,fugaku op data,wovis-cracv,engineering,mpi,pjsub
+636,0,fugaku op data,ParamsHadron,chemistry,mpi,pjsub
+637,0,fugaku op data,vasp,chemistry,mpi,pjsub
+638,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+639,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+640,0,fugaku op data,abinit-mp,chemistry,mpi,pjsub
+641,0,fugaku op data,vasp,chemistry,mpi,pjsub
+642,0,fugaku op data,ibmeagle-kim-pnmpo-ssc-heis-blc10-pauli,,mpi,pjsub
+643,1,fugaku op data,dpgen vasp,machine learning:chemistry,,pjsub
+644,0,fugaku op data,salmon,bioinformatics,mpi,pjsub
+645,0,fugaku op data,vasp,chemistry,mpi,pjsub
+646,0,fugaku op data,VER2REV8-POINT-CHARGE,chemistry,mpi,pjsub
+647,0,fugaku op data,les3x,chemistry,mpi,pjsub
+648,0,fugaku op data,,,mpi,pjsub
+649,0,fugaku op data,abinit-mp,chemistry,mpi,pjsub
+650,0,fugaku op data,gromacs,chemistry,,pjsub
+651,0,fugaku op data,gaussian,chemistry,,pjsub

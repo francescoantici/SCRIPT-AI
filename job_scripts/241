@@ -1,0 +1,19 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load diamond
+
+# Create a binary DIAMOND database
+diamond makedb --db example \
+               --in example.fa \
+               --threads ${NSLOTS}
+
+# Run the alignment task
+diamond blastx --db example \
+               --out matches \
+               --query query.fna \
+               --threads ${NSLOTS}

@@ -1,0 +1,7 @@
+#!/bin/bash
+#SBATCH --job-name=evaluate
+#SBATCH --output=evaluate_%j.out
+#SBATCH --error=evaluate_%j.err
+#SBATCH --ntasks=1
+
+srun python evaluate.py --librispeech_path /root/datasets/ --checkpoint ./exp_finetune/checkpoints_hubert_pretrain_base/epoch\=109-step\=19999.ckpt --split test-clean

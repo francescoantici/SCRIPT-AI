@@ -1,0 +1,11 @@
+#!/bin/bash
+#PJM -L "rscgrp=small"
+#PJM -L "node=1"
+#PJM -L "freq=2200,eco_state=2"
+#PJM -L "elapse=50:00:00"
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -S
+module use modulefiles
+module load Gaussian
+. g16.profile
+g16 < T1COT1Prn21amT1Prn11bmT1Prn13bmP11ar.gjf >& T1COT1Prn21amT1Prn11bmT1Prn13bmP11ar.log

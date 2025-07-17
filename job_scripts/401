@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -lselect=1:ncpus=4:mem=10gb:ngpus=1
+#PBS -lwalltime=1:0:0
+
+cd $PBS_O_WORKDIR
+
+eval "$(~/miniforge3/bin/conda shell.bash hook)"
+source activate tf2_env
+
+## Verify install:
+python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"

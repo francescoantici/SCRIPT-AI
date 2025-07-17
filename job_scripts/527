@@ -1,0 +1,71 @@
+#!/bin/bash
+#PJM -L rscgrp=${RSC_GRP}
+#PJM -L elapse=$TimeLimit
+#PJM -L proc-core=48
+#PJM -L "node=${NodeShape}"
+##:strict,freq=2200
+#PJM --rsc-list "retention_state=0"
+#PJM -j
+#PJM -S
+
+hostname
+export OpenFoldDir="$OPENFOLDDIR"
+
+LogDir="$LogDir"
+if [ ! -d "\$LogDir" ] ; then
+    echo "\$LogDir: not a directory" >&2
+    exit 1
+fi
+
+printenv > "$LogDir/environ"
+
+### The directory where data is stored
+DataDir="$DataDir"
+
+dnnlverbose=$dnnlverbose
+echo "DNNL Verbose Level: $dnnlverbose"
+
+###
+# Copy flag and directory path 
+#   copy data from remote storage to local disk
+#   and use the training data in local disk
+LocalDataDir=${LocalDataDir}
+TmpDataDir=${DataDir}
+ShareDir=${ShareDir}
+
+###
+WORKER=${WORKER}
+
+NumNodes=${NumNodes}
+
+
+
+
+echo "echo ---------------
+echo Job information
+echo ---------------
+echo Mode: MPI
+echo NumNodes: $NumNodes
+echo NodeShape: $NodeShape
+echo LogDir: $LogDir
+
+if [[ `hostname` =~ fn01sv0[0-9] ]] ; then
+    # To use LLIO (node-temporary)
+    # QsubArgs+=("--llio localtmp-size=80Gi")
+
+    # add group option
+    QsubArgs+=("$PJSUB_OPT")
+
+    QsubArgs+=("$ScriptFile")
+
+    ### Execute qsub command
+    echo "`date +%s.%N` #qsub"
+    echo "> pjsub ${QsubArgs[@]} $@"
+    pjsub ${QsubArgs[@]} "$@"
+
+else
+    # On compute node
+    bash $ScriptFile 2>&1 | tee ${LogDir}/stdout.txt
+fi
+# End of file
+" > "$ScriptFile"

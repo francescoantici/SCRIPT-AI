@@ -1,0 +1,14 @@
+#!/bin/sh
+#PJM -L   "node=84"
+##PJM -L   "rscgrp=large"   # more than 384 node, max 24 h.
+##PJM -L   "elapse=10:00:00"
+#PJM -L   "elapse=72:00:00"
+#PJM -N   "ABCD_01"
+##PJM --mpi   "shape=1"
+#PJM --mpi   "max-proc-per-node=12"  
+#PJM -S
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==
+
+export PARALLEL=1
+export OMP_NUM_THREADS=${PARALLEL}
+mpiexec -n 1000 ./FK3

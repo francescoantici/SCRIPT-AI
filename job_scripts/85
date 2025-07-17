@@ -1,0 +1,13 @@
+#!/bin/bash -l
+#PBS -N hybrid_job
+#PBS -A <project_code>
+#PBS -l select=2:ncpus=8:mpiprocs=2:ompthreads=4
+#PBS -l walltime=00:10:00
+#PBS -q casper
+#PBS -j oe
+
+export TMPDIR=${SCRATCH}/temp
+mkdir -p ${TMPDIR}
+
+### Run program
+mpirun ./executable_name

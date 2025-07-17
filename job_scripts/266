@@ -1,0 +1,14 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load prank
+
+# align the FASTA sequences and output in HSAML format
+prank -d=input_file \
+      -t=tree_file \
+      -o=output_file \
+      -F -showxml

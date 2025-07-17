@@ -1,0 +1,7 @@
+#!/bin/bash
+#SBATCH --cpus-per-task=12
+#SBATCH --gpus-per-node=8
+#SBATCH -N 4
+#SBATCH --ntasks-per-node=8
+
+srun python train.py --model-type librispeech --exp-dir ./experiments --dataset-path ./datasets/librispeech --global-stats-path ./global_stats.json --sp-model-path ./spm_bpe_4096.model

@@ -1,0 +1,58 @@
+#!/bin/bash
+#PJM --rsc-list "rscgrp=small"
+#PJM --rsc-list "node=72"
+#PJM --rsc-list "elapse=5:00:00"
+#PJM --rsc-list "node-mem=28Gi"
+#PJM --mpi "proc=3456"
+#PJM --mpi "max-proc-per-node=48"
+#PJM --name "laamps"
+#PJM --out  "%n-%j.out"
+#PJM --err  "%n-%j.err"
+#PJM --STATS
+
+
+# Load language environment
+module purge
+module load lang/tcsds-1.2.40
+export TMPDIR=/data/tmp
+
+# Number of threads: (NTHREADS)*(max-proc-per-node) =< 48
+NTHREADS=1
+
+# Set executable LAMMPS
+BINDIR=/data/bin
+EXE=lmp_rist16June2020
+
+# Command-line options of LAMMPS
+INPUT=input.in
+LOGFILE=input.log
+CMDOPT=$(echo "-in ${INPUT} -log ${LOGFILE} -sf intel -pk intel 0 omp ${NTHREADS} mode double -pk omp ${NTHREADS}")
+
+
+# MPI command
+MPIEXE=mpiexec
+MPIIN=
+
+MPIOUT=$(echo "-stdout-proc ./job%j/%/2000r/stdout ") 
+MPIERR=$(echo "-stderr-proc ./job%j/%/2000r/stderr ")
+
+
+
+# Stack size
+ulimit -s unlimited
+
+# OpenMP setting (for a single thread)
+export OMP_NUM_THREADS=${NTHREADS}
+export FLIB_CNTL_BARRIER_ERR=FALSE #TRUE
+
+
+# Suppress generate of empty log files
+export PLE_MPI_STD_EMPTYFILE=off
+
+
+date > STAMP  # set time stamp
+
+# Run LAMMPS
+${MPIEXE} ${MPIIN} ${MPIOUT} ${MPIERR} \
+${EXE} ${CMDOPT}
+date >> STAMP # set time stamp

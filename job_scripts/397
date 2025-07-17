@@ -1,0 +1,8 @@
+#!/bin/sh
+
+#flux: -N 2
+#flux: -n 4
+
+date
+flux run -n4 ./mpi_hellosleep
+echo 'job complete'

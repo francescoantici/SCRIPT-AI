@@ -1,0 +1,35 @@
+#!/bin/csh -x
+##This script test different conda environments running on Cascade Lake GPU Nodes
+#PBS -q v100@pbspl4
+#PBS -W block=true
+#PBS -lselect=1:ncpus=48:ngpus=4:model=cas_gpu:mem=300g
+#PBS -l place=scatter:exclhost
+#PBS -l walltime=02:00:00
+#PBS -j oe
+#PBS -N model_cas_gpu-check
+#PBS -W group_list=n1853
+
+
+#load analytix modules
+module use -a /swbuild/analytix/tools/modulefiles
+module load miniconda3/v4
+
+
+#activate tf2_9 tensorflow conda environment
+source /swbuild/analytix/tools/miniconda3_220407/bin/activate.csh tf2_9
+
+
+##This script trains a neural network model on MNIST characters
+cd /home7/analytix/examples/mnist/src/main/python
+echo "  " 
+echo "  " 
+echo "tensorflow mnist test"
+echo "  " 
+echo "  " 
+python3 mnist.py
+echo "  " 
+echo "  " 
+
+
+#exit environment
+conda deactivate

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#PBS -N gpu_test
+#PBS -l walltime=00:05:00
+#PBS -l nodes=1:ppn=1:gpus=1
+#PBS -j oe
+
+cd <DIR>
+
+module load matlab
+
+matlab -nodisplay -r gpu_matlab > gpu_matlab.out

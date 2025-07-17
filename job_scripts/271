@@ -1,0 +1,13 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load raxml
+
+raxmlHPC-AVX -m BINGAMMA \
+             -p 12345 \
+             -s ~/raw_data.phy \
+             -n raxml_output_file

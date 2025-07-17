@@ -1,0 +1,17 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 6
+#$ -l h_rt=240:0:0
+#$ -l h_vmem=4G
+
+module load bismark
+
+# Fork the Bismark Methylation Extractor by one third the number of cores
+# requested to avoid poor performance and threading issues
+REPCORES=$((NSLOTS / 3))
+
+bismark_methylation_extractor \
+    --gzip \
+    --multicore ${REPCORES} \
+    sample_bismark_bt2.bam

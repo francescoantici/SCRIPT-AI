@@ -1,0 +1,11 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_vmem=5G
+
+module load openfoam
+
+cd FOAM_PROJECT
+blockMesh
+pisoFoam

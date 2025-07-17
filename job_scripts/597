@@ -1,0 +1,17 @@
+#!/bin/bash
+#PJM -L  "node=8"
+#PJM -L  "rscgrp=small"
+#PJM -L  "elapse=0:20:00"
+#PJM --mpi  "rank-map-bynode"
+#PJM --name "pretrain_gpt"
+#PJM -o ./outs/%n.%j.stdout
+#PJM -e ./outs/%n.%j.err
+#PJM -s --spath ./outs/%n.%j.stats
+
+export PATH=$PATH:/data/jobscheduler2slack
+
+source env.src
+source $VENV_PATH/bin/activate
+
+sh pretrain_gpt_distributed_with_tp_mp_fugaku_override.sh 8 2
+

@@ -1,0 +1,12 @@
+#PBS -S /bin/csh
+#PBS -l select=1:ncpus=20:model=ivy
+#PBS -l walltime=00:10:00
+#PBS -J 1-400:40
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+set begin=$PBS_ARRAY_INDEX
+set end=`expr $PBS_ARRAY_INDEX + 39`
+
+seq $begin $end | parallel -j 4 -u "./my_hello.scr {}"

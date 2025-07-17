@@ -1,0 +1,45 @@
+#!/bin/bash -x 
+#PJM -z jid
+#PJM -j
+#PJM --rsc-list rscgrp=large
+#PJM --rsc-list "node=400"
+#PJM --rsc-list "elapse=02:28:00"
+#PJM --mpi max-proc-per-node=4
+#PJM -x PJM_LLIO_GFSCACHE=/ht43Mn2TVeHmt3yReuCS6w==
+#PJM -N XX_case_001
+#PJM -S
+#PJM --restart
+#PJM -L "freq=2200,eco_state=2"
+
+
+ export LES3DHOME=FFB9  
+ export PATH=$LES3DHOME/bin:$LES3DHOME/macro:$PATH
+ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${LES3DHOME}/lib 
+# Temp
+module switch tcsds-1.2.39
+export PLE_MPI_STD_EMPTYFILE=off
+# Default
+export node=1600
+export PARALLEL=12
+export OMP_NUM_THREADS=${PARALLEL} 
+
+PROG=les3x2.mpi
+
+# Make directory
+mkdir -p FLOW
+mkdir -p HIST
+mkdir -p AVE
+mkdir -p FLOWS
+mkdir -p RMS
+mkdir -p SURF
+mkdir -p STR
+mkdir -p LOG
+
+# llio
+llio_transfer ${PROG}
+llio_transfer PARMLES3X
+#------------------------------- 
+# run les3x 
+#------------------------------- 
+mpiexec -n ${node} -stdout-proc stdout -stderr-proc stderr ${PROG}
+

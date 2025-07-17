@@ -1,0 +1,16 @@
+#!/bin/bash
+## Introductory Example 
+## Copyright (c) 2018
+## The Center for Advanced Research Computing
+## at The University of New Mexico
+####################################################
+#PBS -lnodes=2:ppn=8
+#PBS -lwalltime=1:00
+# Change to directory the PBS script was submitted from
+cd $PBS_O_WORKDIR
+# load the environment module to use OpenMPI built with the Intel compilers
+module load openmpi-3.1.1-intel-18.0.2-hlc45mq 
+# print out a hello message from each of the processors on this host
+# indicating the host this is running on
+export THIS_HOST=$(hostname)
+mpirun -np 16 -machinefile $PBS_NODEFILE echo Hello World from host $THIS_HOST

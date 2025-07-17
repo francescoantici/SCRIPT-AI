@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+#SBATCH --job-name=demo
+#SBATCH --output=result.txt
+#
+#SBATCH --ntasks=4
+#SBATCH --time=00:10:00
+#SBATCH --mem-per-cpu=100
+#SBATCH --partition=partition_name
+
+srun hostname
+srun sleep

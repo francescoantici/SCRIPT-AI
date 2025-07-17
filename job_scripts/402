@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -lselect=1:ncpus=10:mem=12gb
+#PBS -lwalltime=3:0:0
+
+module load lumerical/2022-R2.1
+
+cd ${PBS_O_WORKDIR}
+
+NUM_PROCS="10"
+MY_PROG="fdtd-engine-mpich2nem"
+INPUT="sweep_99.fsp"
+
+mpiexec -n ${NUM_PROCS} ${MY_PROG} ./${INPUT}

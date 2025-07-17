@@ -1,0 +1,60 @@
+#!/bin/sh
+#PJM -N build
+#PJM -L rscgrp=small
+#PJM -L elapse=12:00:00
+#PJM -L node=1
+#PJM --llio localtmp-size=80Gi
+#PJM -j
+#PJM -S
+
+set -e
+
+## For Build cache
+export XDG_CACHE_HOME=${PJM_LOCALTMP}/cache
+export TMPDIR=${PJM_LOCALTMP}/tmp
+mkdir -p ${XDG_CACHE_HOME}
+mkdir -p ${TMPDIR}
+mkdir -p ${PJM_LOCALTMP}/bazeltmp
+
+export PYTORCH_WORIKDIR=pytorch/scripts/fujitsu
+export TENSORFLOW_WORKDIR=tensorflow/fcc_build_script/
+
+### PyTorch
+
+cd ${PYTORCH_WORIKDIR}
+
+## Step1. 1_python.sh
+bash ./1_python.sh clean
+bash ./1_python.sh
+## Step3. 3_venv.sh
+bash ./3_venv.sh clean
+bash ./3_venv.sh
+## Step4. 4_numpy_scipy.sh
+bash ./4_numpy_scipy.sh clean
+bash ./4_numpy_scipy.sh
+## Step5. 5_pytorch.sh
+bash ./5_pytorch.sh clean
+bash ./5_pytorch.sh
+## Step6. 6_vision.sh
+bash ./6_vision.sh clean
+bash ./6_vision.sh
+## Step8. 8_libtcmalloc.sh
+bash ./8_libtcmalloc.sh clean
+bash ./8_libtcmalloc.sh
+
+### TensorFlow
+
+cd ${TENSORFLOW_WORKDIR}
+
+## Step1. 02_bazel_build.sh
+bash ./02_bazel_build.sh clean
+bash ./02_bazel_build.sh
+## Step2. 05-1_build_batchedblas.sh
+bash ./05-1_build_batchedblas.sh clean
+bash ./05-1_build_batchedblas.sh
+## Step3. 05_tf_build.sh
+bash ./05_tf_build.sh clean
+bash ./05_tf_build.sh
+## Step4. 07_horovod_install.sh
+bash ./07_horovod_install.sh clean
+bash ./07_horovod_install.sh

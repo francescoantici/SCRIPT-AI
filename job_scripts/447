@@ -1,0 +1,8 @@
+#!/bin/bash
+#PJM -L "node=1"
+#PJM -L "rscgrp=eap-small"
+#PJM -L "elapse=1:00:00"
+#PJM -j -X -S
+
+echo stepjobTask0
+exit 1

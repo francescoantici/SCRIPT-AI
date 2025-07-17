@@ -1,0 +1,5 @@
+#!/bin/bash
+#PBS -lselect=1:ncpus=16:mem=64gb
+#PBS -lwalltime=4:0:0
+module load paraview/5.10.0
+mpiexec pvserver --reverse-connection --client-host=IPADDRESS

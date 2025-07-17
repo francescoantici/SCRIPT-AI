@@ -1,0 +1,13 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe parallel 96
+#$ -l infiniband=ddy-i
+#$ -l h_rt=240:0:0
+
+module load miniforge
+
+mamba activate abyss-env
+
+abyss-pe --directory=output k=25 j=${NSLOTS} \
+name=test B=1G in='reads1.fastq reads2.fastq'

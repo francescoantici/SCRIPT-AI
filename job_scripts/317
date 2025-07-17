@@ -1,0 +1,19 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 16
+#$ -l h_rt=240:0:0
+#$ -l h_vmem=11G
+#$ -l gpu=2
+
+# Load the GPU-accelerated version
+module load lammps-gpu
+
+# Export the number of GPUs available
+NGPUS=$(nvidia-smi -L | wc -l)
+
+mpirun -np ${NSLOTS} lmp \
+       -sf gpu \
+       -pk gpu ${NGPUS} \
+       -in in.lc \
+       -log in.lc.log

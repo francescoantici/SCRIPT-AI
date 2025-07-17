@@ -1,0 +1,13 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load plumed
+
+# analyse the trajectory "traj-whole.xtc", taken from a tutorial on
+# the PLUMED website
+plumed driver --plumed plumed.dat \
+              --mf_xtc traj-whole.xtc

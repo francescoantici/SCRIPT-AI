@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH -J my_r_job
+#SBATCH -o my_r_job.out
+#SBATCH -e my_r_job.err
+#SBATCH --mail-user=XXXXXXX@mit.edu
+#SBATCH --mail-type=ALL
+#SBATCH --gres=gpu:1
+#SBATCH --nodes=1
+#SBATCH --mem=50G
+#SBATCH --time=2:00:00
+module add spack-flat
+module add r
+Rscript script.R

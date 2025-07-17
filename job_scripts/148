@@ -1,0 +1,27 @@
+##!/bin/bash
+#PBS -q devel -l select=25:ncpus=4:model=has
+#PBS -l walltime=01:00:00
+#PBS -j oe
+#PBS -N air_dask_test
+
+#set environment
+module use /swbuild/analytix/tools/modulefiles
+module load miniconda3/v4
+module load mpi-hpe/mpt
+source activate dask_mpi
+
+#clear and create directory for dask scheduler
+if [ -d dask_sch ]
+then 
+    echo "removing old scheduler directory"
+    rm -r dask_sch
+    echo "creating new scheduler directory"
+    mkdir dask_sch
+else
+    echo "creating scheduler directory"
+    mkdir dask_sch
+fi
+ 
+#run program
+mpirun -np 20 dask-mpi --worker-class distributed.Worker --scheduler-file 
+$(pwd)/dask_sch/sched.json & your_python_script

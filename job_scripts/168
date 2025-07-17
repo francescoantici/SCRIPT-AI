@@ -1,0 +1,10 @@
+#!/bin/bash
+#$ -cwd
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load gromacs
+
+gmx grompp -f example.mdp -c example.gro -p example.top -o example.tpr
+gmx mdrun -ntomp ${NSLOTS} -v -s example.tpr -deffnm example

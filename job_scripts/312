@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 8
+#$ -l h_rt=240:0:0
+#$ -l h_vmem=11G
+#$ -l gpu=1
+
+module load gromacs-gpu
+
+gmx_mpi grompp -f example.mdp -c example.gro -p example.top -o example.tpr
+gmx_mpi mdrun -s example.tpr -nb gpu -pme gpu -update gpu -bonded gpu

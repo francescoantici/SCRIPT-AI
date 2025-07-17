@@ -1,0 +1,32 @@
+#PJM -L "rscgrp=small"
+#PJM -L "node=1" 
+#PJM --mpi "max-proc-per-node=32"
+
+#PJM -L "elapse=2:30:00"
+#PJM -L "node=48:torus"
+#PJM -S
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==:/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -L "freq=2200,eco_state=2,retention_state=0"
+
+
+
+REMOTE_ROOT=$(readlink -f dpgen_honban1/work_dir)
+echo 0 > $REMOTE_ROOT/020f6a6532edd0a37bea832bf636d2d05bedaf95_flag_if_job_task_fail
+test $? -ne 0 && exit 1
+
+
+
+
+
+dpgen_honban1/test_prepend.sh $0
+
+source $REMOTE_ROOT/020f6a6532edd0a37bea832bf636d2d05bedaf95.sub.run
+
+cd $REMOTE_ROOT
+test $? -ne 0 && exit 1
+
+wait
+FLAG_IF_JOB_TASK_FAIL=$(cat 020f6a6532edd0a37bea832bf636d2d05bedaf95_flag_if_job_task_fail)
+if test $FLAG_IF_JOB_TASK_FAIL -eq 0; then touch 020f6a6532edd0a37bea832bf636d2d05bedaf95_job_tag_finished; else exit 1;fi
+
+

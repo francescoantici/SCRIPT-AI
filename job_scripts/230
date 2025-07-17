@@ -1,0 +1,16 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load bowtie
+
+# Prepare example genomes in <inputDir>
+# Output is stored in current working directory
+# -a reports all valid alignments per read or pair
+# -v only accepts alignments with at most v <int> mismatches
+# -x sets the basename of the Bowtie index to be searched
+# -c is the query sequence which will be used
+bowtie -a -v 2 -x <inputDir> --suppress 1,5,6,7 -c ATGCATCATGCGCCAT

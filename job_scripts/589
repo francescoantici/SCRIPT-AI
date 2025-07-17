@@ -1,0 +1,35 @@
+#!/bin/bash
+#PJM -L "node=1"               
+#PJM -L "rscgrp=small"         
+#PJM -L "elapse=00:10:00"         
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q== 
+#PJM -S                       
+
+#export OMP_NUM_THREADS=12      
+
+# execute job
+export VENVDIR=venv
+#python3 -m venv ${VENVDIR}
+source ${VENVDIR}/bin/activate
+#python3 -m pip install Cython
+#python3 -m pip install numpy --upgrade
+#python3 -m pip install scipy
+#cd ..
+pip install --upgrade pip
+pip install -U pip setuptools
+pip install .
+pip install sklearn
+pip install torch
+#cd examples
+
+. setup-env.sh
+
+module load `module avail|grep gcc`
+module load `module avail|grep python`
+module load `module avail|grep py-numpy`
+module load `module avail|grep py-scipy`
+module load `module avail|grep py-pandas`
+module load `module avail|grep py-matplotlib`
+module load `module avail|grep py-cython`
+module load `module avail|grep py-torch`
+

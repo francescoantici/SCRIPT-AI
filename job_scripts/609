@@ -1,0 +1,35 @@
+#!/bin/bash
+
+#PJM --rsc-list "rscgrp=large"
+#PJM --rsc-list "node=640"
+#PJM --rsc-list "elapse=10:00:00"
+#PJM --rsc-list "freq=2200,eco_state=2"
+#PJM --llio localtmp-size=86Gi
+#PJM --mpi "proc=2560"
+#PJM --name "nhm_driver"
+#PJM -S
+#PJM -m e
+
+module purge
+module load lang/tcsds-1.2.38
+
+. setup-env.sh
+spack load /dkidjel # hdf5@1.10.7%gcc@11.2.0 arch=linux-rhel8-cascadelake
+spack load /l53s4lp # hdf5@1.10.7%fj@4.7.0 arch=linux-rhel8-a64fx
+spack load /u3iizwb # netcdf-c%fj
+spack load /ayace7t # netcdf-fortran%fj
+
+export FORT90L="-Wl,-T"
+export OMPI_MCA_plm_ple_memory_allocation_policy=localalloc
+export PLE_MPI_STD_EMPTYFILE="off"
+export PARALLEL=12
+export OMP_NUM_THREADS=12
+
+HMDIR=/RAvG7tRc8R3QSe+OEfBL9Q==data
+
+# stage-in
+mpiexec -n 2560 -of-proc STDOUT ./stagein.sh || exit 1
+
+# run
+mpiexec -n 2560 -of-proc STDOUT ${PJM_LOCALTMP}/nhm_driver     || exit 1
+

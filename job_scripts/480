@@ -1,0 +1,8 @@
+#!/bin/bash
+#PJM -L "node=1"               # ノード数
+#PJM -L "rscgrp=eap-small"     # リソースグループの指定
+#PJM -L "elapse=60:00"         # ジョブの経過時間制限値
+#PJM -S                        # 統計情報ファイル出力の指示
+
+cat ${PJM_BULKNUM}.input > ${PJM_BULKNUM}.output
+exit 0

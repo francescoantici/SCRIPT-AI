@@ -1,0 +1,12 @@
+#!/bin/bash
+#PJM -L "node=1"
+#PJM -L "elapse=00:10:00"
+#PJM --mpi "proc=16"
+#PJM -S
+
+module load Python3-CN
+export FLIB_CNTL_BARRIER_ERR=FALSE
+
+# execute job
+mpiexec -n 16 python3 test_mpi.py
+

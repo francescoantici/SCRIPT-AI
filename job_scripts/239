@@ -1,0 +1,18 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=4G
+
+module load cellranger
+
+cellranger count --id 1234 \
+                 --transcriptome example_transcriptome \
+                 --fastqs raw_data.fastq \
+                 --sample 1234 \
+                 --create-bam false \
+                 --disable-ui \
+                 --jobmode local \
+                 --localcores ${NSLOTS} \
+                 --localmem 4

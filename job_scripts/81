@@ -1,0 +1,17 @@
+#!/bin/bash -l
+#PBS -N mpi_job
+#PBS -A <project_code>
+#PBS -l select=2:ncpus=4:mpiprocs=4:ngpus=4:mem=40GB
+#PBS -l gpu_type=v100
+#PBS -l walltime=01:00:00
+#PBS -q casper
+#PBS -j oe
+
+export TMPDIR=${SCRATCH}/temp
+mkdir -p ${TMPDIR}
+
+### Provide CUDA runtime libraries
+module load cuda
+
+### Run program
+mpirun ./executable_name

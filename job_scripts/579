@@ -1,0 +1,35 @@
+#!/bin/bash
+#PJM -L "node=16"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=48:00:00"
+#PJM --mpi "proc=16"
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==
+
+export PATH=$PATH:jobscheduler2slack
+
+
+EXECFILE=train_mpi_with_wds.py
+TIMM_PATH='timm/'
+PYTORCH_PATH='site-packages/'
+PRETRAINED_PATH='tiny_facebook.pth'
+
+llio_transfer $EXECFILE
+llio_transfer $PRETRAINED_PATH
+
+export PATH=/bin:$PATH
+export CPATH=/include:$CPATH
+export LIBRARY_PATH=/lib:$LIBRARY_PATH
+export LD_LIBRARY_PATH=/lib:$LD_LIBRARY_PATH
+
+export FLIB_CNTL_BARRIER_ERR=FALSE
+export LD_PRELOAD=libpmix.so 
+
+export OMP_NUM_THREADS=48
+
+post_message "start sweep"
+wandb agent --count 17 deit_tiny_cifar100_sweep_bs512/bdvidbq0
+post_message "end sweep"
+
+
+llio_transfer --purge $EXECFILE
+llio_transfer --purge $PRETRAINED_PATH

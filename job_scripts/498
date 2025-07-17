@@ -1,0 +1,16 @@
+#!/bin/bash -x
+#
+#PJM --rsc-list "node=2"
+#PJM --rsc-list "elapse=00:10:00"
+#PJM --rsc-list "proc-core=unlimited"
+#PJM --stg-transfiles "all"
+#PJM --mpi "use-rankdir"
+#PJM --stgin "rank=* ./kmrshell     %r:./"
+#PJM --stgin "rank=* ./mapper       %r:./"
+#PJM --stgin "rank=* ./kmrshuffler  %r:./"
+#PJM --stgin "rank=* ./reducer      %r:./"
+#PJM --stgin "rank=* ./part%r       %r:./input"
+#PJM --stgout "rank=* %r:./output.%r ./output.%r"
+#PJM -S
+\&. /work/system/Env_base
+mpiexec -n 2 -of-proc output ./kmrshell ./mapper ./reducer ./input

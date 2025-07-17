@@ -1,0 +1,26 @@
+#SBATCH --job-name=a-0 --requeue --ntasks-per-node=1
+#SBATCH hetjob
+#SBATCH --job-name=a-1 --requeue --ntasks-per-node=1
+#SBATCH hetjob
+#SBATCH --job-name=b-0 --requeue --ntasks-per-node=1
+
+set -evx
+
+export PYTHONUNBUFFERED=1
+export SLURM_UNBUFFEREDIO=1
+export TORCHX_MAX_RETRIES=2
+
+set +e
+srun --output=slurm-"$SLURM_JOB_ID"-a-0.out --error=slurm-"$SLURM_JOB_ID"-a-0.err --wait=60 --kill-on-bad-exit=1 echo 0 'hello '"$SLURM_JOB_ID"'' :\\
+     --output=slurm-"$SLURM_JOB_ID"-a-1.out --error=slurm-"$SLURM_JOB_ID"-a-1.err --wait=60 --kill-on-bad-exit=1 echo 1 'hello '"$SLURM_JOB_ID"'' :\\
+     --output=slurm-"$SLURM_JOB_ID"-b-0.out --error=slurm-"$SLURM_JOB_ID"-b-0.err --wait=60 --kill-on-bad-exit=1 echo
+exitcode=$?
+set -e
+
+echo "job exited with code $exitcode"
+if [ $exitcode -ne 0 ]; then
+    if [ "$TORCHX_MAX_RETRIES" -gt "${{SLURM_RESTART_COUNT:-0}}" ]; then
+        scontrol requeue "$SLURM_JOB_ID"
+    fi
+    exit $exitcode
+fi

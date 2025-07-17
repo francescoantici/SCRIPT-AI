@@ -1,0 +1,25 @@
+#!/bin/bash
+#PJM -L elapse=12:00:00
+#PJM -L "node=1"
+#PJM -L "freq=2200"
+#PJM --rsc-list "retention_state=0"
+#PJM -j
+#PJM -S
+
+# env
+. env.src
+
+sh 1_cmake.sh  # cmake
+
+export CC="${TCSDS_PATH}/bin/fcc -Nclang -Kfast -Knolargepage -lpthread"
+export CXX="${TCSDS_PATH}/bin/FCC -Nclang -Kfast -Knolargepage -lpthread"
+
+sh 2_python.sh  # python
+sh 3_venv.sh  # venv
+sh 4_pytorch.sh  # pytorch(v160)
+sh 5_jpeg.sh  # jpeg
+sh 6_vision.sh  # vision
+sh 7_horovod.sh  # horovod
+sh 8_check.sh  # check
+cp .libtcmalloc.so ${PREFIX}/libtcmalloc.so
+ln -s ${PREFIX}/libtcmalloc.so ${PREFIX}/libtcmalloc_minimal.so

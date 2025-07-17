@@ -1,0 +1,53 @@
+#!/bin/bash
+#PJM -L "elapse=00:30:00"
+#PJM -L "node=1:noncont,freq=2200"
+#PJM --mpi "max-proc-per-node=1"
+#PJM -j
+#PJM -S
+
+set -ex
+
+NODES=1
+PROCS_PER_NODE=1
+NPROCS=$((NODES * PROCS_PER_NODE))
+export PARALLEL=47
+
+
+# Resource Size
+ulimit -s 8192
+
+# Library
+source $(arch).multi.conf
+
+# Virtual env
+source ${PYTORCH_INSTALL_PATH}/${VENV_NAME}/bin/activate
+
+# Show Info
+echo $(date) " ## Print Env"
+env | grep -e ^PATH= -e ^LD_LIBRARY_PATH= -e ^LD_PRELOAD= | sed "s/:/\n  /g" | sed "s/=/\n  /g"
+python -c "import torch; print(torch.__version__)"
+python -c "import torch; print(torch.__config__.show())"
+
+export OMPI_MCA_mpi_print_stats=2
+
+#for T_BATCHS in 1280 640 320 160 
+for T_BATCHS in 1280 640 320 160 80
+do
+
+BATCHS=$((T_BATCHS / NPROCS))
+if [ ${T_BATCHS} -gt 7680 ]; then
+  STEPS=5
+else
+  STEPS=10
+fi
+
+dnodes=`printf "%03d" ${NODES}`
+dprocs=`printf "%03d" ${NPROCS}`
+dthreads=`printf "%02d" ${PARALLEL}`
+dsteps=`printf "%02d" ${STEPS}`
+dbatchs=`printf "%05d" ${BATCHS}`
+
+
+/usr/bin/time -p mpirun -x BATCH_SIZE=${BATCHS} -x PROFILE_OPS=${TRACE} -x TRAIN_STEPS=${STEPS} -np ${NPROCS} --of-proc std_p${dprocs}-t${dthreads}_b${T_BATCHS}/out  run_transformer_multi_impl.sh
+
+done

@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load sra-tools
+
+# Produces pileup stats for a given genomic region (-r), chromosome 1,
+# bases 559140-559160 (1:559140-559160).
+sra-pileup -r 1:559140-559160 input-file

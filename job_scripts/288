@@ -1,0 +1,19 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=4G
+
+module load spaceranger
+
+spaceranger count   --id=1234 \
+                    --transcriptome=example_transcriptome \
+                    --create-bam true \
+                    --fastqs=raw_data.fastq \
+                    --image=sample_1234.tif \
+                    --slide=V19J01-123 \
+                    --area=A1 \
+                    --disable-ui \
+                    --localcores ${NSLOTS} \
+                    --localmem 4

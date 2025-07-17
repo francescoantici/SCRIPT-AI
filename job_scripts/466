@@ -1,0 +1,13 @@
+#!/bin/bash
+#PJM -L "rscgrp=ito-g-4-dbg"
+#PJM -L "rscunit=ito-b"
+#PJM -L "vnode=4"
+#PJM -L "vnode-core=9"
+#PJM -L "elapse=1:00:00"
+#PJM -j -X -S
+
+## OpenFOAM-v1706
+. /home/app/a/OpenFOAM/OpenFOAM-v1706/etc/bashrc
+source /etc/bashrc
+cd ../WORK/cavity
+mpiexec -np 4 icoFoam -parallel > ./log.icoFoam 2>&1

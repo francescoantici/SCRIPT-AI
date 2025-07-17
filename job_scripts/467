@@ -1,0 +1,11 @@
+#!/bin/bash
+#PJM -L "rscgrp=ito-g-1-dbg"
+#PJM -L "rscunit=ito-b"
+#PJM -L "elapse=1:00:00"
+#PJM -j -X -S
+
+cd ../WORK/cavity
+reconstructPar  
+touch result.foam  
+cd ../
+tar cvzf cavity.tar.gz cavity

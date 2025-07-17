@@ -1,0 +1,10 @@
+#!/bin/bash
+#$ -pe smp 1
+#$ -l h_vmem=1G
+#$ -cwd
+#$ -j y
+#$ -l h_rt=1:0:0
+
+module load cp2k
+
+cp2k.psmp -i myinput.inp -o myoutput.out

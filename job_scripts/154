@@ -1,0 +1,7 @@
+
+#PBS -l select=10:ncpus=28:mpiprocs=28:model=bro_ele
+#PBS -l walltime=8:00:00
+#PBS -q normal
+module load comp-intel/2016.2.181 mpi-hpe/mpt
+cd $PBS_O_WORKDIR
+mpiexec -np 280 ./a.out

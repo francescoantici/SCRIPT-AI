@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+#PBS -N dask-worker
+#PBS -q default
+#PBS -l nodes=1:ppn=8
+#PBS -l walltime=01:00:00
+JOB_ID=${PBS_JOBID%%.*}
+
+/opt/local/anaconda3/envs/jupyterhub/bin/python -m distributed.cli.dask_worker tcp://172.16.2.42:46451 --nthreads 8 --memory-limit 42.00GB --name name --nanny --death-timeout 60

@@ -1,0 +1,11 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_vmem=5G
+
+module load cst_studio
+
+cst_studio cst_design_environment \
+  --numthreads ${NSLOTS} \
+  SOLVERS input_file.cst

@@ -1,0 +1,25 @@
+#!/bin/bash
+#PJM -L "node=1"                            
+#PJM -L "rscgrp=small"                      
+#PJM -L "elapse=24:00:00"                   
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==: 
+#PJM -S                                     
+
+# load modules
+llio_transfer setup-env.sh
+source setup-env.sh
+module load python/3.10.8-fj-4.8.1-5q3ncyl
+module load py-torch/1.13.0-fj-4.8.1-5fgkjj6
+module load py-scikit-learn/1.1.3-fj-4.8.1-4pqbhcy
+module load py-matplotlib/3.6.2-fj-4.8.1-2f7jcoc
+
+# execute 20.train_NN.py
+mkdir -p ${RSLT_DIR}
+cd ${RSLT_DIR}
+ln -s 20.train_NN_abci.py 20.train_NN.py
+ln -s results/dist_hist.py
+ln -s param/
+ln -s 01hdnnp/data4nn/
+time python 20.train_NN.py -o ./rslt -bs ${BATCH_SIZE} -l ${L_RATE} -n ${HID_LAYER}
+python dist_hist.py ./rslt/dist_list.csv ./rslt/pred_vs_true.png
+mv run_train_NN.sh.${PJM_JOBID}.* ./

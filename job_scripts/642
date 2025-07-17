@@ -1,0 +1,19 @@
+#!/bin/bash
+#PJM -L "rscgrp=small,node=32:mesh,elapse=2:00:00"
+#PJM --mpi "shape=32"
+#PJM --mpi "proc=127"
+#PJM --mpi "rank-map-hostfile=IDXXXXXXXXXXXXXXX_JX_hxX_TEY_CNX_CXX_CXY_ZX_pw88k13c.hostfile"
+#PJM --mpi "rank-map-bynode"
+
+#PJM -o "out"
+#PJM -e "err"
+
+#PJM -m b,S
+
+#PJM --name "IDXXXXXXXXXXXXXXX_JX_hxX_TEY_CNX_CXX_CXY_ZX"
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==
+
+export PARALLEL=12
+export OMP_NUM_THREADS=${PARALLEL}
+
+mpiexec     -std-proc pouts/out     ibmeagle-kim-pnmpo-ssc-heis-blc10-pauli         --hx 0.5 -C 20         --chi-max 256 --qc-mpo-s-min 1e-1 --s-min 1e-10 --post-ptsu-steps 0         --measu-multi-Z-sites 62 

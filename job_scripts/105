@@ -1,0 +1,46 @@
+#SBATCH --job-name alphafold
+#SBATCH --time=08:00:00
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=20G
+#SBATCH --partition=singleGPU
+#SBATCH --output alphafold.out
+#SBATCH --error alphafold.err
+#SBATCH -G 1
+
+#SBATCH --mail-user < your email > 
+#SBATCH --mail-type all
+
+module load singularity
+
+# Specify input/output paths
+SINGULARITY_IMAGE_PATH=/projects/shared/singularity/
+ALPHAFOLD_DATA_PATH=/carc/scratch/shared/alphafold/data/70
+ALPHAFOLD_MODELS=$ALPHAFOLD_DATA_PATH/params
+ALPHAFOLD_INPUT_FASTA=$SLURM_SUBMIT_DIR/input_test.fasta
+NOW=$(date +"%Y_%m_%d_%H_%M_%S")
+ALPHAFOLD_OUTPUT_DIR=$SLURM_SUBMIT_DIR/alphafold_output-$NOW
+
+mkdir -p $ALPHAFOLD_OUTPUT_DIR
+
+#Run the command
+singularity run  --nv \
+ --bind $ALPHAFOLD_DATA_PATH:/data \
+ --bind $ALPHAFOLD_MODELS \
+ --bind $ALPHAFOLD_OUTPUT_DIR:/alphafold_output \
+ --bind $ALPHAFOLD_INPUT_FASTA:/input.fasta \
+ --bind .:/etc \
+ --pwd  /app/alphafold $SINGULARITY_IMAGE_PATH/alphafold-2.0.sif \
+ --fasta_paths=/input.fasta  \
+ --uniref90_database_path=/data/uniref90/uniref90.fasta  \
+ --data_dir=/data \
+ --mgnify_database_path=/data/mgnify/mgy_clusters.fa   \
+ --bfd_database_path=/data/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt \
+ --uniclust30_database_path=/data/uniclust30/uniclust30_2018_08/uniclust30_2018_08 \
+ --pdb70_database_path=/data/pdb70/pdb70  \
+ --template_mmcif_dir=/data/pdb_mmcif/mmcif_files  \
+ --obsolete_pdbs_path=/data/pdb_mmcif/obsolete.dat \
+ --max_template_date=2020-05-14   \
+ --output_dir=/alphafold_output  \
+ --model_names='model_1' \
+ --preset=casp14

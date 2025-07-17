@@ -1,0 +1,20 @@
+#!/bin/bash
+#PJM -L node=1
+#PJM -L rscgrp=small
+#PJM -L elapse=00:10:00
+#PJM -N NN_fashionMNIST
+#PJM -o %n.%j.out
+#PJM -j
+#PJM -x PJM_LLIO_GFSCACHE=/ht43Mn2TVeHmt3yReuCS6w==:/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -s
+
+. torch/pytorch.env
+
+cd ${PJM_O_WORKDIR}
+
+#python NN_FashionMNIST.py --profile
+python NN_FashionMNIST.py --epoch 10
+python NN_FashionMNIST_plot.py
+python NN_FashionMNIST_test.py
+
+

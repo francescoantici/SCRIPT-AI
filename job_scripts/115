@@ -1,0 +1,22 @@
+#!/bin/bash
+## Introductory Example 
+## Copyright (c) 2018
+## The Center for Advanced Research Computing
+## at The University of New Mexico
+####################################################
+## Setup your qsub flags
+#PBS -l walltime=2:00:00
+#PBS -l nodes=4:ppn=8
+#PBS -N my_job
+#PBS -M myemailaddress@unm.edu
+#PBS -m bae
+# Change to directory the PBS script was submitted from
+cd $PBS_O_WORKDIR
+# load the environment module to use OpenMPI built with the Intel compilers
+module load openmpi-3.1.1-intel-18.0.2-hlc45mq 
+# print out a hello message from each of the processors on this host
+# run the command "hostname" on ever CPU. Hostname prints the name of the computer is it running on.
+# $PBS_NP is the total number of CPUs requested. In this case 4 nodes x 8 CPUS per node = 32
+# Since we are running on multiple nodes (computers) we have to tell mpirun the names of the nodes we were assigned. Those names are in $PBS_NODEFILE.
+mpirun -np $PBS_NP -machinefile $PBS_NODEFILE hostname
+###################################################

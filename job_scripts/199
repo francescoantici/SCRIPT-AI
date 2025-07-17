@@ -1,0 +1,11 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load ffmpeg
+
+# Create a thumbnail image every 1 second of the video
+ffmpeg -i output.mp4 fps=1 out%03d.png

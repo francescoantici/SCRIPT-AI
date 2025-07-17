@@ -1,0 +1,12 @@
+#PBS -l walltime=08:00:00
+#PBS -l select=2:ncpus=128:mem=250gb:mpiprocs=32:ompthreads=4
+
+module load tools/prod
+
+module load iimpi/2021b
+
+export FI_MLX_IFACE=eth0
+
+cd $PBS_O_WORKDIR
+
+mpirun IMB-MPI1

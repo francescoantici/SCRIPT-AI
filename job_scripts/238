@@ -1,0 +1,16 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load bwa
+
+# Index fasta file
+bwa index ref.fa
+
+# Align Illumina/454/IonTorrent single-end reads
+# longer than ~70bp
+bwa mem -t ${NSLOTS} \
+        ref.fa reads.fq > aln.sam

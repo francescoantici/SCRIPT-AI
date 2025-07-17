@@ -1,0 +1,5 @@
+#PBS -lselect=10:ncpus=28:mpiprocs=28:model=bro
+#PBS -q devel
+module load comp-intel/2020.4.304 mpi-hpe/mpt
+cd $PBS_O_WORKDIR
+mpiexec -np 280 ./a.out

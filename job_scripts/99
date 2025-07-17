@@ -1,0 +1,18 @@
+#!/bin/bash
+
+#SBATCH --job-name DnCNN_DualGPU
+#SBATCH --mail-user <YOUR EMAIL>
+#SBATCH --mail-type ALL
+#SBATCH --output dncnn_dual_gpu.out
+#SBATCH --error dncnn_dual_gpu.err
+#SBATCH --time 48:00:00
+#SBATCH --partition dualGPU
+#SBATCH --ntasks 1
+#SBATCH --mem 0
+#SBATCH --cpus-per-task 16
+#SBATCH -G 2
+
+cd ~/deepLearningExample
+
+module load matlab
+matlab -nodisplay -r deep_learning_example > dncnn_dual_training.out

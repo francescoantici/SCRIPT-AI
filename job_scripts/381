@@ -1,0 +1,9 @@
+#PBS -S /bin/bash
+#PBS -q batch
+#PBS -l nodes=1:ppn=2
+#PBS -l walltime=01:00:00
+#PBS -l mem=500mb
+
+cd $PBS_O_WORKDIR/
+module load stata/15
+stata-se -b do test.do

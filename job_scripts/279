@@ -1,0 +1,16 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load miniforge
+mamba activate rm_env
+
+# By default, RepeatMasker will start 2 threads for every slot requested,
+# resulting in badly overloaded jobs. To avoid this, set a variable equal
+# to half of the allocated slots
+REPCORES=$((NSLOTS / 2))
+
+RepeatMasker -pa ${REPCORES} seqfiles.fa

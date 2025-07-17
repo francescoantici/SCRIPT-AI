@@ -1,0 +1,29 @@
+#!/bin/bash
+
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=30:00:00"
+#PJM -L "node=2"
+#PJM --mpi "max-proc-per-node=4"
+#PJM -S
+#PJM -x PJM_LLIO_GFSCACHE=/jG5wuqbRoLbDgsh4U8DNjg==
+#PJM -o "./log/%j[%b].out"
+#PJM -e "./log/%j[%b].err"
+#PJM --spath "./log/%j[%b].stats"
+
+IN_DATA=eta.${PJM_BULKNUM}.DAT
+OUT_DIR=outdata.${PJM_BULKNUM}
+
+if [ ! -d ${OUT_DIR}/data_vis ]; then
+   mkdir -p ${OUT_DIR}/data_vis
+fi
+
+export PARALLEL=12
+export OMP_NUM_THREADS=${PARALLEL}
+export PLE_MPI_STD_EMPTYFILE=off
+
+llio_transfer ./a.out
+dir_transfer -l ${OUT_DIR} ./config_analysis ./MPI_info ./data_sdf ./data_ref ./inlet ./input_UQ ./log
+
+fout="stdout -stderr-proc ${OUT_DIR}/output.%j[%b]/%/1000r/stderr"
+
+mpiexec ${fout} ./a.out ${IN_DATA} ${OUT_DIR}

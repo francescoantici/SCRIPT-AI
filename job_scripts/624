@@ -1,0 +1,20 @@
+#!/bin/sh -x
+#PJM --rsc-list  "node=32"  
+#PJM --rsc-list  "elapse=24:00:00"  
+#PJM --mpi max-proc-per-node=48  
+#PJM -L "rscgrp=small"      
+#PJM -s                         
+#PJM --name "turbog"
+
+export OMP_NUM_THREADS=1
+
+CORES=1536
+INPUT=datasfn_0.input
+OUTPUT=out_fn_0
+PREOPTION=_PREOPTION_
+POSTOPTION=_POSTOPTION_
+BINARY=turborvb-mpi.x
+
+mpiexec -stdin $INPUT -stdout-proc $OUTPUT -stderr-proc $OUTPUT.err -n $CORES $BINARY
+cp $OUTPUT.1.0 $OUTPUT
+cp $OUTPUT.err.1.0 $OUTPUT.err

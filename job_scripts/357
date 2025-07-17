@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --cpus-per-task=10
+#SBATCH --gpus-per-node=8
+#SBATCH -N 4
+#SBATCH --ntasks-per-node=8
+
+srun \
+python -m self_supervised_learning.train_hubert \
+--dataset-path hubert/exp/data/mfcc/ \
+--exp-dir self_supervised_learning/exp_iter1 \
+--feature-type mfcc \
+--num-class 100 \
+--max-updates 250000 \
+--learning-rate 0.0005 \
+--gpus 8 \
+--num-nodes 4

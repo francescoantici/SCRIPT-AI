@@ -1,0 +1,15 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 8
+#$ -l h_vmem=11G
+#$ -l h_rt=240:0:0
+#$ -l gpu=1
+#$ -l gpu_type="ampere"
+# Approved DERI users can include the following line
+#$ -l cluster=andrena
+
+module load deeplabcut
+
+cd ~/DeepLabCut/examples
+deeplabcut python testscript.py

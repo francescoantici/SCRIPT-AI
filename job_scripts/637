@@ -1,0 +1,17 @@
+#!/bin/bash
+#PJM -L "node=24"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=24:00:00"
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM --mpi "proc=288"
+#PJM --mpi "max-proc-per-node=12" 
+#PJM --name "vasp_gam"
+#PJM -s
+
+module purge
+module load lang/tcsds-1.2.38
+#export OMP_NUM_THREADS=$thread
+export UTOFU_DUMP_ON_ERROR=1
+cd $PJM_O_WORKDIR
+
+mpiexec -stdout vasp.log -stderr vasp.err --mca btl_tofu_eager_limit 128000 vasp_gam

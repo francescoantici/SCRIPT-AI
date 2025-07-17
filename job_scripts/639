@@ -1,0 +1,32 @@
+#PJM -L "rscgrp=small"
+#PJM -L "node=1" 
+#PJM --mpi "max-proc-per-node=32"
+
+#PJM -L "elapse=1:30:00"
+#PJM -L "node=24:torus"
+#PJM -S
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==:/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -L "freq=2200,eco_state=2,retention_state=0"
+
+
+
+REMOTE_ROOT=$(readlink -f work_dir/bae6c03487e479f929643bb4ed8e9d6e4e900faa)
+echo 0 > 91f700f96dd2fffb50f511d6d48f0e2c87c1b607_flag_if_job_task_fail
+test $? -ne 0 && exit 1
+
+
+
+
+
+test_prepend.sh $0
+
+source 91f700f96dd2fffb50f511d6d48f0e2c87c1b607.sub.run
+
+cd $REMOTE_ROOT
+test $? -ne 0 && exit 1
+
+wait
+FLAG_IF_JOB_TASK_FAIL=$(cat 91f700f96dd2fffb50f511d6d48f0e2c87c1b607_flag_if_job_task_fail)
+if test $FLAG_IF_JOB_TASK_FAIL -eq 0; then touch 91f700f96dd2fffb50f511d6d48f0e2c87c1b607_job_tag_finished; else exit 1;fi
+
+

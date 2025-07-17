@@ -1,0 +1,317 @@
+#!/bin/bash -x
+#PJM -L  "node=1"
+#PJM -L  "freq=2000"
+#PJM -L  "throttling_state=0"
+#PJM -L  "issue_state=0"
+#PJM -L  "ex_pipe_state=0"
+#PJM -L  "eco_state=0"
+#PJM -L  "retention_state=0"
+#PJM -L  "elapse=08:00:00"
+#PJM --mpi  "max-proc-per-node=1"
+#PJM -x PJM_LLIO_GFSCACHE='/RAvG7tRc8R3QSe+OEfBL9Q==:/b63OA2tCbZlyAGvjQVfoHw==:/ht43Mn2TVeHmt3yReuCS6w=='
+#PJM --llio localtmp-size=80Gi
+
+COMP="fcc"
+#COMP="clang"
+NEEDPATCH="y"
+FLUSHSUBNORMALS="y"
+VERS="1.13"
+if [[ "${VERS}" = *"1.10"* ]]; then
+	FULLVERS="fujitsu_v1.10.1_for_a64fx"
+elif [[ "${VERS}" = *"1.13"* ]]; then
+	FULLVERS="r1.13_for_a64fx"
+fi
+
+SELF="$(readlink -f "${BASH_SOURCE[0]}")"
+SDIR="$(dirname "${SELF}")"
+TNOW="$(date +%s.%N)"
+LOG=${SDIR}/install."${COMP}"."${TNOW}".log
+#cat "${SELF}" 2>&1 | tee -a "${LOG}"
+
+ISRCCSCLOUD="$(if [[ "$(hostname -d)" = "cloud.r-ccs"* ]]; then echo "y"; else echo ""; fi)"
+
+# https://github.com/fujitsu/pytorch/wiki/PyTorch-DNNL_aarch64-build-manual-for-FUJITSU-Software-Compiler-Package-(PyTorch-v1.13.1)#31-Preliminaries-Detail
+if ! [ -f "${SDIR}/pytorch."${VERS}".git.tgz" ]; then
+	cd "${SDIR}" || exit
+	git clone --branch "${FULLVERS}" https://github.com/fujitsu/pytorch.git
+	tar czf pytorch."${VERS}".git.tgz pytorch
+	rm -rf pytorch
+fi
+if [ -d /local ]; then	cd /local || exit
+else			cd /tmp   || exit
+fi
+if [ -d "${COMP}/pytorch/" ]; then
+	REBUILD="rebuild"
+else
+	mkdir "${COMP}"
+	tar xzf "${SDIR}/pytorch."${VERS}".git.tgz" -C "${COMP}/"
+	REBUILD=""
+fi
+
+cd "${COMP}/pytorch/" || exit
+PYTORCH_TOP=$(pwd)
+echo PYTORCH_TOP = $PYTORCH_TOP
+
+if [[ "${NEEDPATCH}" = *"y"* ]]; then
+	git apply --check "${SDIR}"/*1-*"${FULLVERS}".patch
+	if [ "x$?" = "x0" ]; then git am --ignore-whitespace < ${SDIR}/*1-*"${FULLVERS}".patch; fi
+else
+	NEEDPATCH="n"
+fi
+
+# https://github.com/fujitsu/pytorch/wiki/PyTorch-DNNL_aarch64-build-manual-for-FUJITSU-Software-Compiler-Package-(PyTorch-v1.13.1)#31-B-Edit-envsrc
+cd "${PYTORCH_TOP}/scripts/fujitsu" || exit
+#cp -f ${SDIR}/backup/5_pytorch_bdist.sh ./5_pytorch.sh
+
+if [[ "${FLUSHSUBNORMALS}" = *"y"* ]] && [[ "${COMP}" = *"fcc"* ]]; then
+	#XXX enforce fast math and Kfz to get rid of subnormals
+	sed -i -e "s#-Knolargepage#-Knolargepage -O3 -ffast-math#g" -e '/export CXX/a\    export FC="frt"; export export FORT90C="-Knolargepage -Kfast -Kfz"\n    export F77="frt"; export export FORT77C="-Knolargepage -Kfast -Kfz"' env.src
+	sed -i -e '/configure/i CC="$(echo ${CC} | sed -e \"s/-ffast-math//g\")"\nCXX="$(echo ${CXX} | sed -e \"s/-ffast-math//g\")"' 1_python.sh
+	sed -i -e "/github.com\/numpy/a sed -i -e \"s#\\\\\"frt\\\\\"#\\\\\"frt\\\\\", \\\\\"-Kfast\\\\\", \\\\\"-Kfz\\\\\"#g\" \$NUMPY_DIR/numpy/distutils/fcompiler/fujitsu.py" 4_numpy_scipy.sh
+	sed -i -e "s#CFLAGS=-O3 CXXFLAGS=-O3#CFLAGS='-Kfast -ffast-math -ffj-fast-matmul' CXXFLAGS='-Kfast -ffast-math -ffj-fast-matmul'#g" 5_pytorch.sh
+elif [[ "${FLUSHSUBNORMALS}" = *"y"* ]] && [[ "${COMP}" = *"clang"* ]]; then
+	sleep 0
+fi
+
+sed -i -e "s#^TCSDS_PATH=.*#TCSDS_PATH=$(dirname $(dirname $(which ${COMP})))#g" env.src
+sed -i -e "s#^VENV_PATH=.*#VENV_PATH=$(realpath -m ${PYTORCH_TOP}/../inst/venv)#g" env.src
+sed -i -e "s#^PREFIX=.*#PREFIX=$(realpath -m ${PYTORCH_TOP}/../inst/other)#g" env.src
+sed -i -e "s#b \$PYTHON_VER#b v3.9.17#g" 1_python.sh
+sed -i -e "s#'Cython>=.*'#'Cython==0.29.36'#g" 4_numpy_scipy.sh #XXX thanks for the 0-day annoyance
+sed -i -e "/USE_NNPACK/i export USE_NINJA=0" 5_pytorch.sh
+#add for environment of fx700
+sed -i '92i export BLAS=SSL2' 5_pytorch.sh
+
+if [[ "${COMP}" = *"fcc"* ]]; then
+	mkdir -p "${PYTORCH_TOP}"/../inst/other/lib
+	tar xzf "${SDIR}/parallelize_gemm.git.tgz"
+	cd "parallelize_gemm/" || exit
+	DFLAGS=-DCONV_SGEMM_TO_HGEMM make -f Makefile.fugaku -B
+	mv libopenblas.so "${PYTORCH_TOP}"/../inst/other/lib/libConvSgemmToHgemm.so
+	cd -
+fi
+
+if [[ "${NEEDFFI}" = *"y"* ]] && ! [ -f "${PYTORCH_TOP}"/../inst/other/lib/libffi-3.1/include/ffi.h ] ; then
+	if ! [ -f "${SDIR}"/texinfo-5.2.tar.gz ]; then wget https://ftp.gnu.org/gnu/texinfo/texinfo-5.2.tar.gz -O "${SDIR}"/texinfo-5.2.tar.gz; fi
+	tar xzf "${SDIR}"/texinfo-5.2.tar.gz
+	cd "texinfo-5.2/" || exit
+	LC_ALL=C ./configure --prefix="${PYTORCH_TOP}/../inst/other" CC=gcc CXX=g++ 2>&1 | tee -a "${LOG}"
+	LC_ALL=C make -j"$(nproc)" install 2>&1 | tee -a "${LOG}"
+	cd - || exit
+	git clone --branch v3.1 https://github.com/libffi/libffi.git
+	cd "libffi/" || exit
+	LC_ALL=C PATH="${PYTORCH_TOP}/../inst/other/bin:${PATH}" ./autogen.sh 2>&1 | tee -a "${LOG}"
+	LC_ALL=C PATH="${PYTORCH_TOP}/../inst/other/bin:${PATH}" ./configure --prefix="${PYTORCH_TOP}/../inst/other" CC=gcc CXX=g++ 2>&1 | tee -a "${LOG}"
+	LC_ALL=C PATH="${PYTORCH_TOP}/../inst/other/bin:${PATH}" make -j"$(nproc)" install 2>&1 | tee -a "${LOG}"
+	cd - || exit
+fi
+if [[ "${NEEDFFI}" = *"y"* ]]; then
+	export C_INCLUDE_PATH="${PYTORCH_TOP}/../inst/other/lib/libffi-3.1/include${C_INCLUDE_PATH:+:${C_INCLUDE_PATH}}"
+	if ! /bin/grep -q lffi 1_python.sh; then sed -i -e "/^make -j/i export LDFLAGS=\"-Wl,-rpath,${PYTORCH_TOP}/../inst/other/lib64 -L${PYTORCH_TOP}/../inst/other/lib64 -lffi \${LDFLAGS}\"" 1_python.sh; fi
+fi
+
+if [[ "${NEEDNUMACTL}" = *"y"* ]] && ! [ -f "${PYTORCH_TOP}"/../inst/other/include/numaif.h ]; then
+	if ! [ -f "${SDIR}"/numactl-2.0.12.tar.gz ]; then wget https://github.com/numactl/numactl/releases/download/v2.0.12/numactl-2.0.12.tar.gz -O "${SDIR}"/numactl-2.0.12.tar.gz; fi
+	tar xzf "${SDIR}"/numactl-2.0.12.tar.gz
+	cd "numactl-2.0.12/" || exit
+	LC_ALL=C PATH="${PYTORCH_TOP}/../inst/other/bin:${PATH}" ./configure --prefix="${PYTORCH_TOP}/../inst/other" CC=gcc CXX=g++ 2>&1 | tee -a "${LOG}"
+	LC_ALL=C PATH="${PYTORCH_TOP}/../inst/other/bin:${PATH}" make -j"$(nproc)" install 2>&1 | tee -a "${LOG}"
+	cd - || exit
+	cd "${PYTORCH_TOP}/../inst/other/lib/" || exit
+	rm -f libnuma.a libnuma.la libnuma.so.1.0.0
+	ln -s /usr/lib64/libnuma.so.1.0.0 .
+	cd - || exit
+fi
+if [[ "${NEEDNUMACTL}" = *"y"* ]]; then
+	export C_INCLUDE_PATH="${PYTORCH_TOP}/../inst/other/include${C_INCLUDE_PATH:+:${C_INCLUDE_PATH}}"
+	if ! /bin/grep -q 'set(NUMA_ROOT' ../../cmake/Modules/FindNuma.cmake; then sed -i -e "/find_path/i set(NUMA_ROOT_DIR \"${PYTORCH_TOP}/../inst/other\")" ../../cmake/Modules/FindNuma.cmake; fi
+fi
+
+if [[ "${NEEDSQL}" = *"y"* ]] && ! [ -f "${PYTORCH_TOP}"/../inst/other/include/sqlite3.h ]; then
+	if ! [ -f "${SDIR}"/sqlite3-3.22.0.tar.gz ]; then wget https://github.com/sqlite/sqlite/archive/refs/tags/version-3.22.0.tar.gz -O "${SDIR}"/sqlite3-3.22.0.tar.gz; fi
+	tar xzf "${SDIR}"/sqlite3-3.22.0.tar.gz
+	cd "sqlite-version-3.22.0/" || exit
+	rm -f config.guess config.sub
+	wget http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/config/config/config.guess
+	wget http://savannah.gnu.org/cgi-bin/viewcvs/*checkout*/config/config/config.sub
+	LC_ALL=C PATH="${PYTORCH_TOP}/../inst/other/bin:${PATH}" ./configure --prefix="${PYTORCH_TOP}/../inst/other" CC=gcc CXX=g++ 2>&1 | tee -a "${LOG}"
+	make -j"$(nproc)" 2>&1 | tee -a "${LOG}"
+	make -j"$(nproc)" sqlite3.c 2>&1 | tee -a "${LOG}"
+	make install 2>&1 | tee -a "${LOG}"
+	cd - || exit
+fi
+if [[ "${NEEDSQL}" = *"y"* ]]; then
+	export C_INCLUDE_PATH="${PYTORCH_TOP}/../inst/other/include${C_INCLUDE_PATH:+:${C_INCLUDE_PATH}}"
+	export LD_LIBRARY_PATH="${PYTORCH_TOP}/../inst/other/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}"
+fi
+
+set -o pipefail
+if ! [ -f "${SDIR}"/"${COMP}".134venv."${FULLVERS}".tar ]; then
+	# https://github.com/fujitsu/pytorch/wiki/PyTorch-DNNL_aarch64-build-manual-for-FUJITSU-Software-Compiler-Package-(PyTorch-v1.13.1)#33-a-build-pytorch
+	bash 1_python.sh        "${REBUILD}" 2>&1 | tee -a "${LOG}" || exit # Build and install Python (10 min.)
+	bash 3_venv.sh          "${REBUILD}" 2>&1 | tee -a "${LOG}" || exit # Create VENV (1 min.)
+	bash 4_numpy_scipy.sh   "${REBUILD}" 2>&1 | tee -a "${LOG}" || exit # Build NumPy and SciPy (90 min.)
+	cd "${PYTORCH_TOP}/../" || exit
+	tar cf "${COMP}".134venv."${FULLVERS}".tar inst/ pytorch/scripts/fujitsu/down
+	mv "${COMP}".134venv."${FULLVERS}".tar "${SDIR}"/
+	cd - || exit
+else
+	cd "${PYTORCH_TOP}/../" || exit
+	tar xf "${SDIR}"/"${COMP}".134venv."${FULLVERS}".tar
+	cd - || exit
+fi
+set +o pipefail
+
+#added 9/8 for tokura's batch-gemm
+cp -f ${SDIR}/backup/BatchLinearAlgebra.cpp ${PYTORCH_TOP}/aten/src/ATen/native/cpu/BatchLinearAlgebra.cpp
+cp -f ${SDIR}/backup/a64fx_batch_gemm.h ${PYTORCH_TOP}/aten/src/ATen/a64fx_batch_gemm.h
+#added 9/13
+cp -f ${SDIR}/backup/libfjbatchgemm.so ${PYTORCH_TOP}/../inst/other/lib/
+sed -i '1412i find_library(FJBATCHGEMM_LIBRARY fjbatchgemm ${TORCH_SRC_DIR}/../../inst/other/lib)' ${PYTORCH_TOP}/caffe2/CMakeLists.txt
+sed -i '1413i target_link_libraries(torch_cpu PUBLIC ${FJBATCHGEMM_LIBRARY})' ${PYTORCH_TOP}/caffe2/CMakeLists.txt
+#end
+
+bash 5_pytorch.sh       "${REBUILD}" 2>&1 | tee -a "${LOG}" || exit # Build PyTorch (120 min.)
+bash 6_vision.sh        "${REBUILD}" 2>&1 | tee -a "${LOG}" || exit # Build TorchVision (20 min.)
+bash 7_horovod.sh       "${REBUILD}" 2>&1 | tee -a "${LOG}" || exit # Build Horovod (6 min.)
+bash 8_libtcmalloc.sh   "${REBUILD}" 2>&1 | tee -a "${LOG}" || exit # Install tcmalloc (1 min.)
+
+# https://github.com/fujitsu/pytorch/wiki/PyTorch-DNNL_aarch64-build-manual-for-FUJITSU-Software-Compiler-Package-(PyTorch-v1.13.1)#bert
+cd "${PYTORCH_TOP}/scripts/fujitsu/bert_build_pack" || exit
+sed -i -e "s#python3 setup.py#CARGO_NET_GIT_FETCH_WITH_CLI=true python3 setup.py#g" 5_tokenizers.sh
+bash 3_rust.sh          "${REBUILD}" 2>&1 | tee -a "${LOG}" # Install Rust. ( 1 min.)
+bash 4_sentencepiece.sh "${REBUILD}" 2>&1 | tee -a "${LOG}" # Install Sentencepiece. ( 1 min.)
+bash 5_tokenizers.sh    "${REBUILD}" 2>&1 | tee -a "${LOG}" # Install Tokenizer. ( 1 min.)
+bash 7_transformers.sh  "${REBUILD}" 2>&1 | tee -a "${LOG}" # Build and Install BERT. ( 1 min.)
+if [[ "${ISRCCSCLOUD}" = *"y"* ]]; then
+	#XXX download fails on fugaku
+	bash 8_dataset.sh       "${REBUILD}" 2>&1 | tee -a "${LOG}" # Generate Trainig Data ( 1 min.)
+	bash run1proc.sh                     2>&1 | tee -a "${LOG}" # Run (1 node, 1 proc., 24 cores)
+fi
+
+source "${PYTORCH_TOP}/scripts/fujitsu/env.src"
+source "${PYTORCH_TOP}/../inst/venv/bin/activate"
+
+if [[ "${VERS}" = *"1.10"* ]]; then
+	#XXX bert_build_pack/pip3_list.txt lists 1.6.0 but that fucks up pytorch
+	pip3 install setuptools-rust==1.3.0 setuptools==58.1.0
+fi
+
+wget https://raw.githubusercontent.com/wudu98/fugaku_batch_gemm_end2end/master/test/test.py
+python test.py                       2>&1 | tee -a "${LOG}"
+
+#if [[ "${NEEDPATCH}" = *"y"* ]]; then
+#	for POL in PASSIVE ACTIVE; do
+#	for ALG in 1 2 3; do
+#	for OMP in 12 24 36 48 46; do
+#		echo OMP_NUM_THREADS=${OMP} OMP_WAIT_POLICY=${POL} MYGEMM=${ALG} 2>&1 | tee -a "${LOG}"
+#		LD_PRELOAD=${PYTORCH_TOP}/../inst/other/lib/libtcmalloc.so \
+#		OMP_NUM_THREADS=${OMP} OMP_WAIT_POLICY=${POL} MYGEMM=${ALG} \
+#		python test.py       2>&1 | tee -a "${LOG}"
+#	done
+#	done
+#	done
+#	echo ulimit -s $((1024*12*16)) 2>&1 | tee -a "${LOG}"
+#	ulimit -s $((1024*12*16))
+#	for OSS in 128K 12M; do
+#		echo OMP_NUM_THREADS=48 OMP_WAIT_POLICY=PASSIVE MYGEMM=2 OMP_STACKSIZE=${OSS} 2>&1 | tee -a "${LOG}"
+#		LD_PRELOAD=${PYTORCH_TOP}/../inst/other/lib/libtcmalloc.so \
+#		OMP_NUM_THREADS=48 OMP_WAIT_POLICY=PASSIVE MYGEMM=2 OMP_STACKSIZE=${OSS} \
+#		python test.py       2>&1 | tee -a "${LOG}"
+#	done
+#fi
+
+#XXX DeepSpeed
+if ! [ -d "${PYTORCH_TOP}/../DeepSpeedFugaku" ]; then
+	cd "${PYTORCH_TOP}/../" || exit
+	if ! [ -f "${SDIR}/DeepSpeedFugaku.git.tgz" ]; then exit; fi
+        tar xzf "${SDIR}/DeepSpeedFugaku.git.tgz"
+fi
+cd "${PYTORCH_TOP}/../DeepSpeedFugaku/" || exit
+git switch training/feature/benchmark-ja-wiki
+
+pip3 install pydantic==1.10.11       2>&1 | tee -a "${LOG}"
+pip3 install deepspeed==0.8.0        2>&1 | tee -a "${LOG}"
+pip3 install datasets==2.13.1        2>&1 | tee -a "${LOG}"
+pip3 install nltk==3.8.1             2>&1 | tee -a "${LOG}"
+pip3 install wandb==0.15.5           2>&1 | tee -a "${LOG}"
+pip3 install pybind11==2.10.4        2>&1 | tee -a "${LOG}"
+pip3 install six==1.16.0             2>&1 | tee -a "${LOG}"
+pip3 install regex==2023.6.3         2>&1 | tee -a "${LOG}"
+python3 setup.py install             2>&1 | tee -a "${LOG}"
+#XXX JIT compiled ops requires ninja: pip3 uninstall -y ninja              2>&1 | tee -a "${LOG}" # trouble rebuilding torch when ninja[-1.11.1] is installed
+cd "${PYTORCH_TOP}/../DeepSpeedFugaku/dataset/" || exit
+bash download_vocab.sh               2>&1 | tee -a "${LOG}"
+cd "${PYTORCH_TOP}/../DeepSpeedFugaku/megatron/data/" || exit
+sed -i -e "s#shell.*python3.9-config#shell $(realpath -m ${PYTORCH_TOP}/../inst/other)/bin/python3.9-config#g" Makefile
+make -B                              2>&1 | tee -a "${LOG}"
+
+cd "${PYTORCH_TOP}/../DeepSpeedFugaku/" || exit
+mv "${PYTORCH_TOP}"/../inst/venv/lib/python3.9/site-packages/deepspeed/runtime/zero/partition_parameters.py "${PYTORCH_TOP}"/../inst/venv/lib/python3.9/site-packages/deepspeed/runtime/zero/.partition_parameters.py
+cp DeepSpeed/deepspeed/runtime/zero/partition_parameters.py "${PYTORCH_TOP}"/../inst/venv/lib/python3.9/site-packages/deepspeed/runtime/zero/
+if [[ "${ISRCCSCLOUD}" = *"y"* ]]; then
+	sed -i -e "s#/data.*PyTorch-1.10.1#$(realpath -m ${PYTORCH_TOP}/../inst)/venv/bin/activate\nsource ${PYTORCH_TOP}/scripts/fujitsu#g" -e "/export PYTHONUSERBASE/d" -e "/export PATH/d" -e "s#HF_DATASETS_CACHE.*#HF_DATASETS_CACHE=${PYTORCH_TOP}/../.cache#g" -e "s#DATA_PATH=.*#DATA_PATH=${SDIR}/DeepSpeedFugaku/codeparrot/codeparrot_content_document#g" -e "s#train-iters 100#train-iters 20#g" -e "s/export OMP_PROC/#OMP_WAIT_POLICY=ACTIVE ; export OMP_PROC/g" -e "s#OMP_NUM_THREADS=4#OMP_NUM_THREADS=12#g" -e "s#distributed-backend gloo#distributed-backend mpi#g" -e "s#python -m torch.distributed.launch \$DISTRIBUTED_ARGS#mpirun -x LD_PRELOAD=$(realpath -m ${PYTORCH_TOP}/../inst)/other/lib/libtcmalloc.so -np \${WORLD_SIZE} --mca btl vader,self --mca mtl ^ofi,mxm --mca mca_base_param_files /opt/FJSVstclanga/cp-1.0.21.04/etc/openmpi-mca-params.conf --oversubscribe --tag-output bash -c \"numactl -m \\\\\$PMIX_RANK -N \\\\\$PMIX_RANK python #g" -e "s#\$TENSORBOARD_ARGS#\$TENSORBOARD_ARGS\"#g" -e "/\$TENSORBOARD_ARGS/a rm -rf checkpoints/" -e "s#eval-iters 10#eval-iters 0#g" run_pretrain_gpt_fugaku.sh
+else
+	sed -i -e "s#/data.*PyTorch-1.10.1#$(realpath -m ${PYTORCH_TOP}/../inst)/venv/bin/activate\nsource ${PYTORCH_TOP}/scripts/fujitsu#g" -e "/export PYTHONUSERBASE/d" -e "/export PATH/d" -e "s#HF_DATASETS_CACHE.*#HF_DATASETS_CACHE=${PYTORCH_TOP}/../.cache#g" -e "s#DATA_PATH=.*#DATA_PATH=${SDIR}/DeepSpeedFugaku/codeparrot/codeparrot_content_document#g" -e "s#train-iters 100#train-iters 20#g" -e "s/export OMP_PROC/#OMP_WAIT_POLICY=ACTIVE ; export OMP_PROC/g" -e "s#OMP_NUM_THREADS=4#OMP_NUM_THREADS=12#g" -e "s#distributed-backend gloo#distributed-backend mpi#g" -e "s#python -m torch.distributed.launch \$DISTRIBUTED_ARGS#mpiexec -std-proc mpiout -x LD_PRELOAD=$(realpath -m ${PYTORCH_TOP}/../inst)/other/lib/libtcmalloc.so -np \${WORLD_SIZE} bash -c \"numactl -m \\\\\$((4+\\\\\$PMIX_RANK)) -N \\\\\$((4+\\\\\$PMIX_RANK)) python #g" -e "s#\$TENSORBOARD_ARGS#\$TENSORBOARD_ARGS\"#g" -e "/\$TENSORBOARD_ARGS/a rm -rf checkpoints/\n cat mpiout.*" -e "s#eval-iters 10#eval-iters 0#g" run_pretrain_gpt_fugaku.sh
+fi
+sed -i -e '/^import torch$/a #torch.set_num_threads(2)\n#torch.set_num_interop_threads(12)\n#print(torch.get_num_threads(), torch.get_num_interop_threads())\n#from torch.profiler import profile, record_function, ProfilerActivity\n#sys.exit()' -e '/pretrain(train_/i\    #with profile(activities=[ProfilerActivity.CPU], record_shapes=True) as prof:' -e '/process=data_post_process)/a\    #print(prof.key_averages().table(sort_by="self_cpu_time_total", row_limit=100))' pretrain_gpt.py
+if ! [[ "${FLUSHSUBNORMALS}" = *"y"* ]]; then
+	sed -i -e '/^import torch$/a torch.set_flush_denormal(True)' pretrain_gpt.py
+fi
+sed -i -e '/from torch.nn.parallel.distributed.*torchDDP/a from torch.profiler import profile, record_function, ProfilerActivity' -e '/while iteration < args.train_iters and/i\    with profile(activities=[ProfilerActivity.CPU], schedule=torch.profiler.schedule(wait=1,warmup=1,active=1), record_shapes=True) as prof:' -e 's/while iteration < args.train_iters and/  while iteration < args.train_iters and/' -e '/return iteration/i\        prof.step()\n    print(prof.key_averages().table(sort_by="self_cpu_time_total", row_limit=100))' megatron/training.py
+
+mkdir -p "${SDIR}/DeepSpeedFugaku/"
+tar xzf "${SDIR}/codeparrot.tgz" -C "${SDIR}/DeepSpeedFugaku/"
+tar xzf "${SDIR}/codeparrot.tgz"
+mkdir -p dataset/
+tar xzf "${SDIR}/gpt2.dataset.tgz"
+#wget https://huggingface.co/gpt2/raw/main/vocab.json -O dataset/gpt2-vocab.json
+#wget https://huggingface.co/gpt2/raw/main/merges.txt -O dataset/gpt2-merges.txt
+#python -c 'from datasets import load_dataset;train_data = load_dataset("codeparrot/codeparrot-clean-train", split="train");train_data.to_json("codeparrot_data.json", lines=True)' \
+#                                     2>&1 | tee -a "${LOG}"
+#python tools/preprocess_data.py --input codeparrot_data.json --output-prefix codeparrot \
+#	--vocab vocab.json --dataset-impl mmap --tokenizer-type GPT2BPETokenizer \
+#	--merge-file merges.txt --json-keys content --workers 24 --append-eod \
+#                                     2>&1 | tee -a "${LOG}"
+
+cd "${PYTORCH_TOP}/../DeepSpeedFugaku/" || exit
+bash run_pretrain_gpt_fugaku.sh      2>&1 | tee -a "${LOG}"
+rm -rf checkpoints/
+
+cd "${PYTORCH_TOP}/../" || exit
+tar cvf "${TNOW}"."${COMP}".pytorch."${NEEDPATCH}"."${FULLVERS}".tar.gz inst/
+mv "${TNOW}".*.tar "${SDIR}"/
+tar cvf "${TNOW}"."${COMP}".pytorch_and_src."${NEEDPATCH}"."${FULLVERS}".tar.gz inst/ pytorch/
+mv "${TNOW}".*.tar "${SDIR}"/
+tar cvf "${TNOW}"."${COMP}".DeepSpeedFugaku.tar.gz DeepSpeedFugaku/
+mv "${TNOW}".*.tar "${SDIR}"/
+
+cd "${PYTORCH_TOP}" || exit
+sed -i -e 's/^#ifdef DEBUG/#ifndef DEBUG/g' aten/src/ATen/native/LinearAlgebra.cpp
+sed -i -e 's/^#ifdef DEBUG/#ifndef DEBUG/g' aten/src/ATen/native/cpu/BatchLinearAlgebra.cpp
+d "${PYTORCH_TOP}/scripts/fujitsu" || exit
+bash 5_pytorch.sh                    2>&1 | tee -a "${LOG}"
+cd "${PYTORCH_TOP}/../" || exit
+tar cvf "${TNOW}"."${COMP}".pytorch.dbg."${NEEDPATCH}"."${FULLVERS}".tar.gz inst/
+mv "${TNOW}".*.tar "${SDIR}"/
+
+echo "Extract #0: mkdir ${PYTORCH_TOP} ; cd ${PYTORCH_TOP}"
+echo "Extract #1: tar xvf ${SDIR}/${TNOW}.${COMP}.pytorch.${NEEDPATCH}.${FULLVERS}.tar.gz"
+echo "Extract #2: tar xvf ${SDIR}/${TNOW}.${COMP}.pytorch_and_src.${NEEDPATCH}.${FULLVERS}.tar.gz pytorch/scripts/fujitsu/env.src"
+echo "Extract #3: tar xvf ${SDIR}/${TNOW}.${COMP}.DeepSpeedFugaku.tar.gz"
+
+
+###cd /local/; module load lang/tcsds-1.2.37; source "${HOME}/project_SPRT/llvm-v15.0.3/init.sh"; export OMPI_CC="${CC}"; export OMPI_CXX="${CXX}"; export OMPI_FC="${FC}"; export OMPI_F77="${FC}"; export MPICC="mpifcc"; export MPICXX="mpiFCC"; export MPIFC="mpifrt"
+###git clone https://github.com/xianyi/OpenBLAS.git
+##tar cf ~/project_SPRT/torch1.13_for_a64fx/OpenBLAS.tar
+##cd OpenBLAS
+##git checkout v0.3.23
+###sed -i -e 's/^CCOMMON_OPT += /CCOMMON_OPT += -Ofast -msve-vector-bits=scalable /g' -e 's/^FCOMMON_OPT += /FCOMMON_OPT += -Ofast -msve-vector-bits=scalable /g' Makefile.arm64
+##sed -i -e 's/^CCOMMON_OPT += /CCOMMON_OPT += -O0 -g /g' -e 's/^FCOMMON_OPT += /FCOMMON_OPT += -O0 -g /g' Makefile.arm64
+##make TARGET=A64FX NUM_THREADS=48 2>&1 | tee OpenBLAS.log
+##make PREFIX=../install install
+##clang -Ofast -ffast-math -fopenmp ~/sgemm_test.c -o sgemm_test.exe -I. -Wl,-rpath=`pwd`/../install/lib -L`pwd`/../install/lib -lopenblas
+###make TARGET=A64FX NUM_THREADS=48 LDFLAGS="-Wl,-rpath,$(readlink -f $(dirname $(which ${MPICC}))/../lib64) -L$(readlink -f $(dirname $(which ${MPICC}))/../lib64) -Wl,-rpath=$(readlink -f $(dirname $(which clang))/../lib) -lfjlapacksve $(readlink -f $(dirname $(which ${MPICC}))/../lib64)/fjhpctag.o $(readlink -f $(dirname $(which ${MPICC}))/../lib64)/fjlang08.o -lssl2mtsve -lfj90i -lfj90fmt_sve -lfj90f -lfjsrcinfo -lfj90rt -lfjprofcore -lfjprofomp -lm -lrt -lpthread -lelf -lz -ldl -fuse-ld=lld" 2>&1 | tee OpenBLAS.log2
+###intercept sgemm_kernel?? -> point to SSL2?
+###kernel/arm64/KERNEL.A64FX: SGEMMKERNEL    =  sgemm_kernel_sve_v2x$(SGEMM_UNROLL_N).S
+###https://github.com/xianyi/OpenBLAS/blob/5720fa02c58562c7d3e6a3e97b053598548e98d9/kernel/arm64/sgemm_kernel_sve_v2x8.S#L37

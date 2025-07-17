@@ -1,0 +1,19 @@
+#PJM --rsc-list &quot;node=2&quot;  
+#PJM --mpi &quot;shape=2&quot;  
+#PJM --mpi &quot;proc=12&quot;  
+#PJM -s  
+#   
+. /work/system/Env_base  
+#  
+module load OpenFOAM/2.4.0-fujitsu-sparc64  
+source $WM_PROJECT_DIR/etc/bashrc  
+tar xvzf D50-d10.tar.gz  
+mv ./U.txt U  
+mv ./U ./D50-d10/0  
+cd ./D50-d10  
+decomposePar  
+mpiexec -n 12 simpleFoam -parallel  
+reconstructPar  
+touch result.foam  
+cd ..  
+tar cvzf D50-d10.tar.gz D50-d10  

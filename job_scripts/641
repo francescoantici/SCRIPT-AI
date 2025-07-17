@@ -1,0 +1,64 @@
+#!/bin/bash
+## small: 1-384     nodes, 72h
+## large: 385-12288 nodes, 24h
+#PJM -L "rscgrp=small"
+#PJM -L "node=8"
+#PJM -L "elapse=72:00:00"
+#
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM --mpi "max-proc-per-node=4"
+#PJM -S
+#PJM --name "Conf_vaspjob"
+
+module use modulefiles
+module load VASP6
+
+# Recommended number of cores (MPI processes)
+export MPI_N=32
+
+# example of vaspjob
+/home/system/tool/dir_transfer $VASP_PATH
+
+hostname
+
+cd Conf_0
+ vaspjob.rb -j "r_isif2 p_isif2 p_isif3 p_isif3e" -e "mpiexec -n $MPI_N vasp_std" >& out.vaspjob
+cd ..
+sleep 1
+
+cd Conf_1
+ vaspjob.rb -j "r_isif2 p_isif2 p_isif3 p_isif3e" -e "mpiexec -n $MPI_N vasp_std" >& out.vaspjob
+cd ..
+sleep 1
+
+cd Conf_2
+ vaspjob.rb -j "r_isif2 p_isif2 p_isif3 p_isif3e" -e "mpiexec -n $MPI_N vasp_std" >& out.vaspjob
+cd ..
+sleep 1
+
+cd Conf_4
+ vaspjob.rb -j "r_isif2 p_isif2 p_isif3 p_isif3e" -e "mpiexec -n $MPI_N vasp_std" >& out.vaspjob
+cd ..
+sleep 1
+
+
+
+cd Conf_0
+ vaspjob.rb -j "zpe" -e "mpiexec -n $MPI_N vasp_std" >& out.vaspjob
+cd ..
+sleep 1
+
+cd Conf_1
+ vaspjob.rb -j "zpe" -e "mpiexec -n $MPI_N vasp_std" >& out.vaspjob
+cd ..
+sleep 1
+
+cd Conf_2
+ vaspjob.rb -j "zpe" -e "mpiexec -n $MPI_N vasp_std" >& out.vaspjob
+cd ..
+sleep 1
+
+cd Conf_4
+ vaspjob.rb -j "zpe" -e "mpiexec -n $MPI_N vasp_std" >& out.vaspjob
+cd ..
+sleep 1

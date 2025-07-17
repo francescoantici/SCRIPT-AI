@@ -1,0 +1,11 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load seqtk
+
+# Extract sequences in regions contained in file reg.bed
+seqtk subseq fastq_data.fastq.gz reg.bed

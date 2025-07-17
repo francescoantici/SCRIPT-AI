@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH --job-name=finetune
+#SBATCH --output=finetune_%j.out
+#SBATCH --error=finetune_%j.err
+#SBATCH --gpus-per-node=1
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=10
+
+srun python finetune.py --dataset-path /root/datasets/ --exp-dir ./exp_finetune \
+  --checkpoint ./exp_iter2/checkpoints_librispeech_hubert_pretrain_base/epoch=361-step=399999.ckpt \
+  --gpus 1 --debug --warmup-updates 2000 --hold-updates 8000 --decay-updates 10000 --max-updates 20000 --learning-rate 5e-5

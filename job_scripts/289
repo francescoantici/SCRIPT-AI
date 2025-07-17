@@ -1,0 +1,14 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load spades
+
+spades.py -o <output_dir> \
+          -1 example1.fastq \
+          -2 example2.fastq \
+          --threads ${NSLOTS} \
+          --memory ${SGE_HGR_m_mem_free%.*}

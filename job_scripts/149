@@ -1,0 +1,37 @@
+#!/bin/bash
+#PBS -l select=3:model=sky_gpu:mpiprocs=1:ncpus=36:ngpus=4:mem=300g
+#PBS -l place=scatter:excl
+#PBS -q v100
+#PBS -l walltime=1:00:00
+#PBS -j oe
+#PBS -N multinodetest
+
+NODES=($( cat $PBS_NODEFILE | sort | uniq ))
+NUM_OF_NODES=${#NODES[@]}
+C=0
+
+# for each node that's not the current node
+  for node in ${NODES[@]}
+    do
+      if [[ $node != $(eval hostname) ]]
+      then
+          ssh $node "$MYPATH/MYSCRIPT.sh $C ${NODES[*]}" &
+          C=$(($C+1))
+    # sleep 2 to start the worker nodes before the main node
+          sleep 2
+      fi
+  done
+
+source /usr/local/lib/global.profile
+cd /nobackup/$USER/vgg
+BASE=/nobackup/$USER/
+echo "On node: "
+hostname
+#
+module purge
+module -a use /swbuild/analytix/tools/modulefiles
+module load miniconda3/v4
+source activate env_name
+...
+let PARAMETER=
+python $BASE/main.py $PARAMETER  $@

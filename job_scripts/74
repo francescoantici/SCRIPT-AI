@@ -1,0 +1,42 @@
+#BSUB -L /bin/bash
+#BSUB -J "template-16GPUs"
+#BSUB -o "template-16GPUs_o.%J"
+#BSUB -e "template-16GPUs_e.%J"
+#BSUB -n 16
+#BSUB -R "span[ptile=4]"
+#BSUB -gpu "num=4"
+#BSUB -q "normalx"
+#BSUB -x
+
+#
+# Setup User Environement (Python, WMLCE virtual environment etc)
+#
+HOME2=/nobackup/users/<user-name>
+PYTHON_VIRTUAL_ENVIRONMENT=wmlce-1.6.2
+CONDA_ROOT=$HOME2/anaconda3
+
+source ${CONDA_ROOT}/etc/profile.d/conda.sh
+conda activate $PYTHON_VIRTUAL_ENVIRONMENT
+export EGO_TOP=/opt/ibm/spectrumcomputing
+
+#
+# Cleaning CUDA_VISIBLE_DEVICES
+#
+cat > launch.sh << EoF_s
+#! /bin/sh
+export CUDA_VISIBLE_DEVICES=0,1,2,3
+exec \$*
+EoF_s
+chmod +x launch.sh
+mpirun --tag-output ./setup.sh
+
+
+#
+# Runing the training/inference job
+# (change only the script name and options after python command)
+#
+
+ddlrun --mpiarg "-x EGO_TOP" -v \
+  ./launch.sh python <python-script-name-here>
+
+-------------------------

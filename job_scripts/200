@@ -1,0 +1,23 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load ghostscript
+
+# convert a figure to an image file
+gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -dGraphicsAlphaBits=4 \
+   -sOutputFile=image.png figure.eps
+
+# render the same image at 300 dpi
+gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r300 \
+   -sOutputFile=image_300.png figure.eps
+
+# render a figure in greyscale
+gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=pnggray -sOutputFile=figure.png figure.pdf
+
+# rasterise a whole document
+gs -dSAFER -dBATCH -dNOPAUSE -sDEVICE=pgmraw -r150 \
+   -dTextAlphaBits=4 -sOutputFile='file-%00d.pgm' file.ps

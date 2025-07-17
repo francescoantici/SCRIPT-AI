@@ -1,0 +1,13 @@
+#PBS -S /bin/bash
+#PBS -q batch
+#PBS -l nodes=1:ppn=10
+#PBS -l mem=64gb
+#PBS -l walltime=48:00:00
+#PBS -N myscript
+#PBS -o myscript.out
+#PBS -e myscript.err
+#PBS -m abe
+#PBS -M my_email@umn.edu
+cd $PBS_O_WORKDIR/
+module load python/conda/3.6
+python myscript.py

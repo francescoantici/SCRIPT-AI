@@ -1,0 +1,14 @@
+#!/bin/bash
+#PBS -N orca_job
+#PBS -l select=1:ncpus=1:mem=8gb
+#PBS -l walltime=01:00:00
+#This requests 1 cpu on a single node. 
+
+# Load the ORCA module
+module load orca
+
+# Change to the job's working directory
+cd $PBS_O_WORKDIR
+
+# Run ORCA
+orca my_input_file.inp > orca_output.log

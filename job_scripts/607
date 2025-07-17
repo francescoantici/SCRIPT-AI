@@ -1,0 +1,21 @@
+#!/bin/bash
+#PJM -L "rscgrp=small"
+#PJM -L elapse=02:00:00
+#PJM -L "node=1"
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -j
+#PJM -S
+
+. setup-env.sh
+spack load arch=linux-rhel8-a64fx
+
+
+. env.src
+
+#bash 1_python.sh
+#bash 3_venv.sh
+bash 4_numpy_scipy.sh rebuild
+#bash 5_pytorch.sh
+#bash 6_vision.sh
+#bash 7_horovod.sh
+#bash 8_libtcmalloc.sh

@@ -1,0 +1,26 @@
+#PBS -l select=1:ncpus=16:ngpus=4:mem=240GB:model=mil_a100
+#PBS -l walltime=8:00:00
+## If you request more than 1 chunk (i.e., select=2 or more),
+## with resources which are scattered (i.e., not using the same physical nodes)
+## and you want exclusive access to the vnodes assigned,
+## uncomment the following place statement
+##PBS -l place=scatter:excl
+#PBS -q gpu_devel
+
+module load nvhpc-nompi/23.7
+module load mpi-hpe/mpt
+
+cd $PBS_O_WORKDIR
+
+setenv MPI_USE_CUDA 1
+
+## if you want to run on two specific GPUs, 
+## for example, GPU0 and GPU2
+
+setenv CUDA_VISIBLE_DEVICES 0,2
+mpiexec -np 2 ./your_application.exe
+ 
+## if you want to run on all four GPUs in the node
+
+setenv CUDA_VISIBLE_DEVICES 0,1,2,3
+mpiexec -np 4 ./your_application.exe

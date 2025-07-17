@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#SBATCH --job-name gpu_logistic_map_job
+#SBATCH --output gpu_logistic_map_job.out
+#SBATCH --error gpu_logistic_map_job.err
+#SBATCH --time 00:10:00
+#SBATCH --partition dualGPU
+#SBATCH --ntasks 1
+#SBATCH --cpus-per-task 2
+#SBATCH -G 2
+
+cd <DIR>
+
+module load matlab
+matlab -nodisplay -r gpu_logistic_map > gpu_logistic_map.out

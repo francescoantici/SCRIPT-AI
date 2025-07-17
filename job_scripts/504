@@ -1,0 +1,39 @@
+#!/bin/bash
+#PJM -N QCD-DDD
+#PJM --rsc-list "rscgrp=small"
+#PJM --rsc-list "elapse=00:10:00"
+#PJM --mpi "max-proc-per-node=1"
+#PJM --rsc-list "node=1"
+#PJM -j
+#PJM -S
+
+module list
+set -x
+date
+hostname
+
+TMPDIR=${HOME}/tmp/check_QCD-DDD
+mkdir -p ${TMPDIR}
+cd ${TMPDIR}/
+if [ $? != 0 ] ; then echo '@@@ Directory error @@@'; exit; fi
+rm *
+
+SRC_DIR=${HOME}/fs2020_kernels/src/QCD.ddd_in_s_.20170621
+cp -rp ${SRC_DIR}/* ./
+
+CXXFLAGS="-std=gnu++11 -Kfast,restp=all,ocl,preex,openmp,noswp,noprefetch -DRDC -DV512 -Icommon/include -K__control=0x4"
+CFLAGS="-std=c99 -Kfast,restp=all,ocl,preex,openmp,noswp,noprefetch -DRDC -DV512 -Icommon/include -K__control=0x4 -DDISABLE_VALIDATION "
+
+for i in \
+bicgstab_dd_mix.cc bicgstab_precdd_s.cc clover_s.cc ddd_in_s.cc main.cc qws.cc
+do
+FCC -c ${CXXFLAGS} ${i}
+done
+fcc -c ${CFLAGS} common/src/report.c 
+FCC ${CXXFLAGS} *.o
+
+export OMP_NUM_THREADS=12
+time ./a.out
+
+ls -l
+exit

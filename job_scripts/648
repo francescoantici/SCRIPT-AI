@@ -1,0 +1,24 @@
+#!/bin/bash
+
+#PJM -L node=2048
+#PJM -L elapse=0:05:00
+#PJM -j
+#PJM -L rscgrp=large
+#PJM -s
+
+export UTOFU_NUM_EXCLUSIVE_CQS=0
+export UCX_TLS=utofu
+#export FINCHFS_LOG_LEVEL=debug
+export UCX_LOG_LEVEL=error
+export UTOFU_NUM_MRQ_ENTRIES=2048
+#export UCX_KEEPALIVE_INTERVAL=1800s
+
+NN=2048
+#export UCX_KEEPALIVE_NUM_EPS=$((1))
+export UCX_NUM_EPS=$((NN*32))
+
+mpiexec -np $((16*NN)) --vcoordfile "vcoord.ppn=16.nnodes=$NN" -x UCX_NUM_EPS -x UTOFU_NUM_MRQ_ENTRIES -x UCX_TLS -x UTOFU_NUM_EXCLUSIVE_CQS -x UCX_LOG_LEVEL finchfsd -d /tmp &
+
+sleep 60
+
+mpiexec -np $((16*NN)) --vcoordfile "vcoord.ppn=16.nnodes=$NN" -x UCX_NUM_EPS -x UTOFU_NUM_MRQ_ENTRIES -x UCX_TLS  -x UTOFU_NUM_EXCLUSIVE_CQS -x UCX_LOG_LEVEL mdtest -n $((1024*4)) -d /out -F -a FINCHFS -C -T -r

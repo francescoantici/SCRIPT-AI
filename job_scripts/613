@@ -1,0 +1,30 @@
+#PJM -L "rscgrp=small"
+#PJM -L "node=1" 
+#PJM --mpi "max-proc-per-node=48"
+
+#PJM -L "elapse=1:00:00"
+#PJM --llio cn-cache-size=2Gi
+#PJM -S
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==:/RAvG7tRc8R3QSe+OEfBL9Q==
+
+
+
+REMOTE_ROOT=$(readlink -f d74b5c72f00556c83371c9e42c77a9e270df2540)
+echo 0 > $REMOTE_ROOT/6739bdd5b6436c35a2337061542a4ab00144792c_flag_if_job_task_fail
+test $? -ne 0 && exit 1
+
+
+
+
+
+. init.sh
+
+source 6739bdd5b6436c35a2337061542a4ab00144792c.sub.run
+
+test $? -ne 0 && exit 1
+
+wait
+FLAG_IF_JOB_TASK_FAIL=$(cat 6739bdd5b6436c35a2337061542a4ab00144792c_flag_if_job_task_fail)
+if test $FLAG_IF_JOB_TASK_FAIL -eq 0; then touch 6739bdd5b6436c35a2337061542a4ab00144792c_job_tag_finished; else exit 1;fi
+
+

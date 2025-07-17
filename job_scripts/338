@@ -1,0 +1,13 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 8
+#$ -l gpu=1
+#$ -l h_vmem=11G
+
+module load cst_studio
+
+cst_studio cst_design_environment \
+  --numthreads ${NSLOTS} \
+  -withgpu=1 \
+  SOLVERS input_file.cst

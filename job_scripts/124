@@ -1,0 +1,21 @@
+#!/bin/bash -l
+#BATCH --job-name=omp-job          # Job name
+#SBATCH --time=1:0:0                # Maximum runtime (1 hour)
+#SBATCH --nodes=2                   # Number of nodes requested
+#SBATCH --ntasks-per-node=1         # Number of MPI tasks per node
+#SBATCH --cpus-per-task=4           # Number of CPU cores per task
+#SBATCH --partition=shared          # Partition or queue name
+#SBACTH --mail-type=end             # Email notification type (end of job)
+#SBATCH --mail-user=$USER@jhu.edu   # Email address for notifications (using the user's environment variable)
+#SBATCH --reservation=Training      # Reservation name
+
+ml intel/2022.2  # Load the Intel compiler module with version 2022.2
+
+#Compile the code using Intel and mix MPI/OpenMP
+echo "mpiicc -qopenmp -o hello-mix.x hello-world-mix.c"
+
+#How to compile
+#mpiicc -qopenmp -o hello-mix.x hello-world-mix.c
+
+#Run the code
+mpirun -np 2 ./hello-mix.x  # Run the mixed MPI/OpenMP program with 2 MPI processes

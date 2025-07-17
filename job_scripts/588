@@ -1,0 +1,23 @@
+#!/bin/bash -x
+#PJM -L elapse=72:00:00
+#PJM -L "node=1"
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==:/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -j
+#PJM -S
+
+# activate pytorch environment
+source env.src
+
+export OUTDIR=data/wikipedia/binarized/gpt-2
+mkdir -p $OUTDIR
+
+# Tokenize and binarize Japanese
+python tools/preprocess_data.py \
+  --input ja_merged.json \
+  --output-prefix $OUTDIR/ja_wiki \
+  --vocab-file dataset/gpt2-vocab.json \
+  --merge-file dataset/gpt2-merges.txt \
+  --dataset-impl mmap \
+  --tokenizer-type GPT2BPETokenizer \
+  --workers 16 \
+  --append-eod

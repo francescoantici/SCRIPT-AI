@@ -1,0 +1,45 @@
+#!/bin/bash -x
+#PJM -L "rscgrp=large"
+#PJM -L "elapse=10:00:00"
+#PJM -L "node=6240"
+#PJM --mpi "proc=24960"
+#PJM --mpi "max-proc-per-node=4"
+#PJM --llio stripe-count=24
+#PJM --llio sharedtmp-size=10Gi
+#PJM --llio localtmp-size=30Gi
+#PJM -j
+#PJM -S
+#PJM -N VAE_mcdnnae
+
+#AR_ALGO=ring # OK!
+#AR_ALGO=recursive_doubling # OK!
+#AR_ALGO=trix3 # NG!
+#AR_ALGO=trix6 # NG!
+
+MPI="mpirun -stdout-proc ./std/job%j/%/1000r/stdout -stderr-proc ./std/job%j/%/1000r/stderr -mca mpi_print_stats 2"
+PYTHON="python3"
+SCRIPT="train_mdcnnae_modelpar.py"
+PARAM="param_train_mdcnnae_llio.toml"
+CACHE_2ND_LAYER=$PJM_JOBDIR
+
+# Transfer to cache area of 2nd layer storage
+time llio_transfer ${CACHE_2ND_LAYER}/python.tar
+time llio_transfer ${CACHE_2ND_LAYER}/stgin.sh
+time llio_transfer ${CACHE_2ND_LAYER}/stgout.sh
+
+
+# Stage-in
+time $MPI sh ${CACHE_2ND_LAYER}/stgin.sh
+
+source pytorch_setting_llio.sh
+
+# Main calculation
+time ${MPI} ${PYTHON} ${SCRIPT} ${PARAM}
+
+# Stage-out
+mkdir -p results/train_mdcnnae
+mkdir -p log/train_mdcnnae
+time $MPI sh ${CACHE_2ND_LAYER}/stgout.sh
+
+# Clean up 2nd-layer filesystem cache
+time llio_transfer --purge ${CACHE_2ND_LAYER}/python.tar

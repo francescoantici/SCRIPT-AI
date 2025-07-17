@@ -1,0 +1,16 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 2
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=5G
+
+module load miniforge
+mamba activate angsd_env
+
+angsd -out outFile \
+      -bam bam.list \
+      -GL 1 \
+      -doMaf 1 \
+      -doMajorMinor 1 \
+      -nThreads ${NSLOTS}

@@ -1,0 +1,7 @@
+#!/bin/bash
+#SBATCH --cpus-per-task=16
+#SBATCH --gpus-per-node=1
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=1
+
+srun python eval.py --checkpoint-path ./experiments/checkpoints/epoch=159.ckpt --librispeech-path ./librispeech/ --sp-model-path ./spm_unigram_1023.model --use-cuda

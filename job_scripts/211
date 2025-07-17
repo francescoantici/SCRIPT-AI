@@ -1,0 +1,20 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load sqlite
+
+# print the available databases inside database file "database.db"
+sqlite3 database.db .databases
+
+# print the available tables inside database file "database.db"
+sqlite3 database.db .tables
+
+# execute SQL statements (i.e. SELECT)
+sqlite3 database.db "SELECT * FROM TABLE_NAME"
+
+# dump the database contents into a file
+sqlite3 database.db .dump > database.sql

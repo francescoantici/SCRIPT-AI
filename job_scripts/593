@@ -1,0 +1,14 @@
+#!/bin/sh
+#PJM -L "node=1"                        
+#PJM -L "rscgrp=small"                  
+#PJM -L "elapse=6:00:00"               
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==      
+#PJM -s                                 
+#PJM -j
+#
+
+umask 0002
+. setup-env.sh
+
+spack install improved-rdock %fj ^pcre2@10.39 ^gobject-introspection@1.56.1
+

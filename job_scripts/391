@@ -1,0 +1,11 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_vmem=1G
+#$ -l h_rt=1:0:0
+
+module load stata
+
+# Run the Stata code example.do
+stata-mp -b do example.do ${NSLOTS}

@@ -1,0 +1,17 @@
+#SBATCH --ntasks=2
+#SBATCH --nodes=2
+#SBATCH --gpus-per-task=8
+
+#SBATCH --cpus-per-task=96
+
+#SBATCH --partition=train
+#SBATCH --job-name=llama_train
+
+# Get your HF token from https://huggingface.co/settings/tokens
+
+# Llama 3.1 tokenizer.model
+python torchtitan/datasets/download_tokenizer.py --repo_id meta-llama/Meta-Llama-3.1-8B --tokenizer_path "original" --hf_token=...
+
+CONFIG_FILE="./train_configs/llama3_8b.toml" ./run_llama_train.sh
+
+srun torchrun --nnodes 2

@@ -1,0 +1,22 @@
+#!/bin/sh -evx
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==:/fSjXVWZ9gBglklF02ESwoQ==
+#PJM -N XXYZa
+#PJM -o XXYZa.o
+#PJM -e XXYZa.e
+#PJM -L elapse=00:20:00
+#PJM -L freq=2200,eco_state=2
+#PJM -L retention_state=0
+#PJM -L node-mem=28Gi
+#PJM -L node=12
+#PJM --mpi proc=48
+#PJM --mpi rank-map-bynode
+#PJM -S
+export NWPDIR=`pwd`/../../..
+export SYSDIR=${NWPDIR}/Test/Nwpbin
+export NWP_NUM_NODES=12
+export PLE_MPI_STD_EMPTYFILE=off
+export FLIB_USE_STOPCODE=1
+export FLIB_BARRIER=HARD
+export FLIB_CNTL_BARRIER_ERR=FALSE
+export XOS_MMM_L_ARENA_FREE=2
+sh XXYZa

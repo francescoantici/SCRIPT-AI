@@ -1,0 +1,7 @@
+#PBS -lselect=10:ncpus=16:mpiprocs=1:ompthreads=16:model=san
+#PBS -lwalltime=4:00:00
+
+cd $PBS_O_WORKDIR
+
+seq 64 | parallel -j 1 -u --sshloginfile $PBS_NODEFILE \
+ "cd $PWD; ./myopenmpscript.csh {}"

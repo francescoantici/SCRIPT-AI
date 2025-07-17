@@ -1,0 +1,68 @@
+#!/bin/bash
+#$ -cwd
+#$ -pe smp 8
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+#$ -j y
+#$ -N shapeit5-test
+
+# Adapted from https://odelaneau.github.io/shapeit5/docs/tutorials/simulated/
+
+set -e
+
+module load shapeit5
+
+# STEP1: Phasing common variants
+
+shapeit5 phase_common \
+    --input wgs/target.unrelated.bcf \
+    --filter-maf 0.001 \
+    --region 1:1-6000000 \
+    --map info/chr1.gmap.gz \
+    --output tmp/target.scaffold.chunk0.bcf \
+    --thread ${NSLOTS}
+
+shapeit5 phase_common \
+    --input wgs/target.unrelated.bcf \
+    --filter-maf 0.001 \
+    --region 1:4000001-10000000 \
+    --map info/chr1.gmap.gz \
+    --output tmp/target.scaffold.chunk1.bcf \
+    --thread ${NSLOTS}
+
+ls -1v tmp/target.scaffold.chunk*.bcf > tmp/files.txt
+
+shapeit5 ligate \
+    --input tmp/files.txt \
+    --output tmp/target.scaffold.bcf \
+    --thread ${NSLOTS} \
+    --index
+
+# STEP2: Phase rare variants small region
+
+while read LINE; do
+    ID=$(echo $LINE | awk '{ print $1; }')
+    SRG=$(echo $LINE | awk '{ print $3; }')
+    IRG=$(echo $LINE | awk '{ print $4; }')
+    shapeit5 phase_rare \
+        --input wgs/target.unrelated.bcf \
+        --scaffold tmp/target.scaffold.bcf \
+        --map info/chr1.gmap.gz \
+        --input-region $IRG \
+        --scaffold-region $SRG \
+        --output tmp/target.phased.chunk$CHK\.bcf \
+        --thread ${NSLOTS}
+done < info/chunks.coordinates.txt
+
+# STEP3: Obtaining chromosome-wide phased data
+
+ls -1v tmp/target.phased.chunk$CHK\.bcf > tmp/files.txt
+
+shapeit5 bcftools concat \
+    --naive \
+    -f tmp/files.txt \
+    -o target.phased.bcf \
+    --threads ${NSLOTS}
+
+shapeit5 bcftools index \
+    -f target.phased.bcf

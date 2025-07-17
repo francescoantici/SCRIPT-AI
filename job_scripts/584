@@ -1,0 +1,37 @@
+#!/bin/sh
+#PJM -N build_pytorch
+#PJM -L rscgrp=small
+#PJM -L elapse=6:00:00
+#PJM -L node=1
+#PJM --llio localtmp-size=50Gi
+#PJM -j   
+#PJM -S
+
+set -e 
+
+## For Build cache
+export XDG_CACHE_HOME=$PJM_LOCALTMP
+export TMPDIR=$PJM_LOCALTMP
+echo $PJM_LOCALTMP
+
+## Step1. 1_python.sh
+bash ./1_python.sh clean
+bash ./1_python.sh
+## Step3. 3_venv.sh
+bash ./3_venv.sh clean
+bash ./3_venv.sh
+## Step4. 4_numpy_scipy.sh
+bash ./4_numpy_scipy.sh clean
+bash ./4_numpy_scipy.sh
+## Step5. 5_pytorch.sh
+bash ./5_pytorch.sh clean
+bash ./5_pytorch.sh
+## Step6. 6_vision.sh
+bash ./6_vision.sh clean
+bash ./6_vision.sh
+## Step7. 7_horovod.sh
+bash ./7_horovod.sh clean
+bash ./7_horovod.sh
+## Step8. 8_libtcmalloc.sh
+bash ./8_libtcmalloc.sh clean
+bash ./8_libtcmalloc.sh

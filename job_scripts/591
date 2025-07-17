@@ -1,0 +1,57 @@
+#!/bin/bash
+#PJM -L elapse=1:00:00
+#PJM -L "node=2x3x2:torus:strict-io"
+#PJM --mpi "proc=12"
+#PJM --mpi "max-proc-per-node=1"
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==:/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -j
+#PJM -S
+
+source /scripts/fujitsu/env.src
+source $VENV_PATH/bin/activate
+
+# Change for multinode config
+CPUS_PER_NODE=1
+NNODES=12
+NODE_RANK=0
+export WORLD_SIZE=$(($CPUS_PER_NODE*$NNODES))
+export MASTER_ADDR=localhost
+export MASTER_PORT=$((10000 + ($PJM_JOBID % 50000)))
+PP=3
+TP=2
+DP=$(($WORLD_SIZE / ($TP * $PP)))
+TORCH_VERSION=1.10
+MODEL_SIZE=1.3b
+export TIMER="timer/torch${TORCH_VERSION}_${MODEL_SIZE}_${PP}p_${TP}t_${DP}d/${PJM_JOBID}"
+DATE=`date +%Y%m%d-%H%M%S`
+CHECKPOINT_PATH=checkpoints/torch${TORCH_VERSION}_${MODEL_SIZE}_pp${PP}_mp${TP}_dp${DP}/${DATE}/
+INPUT_PREFIX=/fSjXVWZ9gBglklF02ESwoQ==/data/data
+VOCAB_FILE=gpt2-vocab.json
+MERGE_FILE=gpt2-merges.txt
+DATA_PATH=${INPUT_PREFIX}/BookCorpusDataset_text_document
+TENSORBOARD_ARGS="--tensorboard-dir experiments/tensorboard"
+
+output_path="jobs/torch1.10_1.3b_pp3_mp2_dp2/outs/${PJM_JOBID}_n${nodos}"
+DISTRIBUTED_ARGS="-np $NNODES -std-proc ${output_path}/stdproc"
+DATA_PARALLEL_SIZE=${DP}
+PIPELINE_MODEL_PARALLEL_SIZE=${PP}
+TENSOR_MODEL_PARALLEL_SIZE=${TP}
+PIPELINE_PARALLEL_ARGS="--pipeline-model-parallel-size $PIPELINE_MODEL_PARALLEL_SIZE"
+MODEL_PARALLEL_ARGS="--tensor-model-parallel-size $TENSOR_MODEL_PARALLEL_SIZE"
+#DATA_PARALLEL_ARGS="--DDP-impl torch"
+#PARALLEL_ARGS="$MODEL_PARALLEL_ARGS $DATA_PARALLEL_ARGS $PIPELINE_PARALLEL_ARGS"
+PARALLEL_ARGS="$MODEL_PARALLEL_ARGS $PIPELINE_PARALLEL_ARGS"
+
+MICRO_BATCH_SIZE=1
+GLOBAL_BATCH_SIZE=$(($DATA_PARALLEL_SIZE*$MICRO_BATCH_SIZE))
+echo GLOBAL_BATCH_SIZE $GLOBAL_BATCH_SIZE
+#OMP_PARALLEL_ARGS="OMP_NUM_THREADS=48"
+export OMP_NUM_THREADS=48
+
+post_message start_job
+
+mpirun $DISTRIBUTED_ARGS \
+-x LD_PRELOAD="only_override.so" \
+python call_mpi_torch_test3.py
+
+post_message end job

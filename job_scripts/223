@@ -1,0 +1,22 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load bedops
+
+# Convert a vcf file to bed format
+vcf2bed < test.vcf > test.bed
+
+# Sort the input data
+sort-bed test.bed > test_sorted.bed
+
+# Count number of single-base or greated overlaps
+bedmap --ec \
+       --delim "\t" \
+       --bp-ovr 1 \
+       --echo \
+       --count \
+       test_sorted.bed > test_matrix.bed

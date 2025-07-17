@@ -1,0 +1,166 @@
+#!/bin/bash
+
+# JOB parameters setting here
+#PJM -L "node=1"
+#PJM -L "rscgrp=small"
+#PJM --mpi "max-proc-per-node=10"
+#PJM -L "elapse=72:00:00"
+#PJM -L "freq=2000,eco_state=2,retention_state=0"
+#PJM -x PJM_LLIO_GFSCACHE=/jG5wuqbRoLbDgsh4U8DNjg==   
+#PJM -j
+#PJM -S
+
+export PLE_MPI_STD_EMPTYFILE=off
+export XOS_MMM_L_PAGING_POLICY="demand:demand:demand"
+export XOS_MMM_L_ARENA_LOCK_TYPE=0
+export OMP_PROC_BIND=close # default
+export OMP_NUM_THREADS=4
+
+. setup-env.sh
+spack load /sq6mxek
+spack load /dox3gz6
+
+export LD_LIBRARY_PATH=/lib64:$LD_LIBRARY_PATH
+# PJM_BULKNUM=1
+
+iter=2
+
+# export OMP_NUM_THREADS=4
+# number of processes to run in parallel
+NPARA=10
+
+# number process to run as steps
+NSTEP=10
+
+# total number of processes to be run by this script is NPARA*NSTEP for each sub bulk job
+NTOTAL=$(( $NPARA * $NSTEP))
+
+# first data for this PJM_BULKNUM
+IFIRST=$(( $NTOTAL * ( $PJM_BULKNUM - 1 ) + 1 ))
+echo IFIRST $IFIRST
+
+# last data for this PJM_BULKNUM
+ILAST=$(( $PJM_BULKNUM * $NTOTAL))
+
+echo NPARA $NPARA
+echo NSTEP $NSTEP
+echo NTOTAL $NTOTAL
+echo ILAST $ILAST
+
+# Variables for createGenesisInputStep
+constantK="5000"
+pixel_size="0.864"
+integrator="INTEGRATOR_LEAPFROG"
+time_step="0.002"
+n_steps="20000"
+forcefield="FORCEFIELD_CAGO"
+simulationType="SIMULATION_LEAP"
+
+# Common files
+ATDYN='MDTools-forked-from-GENESIS-fugaku-MPI/bin/atdyn'
+VCOOR="vcode1"
+########################################
+
+#llio_transfer $VCOOR
+#llio_transfer $ATDYN
+
+run_simulation() {
+    #export FLIB_CPUBIND=OFF
+    num_simulations=$1
+    iter=$2
+
+    # Logging setup
+    simulation=$(printf "%06d" "$num_simulations")
+    iterations="iter_$(printf "%03d" $(($iter-1)))"
+    iteration="iter_$(printf "%03d" $(($iter)))"
+
+    # Step 1: makePathStep
+    MDSPACE_HOME=$(pwd) # Assuming this is the current working directory for mdspace_fugaku
+    HOME=$(dirname "$MDSPACE_HOME")
+    SIMULATION="${MDSPACE_HOME}/simulations"
+    TOPLEVEL=$(printf "%04d" $(( (num_simulations - 1) / 10000 )))
+    WORKDIR="${SIMULATION}/${TOPLEVEL}/${simulation}/${iteration}"
+    SCRIPTS="${MDSPACE_HOME}/utils"
+    COMMONINPs="../../../common_inputs"
+
+    cd "$WORKDIR"
+
+    LogFileName="log_2_runSimulations.log"
+    # Step 4: convertInputEMStep
+
+    metaEMxmd="$MDSPACE_HOME/EM_data/inputEM.xmd"
+    inputEMxmd="$WORKDIR/inputEM_${simulation}.xmd"
+
+    # Make xmd file
+    python "${SCRIPTS}/splitInputXmd.py" -i "$metaEMxmd" -o "$inputEMxmd" -id "$num_simulations"
+
+    # xmipp_image_convert -i "$inputEMxmd" -o "$inputEMspi"
+
+    # Step 5: createGenesisInputStep
+    createGenesisInputStep=$((5 + (iter - 1) * 8))
+
+    inputEMprefix="../inputEM_${simulation}.spi"
+    genesisInp="$WORKDIR/INPUT_${simulation}"
+    inputPDBprefix="inputPDB_000001_${iterations}"
+    rstFile="inputPDB_000001_${iterations}.rst"
+    outputPrefix="output_${simulation}_${iteration}"
+    inputType="INPUT_RESTART"
+
+    electrostatics="ELECTROSTATICS_CUTOFF"
+    ensemble="ENSEMBLE_NVT"
+    temperature="50"
+    boundary="BOUNDARY_NOBC"
+    tpcontrol="TPCONTROL_LANGEVIN"
+
+    # Change the settings of GENESIS INPUT file here
+    python "${SCRIPTS}/createGenesisInput.py" \
+        --inp_file "$genesisInp" \
+        --inputEMxmd "$inputEMxmd" \
+        --outputPrefix "$outputPrefix" \
+        --inputPDBprefix "$inputPDBprefix" \
+        --inputEMprefix "$inputEMprefix" \
+        --inputType "$inputType" \
+        --rstFile "$rstFile" \
+        --forcefield "$forcefield" \
+        --simulationType "$simulationType" \
+        --electrostatics "$electrostatics" \
+        --integrator "$integrator" \
+        --time_step "$time_step" \
+        --n_steps "$n_steps" \
+        --ensemble "$ensemble" \
+        --temperature "$temperature" \
+        --boundary "$boundary" \
+        --tpcontrol "$tpcontrol" \
+        --constantK "$constantK" \
+        --pixel_size "$pixel_size" \
+        --common_inputs "$COMMONINPs" 
+
+    # Step 6: Run MD simulation using GENESIS2.0
+    runMDsimulation=$((6 + (iter - 1) * 8))
+
+    genesisOutput="$WORKDIR/output_${simulation}_${iterations}.log"
+
+    mpiexec --of-proc output --vcoordfile $VCOOR ${ATDYN} "${genesisInp}" &
+
+    # go back to the MDSPACE_HOME dir
+    cd $MDSPACE_HOME
+}
+
+# job control
+for ((i=0; i<$NSTEP; i++)); do
+    starting=$(($IFIRST + ($i*$NPARA)))
+    ending=$(($starting + $NPARA - 1))
+    echo "going to run simulations: ($starting, $ending) ..."
+    for num_simulations in $(seq $starting $ending); do
+        export FLIB_CPUBIND=OFF
+        echo "running $num_simulations"
+        run_simulation $num_simulations $iter  # Run in background
+    done
+    echo waiting
+    date
+    wait
+    echo done
+    date
+done
+
+wait

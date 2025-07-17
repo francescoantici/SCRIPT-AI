@@ -1,0 +1,31 @@
+#!/bin/bash
+#PJM -L rscgrp=${RSC_GRP}
+#PJM -L elapse=$TimeLimit
+#PJM -L node=${NumNodes}
+##:strict,freq=2200
+#PJM --rsc-list "retention_state=0"
+#PJM -j
+#PJM -S
+
+hostname
+export BaseDir="$MyDir"
+
+LogDir="$LogDir"
+if [ ! -d "\$LogDir" ] ; then
+    echo "\$LogDir: not a directory" >&2
+    exit 1
+fi
+
+printenv > "$LogDir/environ"
+
+### The directory where data is stored
+DataDir="$DataDir"
+
+###
+WORKER=${WORKER}
+NumNodes=$NumNodes
+InputDir=$InputDir
+OutputDir=$OutputDir
+InputFileList=$InputFileList
+
+source ../scripts/setenv

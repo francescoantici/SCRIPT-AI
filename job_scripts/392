@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#FLUX: -N 2
+#FLUX: -q pdebug
+#FLUX: -S dw="""
+#FLUX: #DW jobdw type=xfs capacity=1TiB name=xfsproject
+#FLUX: #DW jobdw type=lustre capacity=10GiB name=lustreproject
+#FLUX: """
+
+echo "Hello World!" > $DW_JOB_lustreproject/world.txt
+
+flux submit -N2 -n2 /bin/bash -c "echo 'Hello World!' > $DW_JOB_xfsproject/world.txt"

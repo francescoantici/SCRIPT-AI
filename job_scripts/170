@@ -1,0 +1,16 @@
+#$ -cwd
+#$ -j y
+#$ -pe smp 8                   # 8 cores per GPU
+#$ -l h_rt=240:0:0             # 240 hours runtime
+#$ -l h_vmem=11G               # 11G RAM per core
+#$ -l gpu=1                    # AlphaFold only uses 1 GPU
+# Approved DERI users can include the following line
+#$ -l cluster=andrena
+
+# Specify an output destination.
+export OUTPUT=/data/scratch/${USER}/alphafold_out
+
+module load alphafold
+
+alphafold ${HOME}/alphafold_scripts/run.sh \
+  --fasta_paths=${HOME}/alphafold_input/T1050.fasta

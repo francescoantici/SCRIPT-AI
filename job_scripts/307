@@ -1,0 +1,11 @@
+#!/bin/bash
+#$ -pe parallel 96
+#$ -l infiniband=ddy-i
+#$ -cwd
+#$ -j y
+#$ -l h_rt=240:0:0
+#$ -l exclusive
+
+module load cp2k
+
+mpirun -n ${NSLOTS} cp2k.psmp -i myinput.inp -o myoutput.out

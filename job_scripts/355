@@ -1,0 +1,7 @@
+#!/bin/bash
+#SBATCH --cpus-per-task=12
+#SBATCH --gpus-per-node=8
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=8
+
+srun python train.py --model-type tedlium3 --exp-dir ./experiments --dataset-path ./datasets/tedlium --global-stats-path ./global_stats.json --sp-model-path ./spm_bpe_500.model --num-nodes 1 --gradient-clip-val 5.0

@@ -1,0 +1,13 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load bowtie2
+
+# Prepare example genomes in <inputDir>
+# Output is stored in <outputDir>
+bowtie2-build <inputDir> <outputDir>
+bowtie2-inspect <outputDir>

@@ -1,0 +1,159 @@
+#!/bin/bash
+
+#PBS -q default
+#PBS -l nodes=4:ppn=8
+#PBS -l walltime=10:00:00
+#PBS -N gatk_tutorial
+#PBS -m ae
+#PBS -M youremail@school.edu
+
+# the PBS lines are for the default queue, using 4 nodes, and has a conservative 10 hour wall time
+# it is named "gatk_tutorial" and sends an email to "youremail@school.edu" when done
+
+# load your conda environment
+module load miniconda3-4.7.12.1-gcc-4.8.5-lmtvtik
+eval "$(conda shell.bash hook)"
+conda activate gatk-env
+
+# load GNU parallel, get env_parallel
+module load parallel-20170322-gcc-4.8.5-2ycpx7e
+source $(which env_parallel.bash)
+
+src=$PBS_O_WORKDIR
+# this is "sagegrouse_reference" in the tutorial
+reference=${src}/reference
+
+# indexing reference
+bwa index -p $reference ${reference}.fa
+samtools faidx ${reference}.fa -o ${reference}.fa.fai
+picard CreateSequenceDictionary \
+   		R=${reference}.fa \
+   		O=${reference}.dict
+
+# Trimming section
+adapters=~/.conda/pkgs/trimmomatic-0.39-1/share/trimmomatic-0.39-1/adapters/TruSeq3-PE.fa
+cat $src/sample_list | env_parallel --sshloginfile $PBS_NODEFILE \
+	'read1=$src/raw_reads/{}_1.fastq.gz
+	read2=$src/raw_reads/{}_2.fastq.gz
+	paired_r1=$src/clean_reads/{}_paired_R1.fastq.gz
+	paired_r2=$src/clean_reads/{}_paired_R2.fastq.gz
+	unpaired_r1=$src/clean_reads/{}_unpaired_R1.fastq.gz
+	unpaired_r2=$src/clean_reads/{}_unpaired_R2.fastq.gz
+	# the minimum read length accepted, we do the liberal 30bp here
+	min_length=30
+	trimmomatic PE -threads 1 \
+		$read1 $read2 $paired_r1 $unpaired_r1 $paired_r2 $unpaired_r2 \
+		ILLUMINACLIP:${adapters}:2:30:10:2:True \
+		LEADING:3 TRAILING:3 MINLEN:${min_length}'
+
+# Section for alignment and marking duplicates. 
+# Note we parallelize such that BWA uses exactly one node.
+# Then, we have a number of jobs equal to the number of nodes requested.
+
+cat $src/sample_list | env_parallel -j 1 --sshloginfile $PBS_NODEFILE \
+	'bwa mem \
+		-t 8 -M \
+		-R "@RG\tID:{}\tPL:ILLUMINA\tLB:{}\tSM:{}" \
+		$reference \
+		$src/clean_reads/{}_paired_R1.fastq.gz \
+		$src/clean_reads/{}_paired_R2.fastq.gz \
+		> $src/alignments/{}.sam
+	gatk MarkDuplicatesSpark \
+		-I $src/alignments/{}.sam \
+		-M $src/bams/{}_dedup_metrics.txt \
+		--tmp-dir $src/alignments/dedup_temp \
+		-O $src/bams/{}_dedup.bam \
+		 --conf "spark.executor.cores=8"
+	rm $src/alignments/{}.sam'
+
+# Collecting metrics in parallel
+# Remember to change from _recal to _dedup if you can’t do base recalibration.
+# Also, depth will take A LOT of room up, so you may not want to run it until you know what to do with it.
+
+cat $src/sample_list | env_parallel --sshloginfile $PBS_NODEFILE \
+	'picard CollectAlignmentSummaryMetrics \
+		R=${reference}.fa \
+		I=$src/bams/{}_dedup.bam \
+		O=$src/alignments/alignment_summary/{}_alignment_summary.txt
+	picard CollectInsertSizeMetrics \
+		INPUT=$src/bams/{}_dedup.bam \
+		OUTPUT=$src/alignments/insert_metrics/{}_insert_size.txt \
+		HISTOGRAM_FILE=$src/alignments/insert_metrics/{}_insert_hist.pdf
+	samtools depth \
+		-a $src/bams/{}_dedup.bam \
+		> $src/alignments/depth/{}_depth.txt'
+
+# Scatter-gather HaploType Caller, probably the most likely to need checkpoints.
+# This can take a lot of different forms, this one is best for large files.
+# Go to the HaplotypeCaller section for more info. 
+
+cut -f 1 ${reference}.fa.fai > $src/intervals.list
+
+while read sample; do
+	mkdir ${src}/gvcfs/${sample}
+	cat $src/intervals.list | env_parallel --sshloginfile $PBS_NODEFILE \
+		'gatk --java-options "-Xmx6g" HaplotypeCaller \
+		-R ${reference}.fa \
+		-I $src/bams/${sample}_dedup.bam \
+		-O $src/gvcfs/${sample}/${sample}_{}_raw.g.vcf.gz \
+		-L {} \
+		-ERC GVCF'
+done < $src/sample_list
+
+# Run CombineGVCFs per interval, each step combines all samples into one interval-specific GVCF
+cat $src/intervals.list | env_parallel --sshloginfile $PBS_NODEFILE \
+	'interval_list=""
+	# loop to generate list of sample-specific intervals to combine
+	while read sample; do
+		interval_list="${interval_list}-V ${src}/gvcfs/${sample}/${sample}_{}_raw.g.vcf.gz "
+	done < $src/sample_list
+	gatk --java-options "-Xmx6g" CombineGVCFs \
+		-R ${reference}.fa \
+		${interval_list} \
+		-O $src/gvcfs/combined_intervals/{}_raw.g.vcf.gz'
+
+# Run GenotypeGVCFs on each interval GVCF
+cat $src/intervals.list | env_parallel --sshloginfile $PBS_NODEFILE \
+	'gatk --java-options "-Xmx6g" GenotypeGVCFs \
+		-R ${reference}.fa \
+		-V $src/gvcfs/combined_intervals/{}_raw.g.vcf.gz \
+		-O $src/combined_vcfs/intervals/{}_genotyped.vcf.gz'
+
+# Make a file with a list of paths for GatherVcfs to use
+> $src/combined_vcfs/gather_list
+while read interval; do
+	echo ${src}/combined_vcfs/intervals/${interval}_genotyped.vcf.gz >> \
+   			$src/combined_vcfs/gather_list
+done < $src/intervals.list
+
+# Run GatherVcfs
+gatk GatherVcfs \
+		-I $src/combined_vcfs/gather_list \
+		-O $src/combined_vcfs/combined_vcf.vcf.gz
+
+# Index the gathered VCF
+gatk IndexFeatureFile \
+	-I $src/combined_vcfs/combined_vcf.vcf.gz
+
+# Select and filter variants
+gatk SelectVariants \
+	-R ${reference}.fa \
+	-V $src/combined_vcfs/combined_vcf.vcf.gz \
+	-select-type SNP \
+	-O $src/combined_vcfs/raw_snps.vcf.gz
+
+gatk SelectVariants \
+	-R ${reference}.fa \
+	-V $src/combined_vcfs/combined_vcf.vcf.gz \
+	-select-type INDEL \
+	-O $src/combined_vcfs/raw_indel.vcf.gz
+
+gatk VariantFiltration \
+	-R ${reference}.fa \
+	-V $src/combined_vcfs/raw_snps.vcf.gz \
+	-O $src/analysis_vcfs/filtered_snps.vcf  \
+	-filter "DP < 4" --filter-name "DP_filter" \
+	-filter "QUAL < 30.0" --filter-name "Q_filter" \
+	-filter "QD < 2.0" --filter-name "QD_filter" \
+	-filter "FS > 60.0" --filter-name "FS_filter" \
+	-filter "MQ < 40.0" --filter-name "MQ_filter"

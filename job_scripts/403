@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -l select=1:ncpus=4:mem=16gb
+#PBS -l walltime=01:00:00
+#PBS -N mdcs_job
+
+module load tools/prod
+module load MATLAB/2023a_Update_3
+
+cd $PBS_O_WORKDIR
+
+matlab -nosplash -nodisplay -nojvm -batch myMfile -logfile myTestRun_output.log

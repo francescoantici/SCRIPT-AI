@@ -1,0 +1,11 @@
+#PBS -lselect=4:ncpus=20:model=ivy
+#PBS -lwalltime=8:00:00
+#PBS -J 1-5
+
+# For each sub-job, a value provided by the -J
+# option is used for PBS_ARRAY_INDEX
+
+mkdir dir.$PBS_ARRAY_INDEX
+cd    dir.$PBS_ARRAY_INDEX
+
+mpiexec ../a.out < ../input.$PBS_ARRAY_INDEX

@@ -1,0 +1,43 @@
+#!/usr/bin/bash
+#PJM -N fjtorch_local_build
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=08:00:00
+#PJM -L "node=1"
+#PJM --mpi "proc=1"
+#PJM -j
+#PJM -S
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM --llio localtmp-size=80Gi
+# #PJM -o
+# #PJM -e
+
+set -e
+
+TARFILE=$1
+
+echo "This file will be created: ${TARFILE}"
+
+[ $# -lt 1 ] && echo "Usage: [KFAST=true] $0 <tar file> (if KFAST=true compile with -Kfast option)" && exit -1
+
+source fj_pytorch_build_funcs.src
+
+pushd \${PJM_LOCALTMP}
+
+prep_fj_repo_2pushd \${PJM_LOCALTMP} ${KFAST}
+
+bash 1_python.sh
+bash 3_venv.sh
+### 20min mark ###
+bash 4_numpy_scipy.sh
+bash 5_pytorch.sh
+bash 6_vision.sh
+bash 7_horovod.sh
+bash 8_libtcmalloc.sh
+
+echo ">>> BEGIN TAR <<<"
+tar czf ${TARFILE} opt venv
+
+echo ">>> BEGIN COPY <<<"
+cp \${PJM_LOCALTMP}/${TARFILE} .
+
+echo ">>> DONE <<<"

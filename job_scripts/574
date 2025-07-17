@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+
+#SBATCH --account=<your project account>
+#SBATCH --job-name=<fancy name>
+#SBATCH --partition=accel --gpus-per-task=1
+#SBATCH --ntasks=8
+#SBATCH --mem-per-cpu=8G
+#SBATCH --time=00:30:00
+
+# Purge modules and load tensorflow
+module purge
+module load TensorFlow/2.2.0-fosscuda-2019b-Python-3.7.4
+source $SLURM_SUBMIT_DIR/tensor_env/bin/activate
+# List loaded modules for reproducibility
+module list
+
+# Export settings expected by Horovod and mpirun
+export OMPI_MCA_pml="ob1"
+export HOROVOD_MPI_THREADS_DISABLE=1
+
+# Run python script
+srun python $SLURM_SUBMIT_DIR/mnist_hvd.py

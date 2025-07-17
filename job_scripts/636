@@ -1,0 +1,43 @@
+#!/bin/sh
+#PJM -L  "node=686"
+#PJM -L  "rscgrp=large"
+#PJM -L  "elapse=1:20:00"
+#PJM --mpi "proc=2744"
+#PJM --mpi "max-proc-per-node=4"
+#PJM --mpi "rank-map-bynode"
+#PJM --name "HADRON-000210"
+#PJM --llio async-close=off
+##PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -j
+#PJM -s
+#
+
+export PARALLEL=12
+export OMP_NUM_THREADS=${PARALLEL}
+export PLE_MPI_STD_EMPTYFILE="off"
+
+msr=./main_hadron_wgf_honeycomb_lattice_src_Nf2+1+1
+hinput=./ParamsHadron_000210
+
+num=$(awk 'NR==2{printf "%6.6d\n", $1}' $hinput)
+output=HADRON.${num}
+errfile=ERR.$num
+
+rm hadron/*.${num}
+test -d output.$num && rm -r output.$num
+
+echo " Start job at " `date`           #  > $output
+echo "# Input file        :" $hinput   # >> $output
+
+
+#####
+llio_transfer ../../$msr
+mpiexec -n ${PJM_MPI_PROC} -stdout-proc .$output  -stderr-proc .$errfile ../../$msr $hinput #>> $output
+llio_transfer --purge ../../$msr
+#####
+
+echo " End job at " `date`              # >> $output
+
+mv ./output.$num/0/${output}*.0  ${output}
+mv ./output.$num/0/${errfile}*.0 ${errfile}

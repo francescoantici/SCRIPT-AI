@@ -1,0 +1,27 @@
+#!/bin/bash
+#PJM -N "init_core_exec_varABC_gmx"
+#PJM -L "node=1"
+#PJM --mpi "proc=4"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=20:00:00"
+#PJM -S
+
+gromacs-2021.1/bin/gmx grompp -f equil_em_steep_gpu_holo_0_prep.mdp -c conf_mut.gro -r conf_mut.gro -p newtop.top -n index.ndx -po equil_em_steep_gpu_holo_0.mdp -o equil_em_steep_gpu_holo_0.tpr -maxwarn 3
+mpiexec gmx_mpi mdrun -deffnm equil_em_steep_gpu_holo_0 -ntomp 12
+
+gromacs-2021.1/bin/gmx grompp -f equil_em_l-bfgs_gpu_holo_0_prep.mdp -c equil_em_steep_gpu_holo_0.gro -r equil_em_steep_gpu_holo_0.gro -p newtop.top -n index.ndx -po equil_em_l-bfgs_gpu_holo_0.mdp -o equil_em_l-bfgs_gpu_holo_0.tpr -maxwarn 3
+mpiexec -np 1 gmx_mpi mdrun -deffnm equil_em_l-bfgs_gpu_holo_0 -ntomp 12
+
+gromacs-2021.1/bin/gmx grompp -f equil_nvt_gpu_holo_0_prep.mdp -c equil_em_l-bfgs_gpu_holo_0.gro -r equil_em_l-bfgs_gpu_holo_0.gro -p newtop.top -n index.ndx -po equil_nvt_gpu_holo_0.mdp -o equil_nvt_gpu_holo_0.tpr -maxwarn 3
+mpiexec gmx_mpi mdrun -deffnm equil_nvt_gpu_holo_0 -ntomp 12
+
+gromacs-2021.1/bin/gmx grompp -f equil_npt1_gpu_holo_0_prep.mdp -c equil_nvt_gpu_holo_0.gro -t equil_nvt_gpu_holo_0.cpt -r equil_nvt_gpu_holo_0.gro -p newtop.top -n index.ndx -po equil_npt1_gpu_holo_0.mdp -o equil_npt1_gpu_holo_0.tpr -maxwarn 3
+mpiexec gmx_mpi mdrun -deffnm equil_npt1_gpu_holo_0 -ntomp 12
+
+gromacs-2021.1/bin/gmx grompp -f equil_npt2_gpu_holo_0_prep.mdp -c equil_npt1_gpu_holo_0.gro -t equil_npt1_gpu_holo_0.cpt -r equil_npt1_gpu_holo_0.gro -p newtop.top -n index.ndx -po equil_npt2_gpu_holo_0.mdp -o equil_npt2_gpu_holo_0.tpr -maxwarn 3
+mpiexec gmx_mpi mdrun -deffnm equil_npt2_gpu_holo_0 -ntomp 12
+
+gromacs-2021.1/bin/gmx grompp -f complex_unequ_0_prep.mdp -c equil_npt2_gpu_holo_0.gro -t equil_npt2_gpu_holo_0.cpt -p newtop.top -n index.ndx -po complex_unequ_0.mdp -o complex_unequ_0.tpr -maxwarn 3
+mpiexec gmx_mpi mdrun -deffnm complex_unequ_0 -ntomp 12
+
+rm *.out.*

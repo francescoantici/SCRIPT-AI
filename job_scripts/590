@@ -1,0 +1,16 @@
+#!/bin/bash
+#PJM -L "node=1"               
+#PJM -L "rscgrp=small"         
+#PJM -L "elapse=00:30:00"         
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q== 
+#PJM -S                        
+
+#export OMP_NUM_THREADS=12      
+
+# execute job
+export VENVDIR=venv
+#python3 -m venv ${VENVDIR}
+source ${VENVDIR}/bin/activate
+
+
+python run_V100.py

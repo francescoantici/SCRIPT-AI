@@ -1,0 +1,38 @@
+#!/bin/bash
+#PBS -N multi-mpi
+#PBS -l select=2:ncpus=128:mpiprocs=128
+#PBS -l walltime=04:00:00
+#PBS -q main
+#PBS -A <project_code>
+
+# *** Job Configurables ***
+num_runs=8   # Number of concurrent MPI applications running
+ppr=32       # Processes per run
+ppn=128      # Processes per node
+
+# Load explicit module versions to preserve reproducibility
+module purge
+module load ncarenv/23.09 intel/2024.0.2 cray-mpich/8.1.27
+
+# Define driver function to set up and start model runs
+function run_model {
+    ni=$((ppr * ($1 - 1) / ppn))    # Index of node to use
+    sc=$((ppr * ($1 - 1) % ppn))    # Starting core of range to bind to
+    ec=$((sc + ppr - 1))            # Ending core of range to bind to
+
+    mkdir run-$1; cd run-$1         # Create unique directory for each run
+    ln -s ../model .                # Reuse same executable via symbolic linking
+    mpiexec -host ${nodes[$ni]} -n $ppr --cpu-bind list:$sc-$ec ./model &> outerr.log
+    cd ../
+}
+
+# Store node list in a bash array
+nodes=( $(uniq $PBS_NODEFILE) )
+
+# Start our independent runs as background processes
+for run in $(seq $num_runs); do
+    run_model $run &
+done
+
+# Block job exit until all processes are finished
+wait

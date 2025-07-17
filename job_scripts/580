@@ -1,0 +1,42 @@
+#!/bin/bash -x
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=00:30:00"
+#PJM -L "node=2"
+#PJM --mpi "proc=8"
+#PJM --mpi "max-proc-per-node=4"
+#PJM --llio stripe-count=24
+#PJM --llio sharedtmp-size=10Gi
+#PJM --llio localtmp-size=30Gi
+#PJM -j
+#PJM -S
+
+
+PROF="fapp -C -d fappd -Icpupa -Hevent=statistics"
+MPI="mpirun -stdout-proc ìstdout -stderr-proc ìstderr -mca mpi_print_stats 2"
+PYTHON="python3"
+SCRIPT="train_mdcnnae_modelpar_llio.py"
+PARAM="param_train_mdcnnae_llio.toml"
+CACHE_2ND_LAYER=$PJM_JOBDIR
+
+
+# Transfer to cache area of 2nd layer storage
+time llio_transfer ${CACHE_2ND_LAYER}/python.tar
+time llio_transfer ${CACHE_2ND_LAYER}/stgin.sh
+time llio_transfer ${CACHE_2ND_LAYER}/stgout.sh
+
+
+# Stage-in
+time $MPI sh ${CACHE_2ND_LAYER}/stgin.sh
+
+source pytorch_setting_llio.sh
+
+# Main calculation
+time ${PROF} ${MPI} ${PYTHON} ${SCRIPT} ${PARAM}
+
+# Stage-out
+mkdir -p train_mdcnnae
+mkdir -p train_mdcnnae
+time $MPI sh ${CACHE_2ND_LAYER}/stgout.sh
+
+# Clean up 2nd-layer filesystem cache
+time llio_transfer --purge ${CACHE_2ND_LAYER}/python.tar

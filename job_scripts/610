@@ -1,0 +1,16 @@
+#!/bin/bash -l
+#PJM -L "node=1"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=24:00:00"
+#PJM -N "gmx-livid-14"
+#PJM -L "freq=2200,eco_state=2"
+#PJM --mpi "proc=4"
+#PJM -s
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==:/RAvG7tRc8R3QSe+OEfBL9Q==
+
+export OMP_NUM_THREADS=12
+
+export RUNNER=gmxrunner.py
+export GMX=gmx_mpi
+
+python $RUNNER config.yml

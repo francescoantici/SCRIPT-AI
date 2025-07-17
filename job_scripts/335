@@ -1,0 +1,13 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_vmem=5G
+
+module load comsol
+
+comsol batch -np auto \
+             -tmpdir "${TMPDIR}" \
+             -inputfile inputfile \
+             -outputfile outputfile \
+             -study study001

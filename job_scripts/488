@@ -1,0 +1,37 @@
+#!/bin/bash
+#PJM -N FFB-CALLAP-KERNEL
+#PJM --rsc-list "rscgrp=small"
+#PJM --rsc-list "elapse=00:10:00"
+#PJM --mpi "max-proc-per-node=1"
+#PJM --rsc-list "node=1"
+#PJM -j
+#PJM -S
+
+module list
+set -x
+date
+hostname
+
+TMPDIR=${HOME}/tmp/check_FFB-CALLAP
+mkdir -p ${TMPDIR}
+cd ${TMPDIR}/
+if [ $? != 0 ] ; then echo '@@@ Directory error @@@'; exit; fi
+rm *.o a.out
+
+SRC_DIR=${HOME}/fs2020_kernels/src/FFB.callap_kernel2.20160805
+cp -rp ${SRC_DIR}/* ./
+gunzip data_file_ELEM1.gz
+
+OPTIMIZE="-Kfast,openmp,ocl -Icommon/include "
+FOPTIMIZE="${OPTIMIZE} -Cpp -fw "
+COPTIMIZE="${OPTIMIZE} -DDISABLE_VALIDATION "
+
+frt -c ${FOPTIMIZE}  main.F
+frt -c ${FOPTIMIZE}  sub_data_io.F
+frt -c ${FOPTIMIZE}  callap_kernel2.F
+fcc -c ${COPTIMIZE} common/src/report.c
+frt ${FOPTIMIZE} main.o callap_kernel2.o sub_data_io.o report.o
+
+export OMP_NUM_THREADS=12
+time ./a.out
+exit

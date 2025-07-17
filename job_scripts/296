@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 2
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=4G
+
+module load miniforge
+mamba activate stacks_env
+
+denovo_map.pl -T ${NSLOTS} -M 4 -n 4 -o ./stacks/ \
+              --samples ./samples --popmap ./popmaps/popmap

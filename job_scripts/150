@@ -1,0 +1,8 @@
+#PBS -l select=2:ncpus=128:mpiprocs=128:model=mil_ait 
+#PBS -l walltime=8:00:00 
+#PBS -q normal 
+module use -a /nasa/modulefiles/testing 
+module load mpi-hpe/mpt
+module load comp-intel/2023.2.1 
+cd $PBS_O_WORKDIR 
+mpiexec -np 256 ./a.out

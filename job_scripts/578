@@ -1,0 +1,68 @@
+#!/bin/bash
+#PJM -L "node=2"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=0:10:00"
+#PJM --mpi "proc=2"
+
+TARDIR='shards/'
+EXECFILE=train_mpi_with_wds.py
+TIMM_PATH='timm/'
+PYTORCH_PATH='site-packages/'
+PRETRAINED_PATH='tiny_facebook.pth'
+PYTORCHILB_TAR=pytorch_tarfile.tar.gz
+
+llio_transfer $PYTORCHLIB_TAR
+llio_transfer $EXECFILE
+llio_transfer $PRETRAINED_PATH
+. pytorch_untar.sh ${PJM_LOCALTMP}
+
+
+echo ${PJM_LOCALTMP}
+ls ${PJM_LOCALTMP}
+exit 0
+
+export PATHbin:$PATH
+export CPATHinclude:$CPATH
+export LIBRARY_PATHlib:$LIBRARY_PATH
+export LD_LIBRARY_PATHlib:$LD_LIBRARY_PATH
+
+export FLIB_CNTL_BARRIER_ERR=FALSE
+export LD_PRELOAD=libpmix.so 
+
+export NUM_PROC=$PJM_MPI_PROC
+
+export OMP_NUM_THREADS=48
+
+
+mpirun -n $NUM_PROC python $EXECFILE ./ \
+    --pretrained-path $PRETRAINED_PATH \
+    --dataset imagenet1k \
+    --num-classes 1000 \
+    --model vit_deit_tiny_patch16_224 \
+    --input-size 3 224 224 \
+    --opt sgd \
+    --batch-size 128 \
+    --epochs 100\
+    --cooldown-epochs 0 \
+    --lr 0.01 \
+    --sched cosine \
+    --warmup-epochs 5 \
+    --weight-decay 0.0001 \
+    --smoothing 0.1 \
+    --aa rand-m9-mstd0.5-inc1 \
+    --repeated-aug \
+    --mixup 0.8 \
+    --cutmix 1.0 \
+    --output output \
+    --dist-backend mpi \
+    --experiment fugaku_shard_amp_n2_p2_lbs128_1 \
+    --project-name deit_tiny_finetuning_imnet_verification \
+    --webdataset \
+    --trainshards $TARDIR'imagenet1k_train_{000000..001023}.tar' \
+    --evalshards $TARDIR'imagenet1k_eval_{000000..000127}.tar' \
+    --log-wandb \
+    --native-amp \
+    -j 0
+llio_transfer --purge $EXECFILE
+llio_transfer --purge $PRETRAINED_PATH
+llio_transfer --purge $PYTORCHLIB_TAR

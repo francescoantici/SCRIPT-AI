@@ -1,0 +1,15 @@
+#!/bin/bash
+#PBS -l walltime=2:00:00
+#PBS -lselect=1:ncpus=32:mem=100gb:writabletmp=true
+#PBS -N starccm_example
+
+module load STAR-CCM+/19.04.007-r8
+export CDLMD_LICENSE_FILE=<Your license server>
+
+export I_MPI_HYDRA_BOOTSTRAP="rsh"
+export I_MPI_HYDRA_BOOTSTRAP_EXEC="/opt/pbs/bin/pbs_tmrsh"
+export I_MPI_HYDRA_BRANCH_COUNT=0
+
+cd $PBS_O_WORKDIR
+
+starccm+ -mpi intel -mpiflags "-v6" -np 32 -batch airfoil_bl.sim -machinefile $PBS_NODEFILE

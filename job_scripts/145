@@ -1,0 +1,34 @@
+#!/bin/csh -x
+##This script test different conda environments running on Broadwell Nodes
+#PBS -l select=1:ncpus=16:model=bro
+#PBS -l site=static_broadwell
+#PBS -q devel
+#PBS -l walltime=02:00:00
+#PBS -j oe
+#PBS -N model_bro-check
+#PBS -W group_list=n1853
+
+
+#load analytix modules
+module use -a /swbuild/analytix/tools/modulefiles
+module load miniconda3/v4
+
+
+#activate tf2_9 tensorflow conda environment
+source /swbuild/analytix/tools/miniconda3_220407/bin/activate.csh tf2_9
+
+
+##This script trains a neural network model on MNIST characters
+cd /home7/analytix/examples/mnist/src/main/python
+echo "  " 
+echo "  " 
+echo "tensorflow mnist test"
+echo "  " 
+echo "  " 
+python3 mnist.py
+echo "  " 
+echo "  " 
+
+
+#exit environment
+conda deactivate

@@ -1,0 +1,10 @@
+#!/bin/bash
+#$ -cwd                 # Set the working directory for the job to the current directory
+#$ -j y
+#$ -pe parallel 96      # Request 96 cores/2 ddy nodes
+#$ -l infiniband=ddy-i  # Choose infiniband island (ddy-i)
+#$ -l h_rt=240:0:0      # Request 240 hours runtime
+
+module load intelmpi
+
+mpirun -np $NSLOTS ./code

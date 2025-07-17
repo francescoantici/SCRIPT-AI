@@ -1,0 +1,22 @@
+#!/bin/sh
+#PJM -L  "node=32"                         
+#PJM -L  "rscgrp=small"                    
+#PJM -L  "elapse=50:00:00"                 
+#PJM -S                                    
+#PJM --llio localtmp-size=80Gi
+#PJM --mpi "max-proc-per-node=1"
+
+echo "script checkpoint start"
+date
+
+cd pytorch/scripts/fujitsu
+mpirun -np 32 bash testttt.sh 
+mpirun -np 32 bash staging.sh 
+
+echo "script checkpoint 1"
+date
+
+cd /partition
+bash scripts/cifar100_WRN/WRN_32_local_2_top_gbs1024.sh
+
+echo "script checkpoint end"

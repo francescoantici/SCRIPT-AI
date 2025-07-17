@@ -1,0 +1,14 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 2
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load jellyfish
+
+jellyfish count -t ${NSLOTS} \
+                -m 16 \
+                -s 10M \
+                -C \
+                -o 16mer.jf < ERR458495.fastq

@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 12
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load miniforge
+mamba activate freebayes_env
+
+freebayes-parallel <(fasta_generate_regions.py <fastafile> <region size>) \
+${NSLOTS} -f <fastafile> <bamfile> > <output>

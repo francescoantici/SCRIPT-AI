@@ -1,0 +1,19 @@
+#!/bin/bash
+#PJM -L "rscgrp=small"
+#PJM -L "node=16"
+#PJM --mpi "proc=16,max-proc-per-node=1"
+#PJM -L "elapse=9:00:00"
+#PJM -L freq=2200,eco_state=2
+#PJM -j
+
+module switch lang/tcsds-1.2.39
+
+export OMP_NUM_THREADS=48
+export OMP_STACKSIZE=1G
+
+#------- Program execution -------#
+mkinp_bindsv1.py < gcr_100045_1_2_vina.ajf > gcr_100045_1_2_vina.inp
+mpiexec -stdin gcr_100045_1_2_vina.inp -stdout-proc gcr_100045_1_2_vina_16n-1p-48t.log -stderr-proc gcr_100045_1_2_vina_16n-1p-48t.err abinitmp_smp
+mv -f gcr_100045_1_2_vina_16n-1p-48t.log.1.0 gcr_100045_1_2_vina_16n-1p-48t.log
+cat gcr_100045_1_2_vina_16n-1p-48t.err.1.* > gcr_100045_1_2_vina_16n-1p-48t.err 2>/dev/null
+rm -f gcr_100045_1_2_vina_16n-1p-48t.err.1.*

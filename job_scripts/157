@@ -1,0 +1,5 @@
+#PBS -lselect=12:ncpus=20:mpiprocs=20:model=ivy
+#PBS -q normal
+module load comp-intel/2020.4.304 mpi-hpe/mpt
+cd $PBS_O_WORKDIR
+mpiexec -np 240 ./a.out

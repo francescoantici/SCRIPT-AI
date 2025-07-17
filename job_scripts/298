@@ -1,0 +1,25 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 2
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load subread
+
+# Genome indexing
+# Build a base-space index (default). You can provide a list of FASTA files or
+# a single FASTA file including all the reference sequences. The files can be
+# gzipped.
+
+subread-buildindex -o my index chr1.fa chr2.fa ...
+
+# Genome alignment
+# Map single-end genomic DNA sequencing reads matching threads to ${NSLOTS}
+# (only uniquely mapped reads are reported):
+
+subread-align -t 1 \
+              -T ${NSLOTS} \
+              -i my index \
+              -r reads.txt.gz \
+              -o subread results.bam

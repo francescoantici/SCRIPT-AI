@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+#PJM -L "rscgrp=large"
+#PJM -L elapse=24:00:00
+#PJM -L "node=1200"
+#PJM --mpi "proc=1200"
+#PJM -j
+#PJM -S
+#PJM -o logs/%n.%j.stdout
+#PJM -e logs/%n.%j.stderr
+#PJM --spath logs/%n.%j.stat
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+##PJM --llio sharedtmp-size=80Gi
+
+source ./venv/bin/activate
+
+export NUM_GPUS_PER_NODE=0
+export TOKENIZERS_PARALLELISM=true
+export PL_TORCH_DISTRIBUTED_BACKEND=MPI
+export WANDB_MODE="online"
+
+OMP_NUM_THREADS=48 mpirun \
+    -x TOKENIZERS_PARALLELISM \
+    -x NUM_GPUS_PER_NODE \
+    -x PL_TORCH_DISTRIBUTED_BACKEND \
+    -x WANDB_MODE \
+    python3 -m langmo.pretraining pretrain.yaml
+

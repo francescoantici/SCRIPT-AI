@@ -1,0 +1,6 @@
+#!/bin/bash
+#SBATCH --job-name=preprocess
+#SBATCH --cpus-per-task=24
+#SBATCH --partition=compute  # Adjust based on your system
+
+srun python preprocess.py --root-dir /home/datasets --feat-type mfcc --exp-dir ./exp --num-cluster 100

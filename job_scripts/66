@@ -1,0 +1,11 @@
+#BSUB -J second_job
+#BSUB -e "second_job.stderr.\%J"
+#BSUB -o "second_job.stdout.\%J"
+#BSUB -q "normal"
+#BSUB -R "affinity[core]"
+#BSUB -M "40"
+#BSUB -R "rusage[mem=40]"
+#BSUB -w "done (first_job)"
+#BSUB -x
+
+echo -n "Job second_job started: "; date

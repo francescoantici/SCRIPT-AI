@@ -1,0 +1,14 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load bcl2fastq2
+
+bcl2fastq --runfolder-dir <runfolder_dir> \
+          --output-dir <output_dir> \
+          --processing-threads ${NSLOTS} \
+          --loading-threads 1 \
+          --writing-threads 1

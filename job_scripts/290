@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load sra-tools
+
+# Produces two (--split-files) fasta files (--fasta) with 60 bases
+# per line ("60" included after --fasta).
+fastq-dump --split-files --fasta 60 input-file

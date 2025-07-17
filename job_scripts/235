@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+apptainer run \
+    /path/to/busco_v5.8.2_cv1.sif \
+        busco -i [SEQUENCE_FILE] \
+        -m [MODE] \
+        [OTHER OPTIONS]

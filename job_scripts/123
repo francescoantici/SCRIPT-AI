@@ -1,0 +1,16 @@
+#!/bin/bash -l
+#SBATCH --job-name=mpi-job          # Job name
+#SBATCH --time=1:0:0                # Maximum runtime (1 hour)
+#SBATCH --nodes=1                   # Number of nodes requested
+#SBATCH --ntasks-per-node=4         # Number of MPI tasks per node
+#SBATCH --partition=shared            # Partition or queue name
+#SBACTH --mail-type=end             # Email notification type (end of job)
+#SBATCH --mail-user=userid@jhu.edu  # Email address for notifications
+#SBATCH --reservation=Training      # Reservation name
+
+ml intel/2022.2  # Load the Intel compiler module with version 2022.2
+
+# compile
+mpiicc -o hello-mpi.x hello-mpi.c  # Compile the MPI program from source code
+
+mpirun -np 4 ./hello-mpi.x > my-mpi.log  # Run the MPI program with 4 MPI processes, redirecting output to a log file

@@ -1,0 +1,19 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load plink
+
+plink2 --threads ${NSLOTS} \
+      --dummy 387 1112 0.03 scalar-pheno \
+      --out dummy1
+
+plink2 --threads ${NSLOTS} \
+      --pfile dummy1 \
+      --export vcf \
+      --freq \
+      --keep-autoconv \
+      --out dummy1.new_recode

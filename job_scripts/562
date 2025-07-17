@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+#SBATCH --account=nn____k
+
+#SBATCH --job-name='mem-profiling'
+#SBATCH --time=0-00:01:30
+#SBATCH --mem-per-cpu=3500M
+#SBATCH --ntasks=1
+
+# instead of this:
+# ./mybinary
+
+# we do this:
+/usr/bin/time -v ./mybinary

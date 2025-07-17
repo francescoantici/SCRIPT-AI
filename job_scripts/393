@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#FLUX: -N 2
+#FLUX: -q pdebug
+#FLUX: -S dw="""
+#FLUX: #DW jobdw type=lustre capacity=100GiB name=lustreproject
+#FLUX: #DW copy_out source=$DW_JOB_lustreproject destination=/p/lustre1/$USER/lustreproject_results
+#FLUX: """
+
+echo "Hello World!" > $DW_JOB_lustreproject/world.txt

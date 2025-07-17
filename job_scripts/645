@@ -1,0 +1,51 @@
+#!/bin/sh -x
+#PJM -L "node=1"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=72:00:00"
+#PJM -N "vasp_pl"
+#PJM -S
+#PJM --mpi "proc=48"
+#PJM --mpi "max-proc-per-node=48"
+#PJM -x PJM_LLIO_GFSCACHE=/b63OA2tCbZlyAGvjQVfoHw==
+#PJM -o std.log
+#PJM -e err.log
+
+cdir=`head -${PJM_BULKNUM} not_converged | tail -1`
+cd ../$cdir
+
+export OMP_NUM_THREADS=1
+ulimit -s unlimited
+export FLIB_FASTOMP=TRUE
+export PARALLEL=1
+
+llio_transfer vasp_std
+export VASP="mpiexec -std-proc log vasp_std"
+export MVLOG="mv log.*.0 log"
+
+
+sleep 1
+$VASP 
+sleep 1
+$MVLOG
+sleep 1
+i=1
+
+while [ -n "`grep 2.F= OSZICAR`" ] ; do
+    if [ $i -gt 30 ] ;then
+        echo "Too many repeat" >> std.out
+        exit 1
+    fi
+    echo "repeat $i" >> std.out
+    mv POSCAR POSCAR_$((i-1))
+    mv OUTCAR OUTCAR_$((i-1))
+    mv CONTCAR POSCAR
+    mv log log_$((i-1))
+    sleep 1
+    $VASP 
+    sleep 1
+    $MVLOG
+    sleep 1
+    i=$((i+1))
+done
+
+rm WAVECAR

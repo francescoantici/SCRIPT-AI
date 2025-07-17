@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+#SBATCH --job-name=slurm
+#SBATCH --account=nn9999k
+#SBATCH --nodes=128
+#SBATCH --ntasks-per-node=1
+#SBATCH --time=0:0:5
+
+import os
+
+os.system('srun hostname')

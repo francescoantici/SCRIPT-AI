@@ -1,0 +1,20 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=4G
+
+module load miniforge
+mamba activate wtdbg2_env
+
+# Overlap and layout the reads
+wtdbg2 -i assembly.fa.gz \
+       -g 300M \
+       -o outdir \
+       -t ${NSLOTS}
+
+# Derive consensus sequence for the contigs
+wtpoa-cns -i assembly.ctg.lay.gz \
+          -o outdir \
+          -t ${NSLOTS}

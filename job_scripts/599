@@ -1,0 +1,18 @@
+#!/bin/bash
+#PJM -L elapse=10:00:00
+#PJM -L "node=3x2x24:torus:strict-io"
+#PJM -L "freq=2200"
+#PJM -L "throttling_state=0"
+#PJM -L "issue_state=0"
+#PJM -L "ex_pipe_state=0"
+#PJM -L "eco_state=0"
+#PJM -L "retention_state=0"
+#PJM --llio localtmp-size=80Gi
+#PJM --mpi "proc=1"
+#PJM --mpi "max-proc-per-node=1"
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==:/RAvG7tRc8R3QSe+OEfBL9Q==:/b63OA2tCbZlyAGvjQVfoHw==:/ht43Mn2TVeHmt3yReuCS6w==
+#PJM -j
+#PJM -S
+
+mpirun -np 144 -std-proc "stdproc" \
+	bash 30b_pp24_tp3_dp2_pytorch1.13_interleaved_inner.sh

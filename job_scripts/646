@@ -1,0 +1,15 @@
+#!/bin/bash
+#------- pjsub option -------#
+#PJM -L "rscgrp=small"
+#PJM -L "node=192"
+#PJM --mpi "proc=192,max-proc-per-node=1"
+#PJM -L "elapse=6:00:00"
+#PJM -j
+
+module switch lang/tcsds-1.2.40
+
+export OMP_NUM_THREADS=48
+export OMP_STACKSIZE=1024M
+
+#------- Program execution -------#
+mpiexec -stdin ./crisp-100-200ns-157000ps.ajf -stdout-proc ./crisp-100-200ns-157000ps.log -stderr-proc ./crisp-100-200ns-157000ps.err abinitmp_smp

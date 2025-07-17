@@ -1,0 +1,16 @@
+#!/glade/u/apps/opt/conda/envs/npl/bin/python
+#PBS -N hello_pbs
+#PBS -A <project_code>
+#PBS -j oe
+#PBS -k eod
+#PBS -q main
+#PBS -l walltime=00:05:00
+#PBS -l select=1:ncpus=128:mpiprocs=128
+
+import sys
+print("Hello, world!!\n\n")
+
+print("Python version:")
+print(sys.version)
+print("Version info:")
+print(sys.version_info)

@@ -1,0 +1,19 @@
+#!/bin/bash
+## Introduction for writing a PBS script
+## The next lines specify what resources you are requesting.
+## Starting with 1 node, 8 processors per node, and 2 hours of walltime. 
+## Setup your qsub flags
+#PBS -l walltime=2:00:00
+#PBS -l nodes=1:ppn=8
+#PBS -N my_job
+#PBS -M myemailaddress@unm.edu
+#PBS -m bae
+## All other instructions to TORQUE are here as well and are preceded by a single #, note that normal comments can also be preceded by a single #
+## Specify the shell to be bash
+#PBS -S /bin/bash
+## Change to directory the PBS script was submitted from
+cd $PBS_O_WORKDIR
+## Print out a hello message indicating the host this is running on
+export THIS_HOST=$(hostname)
+echo Hello World from host $THIS_HOST
+####################################################

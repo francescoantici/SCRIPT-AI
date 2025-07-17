@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+
+## Setup your qsub flags here requesting resources.
+#PBS -l walltime=10:00:00
+#PBS -l nodes=1:ppn=8
+#PBS -N my_orca_job
+#PBS -M <YourNetID>@unm.edu
+#PBS -m bae
+
+## Change to the submission directory 
+## and load the Orca software module
+cd $PBS_O_WORKDIR
+module load orca/4.0.1
+
+## Set your input file for Orca
+input_file=my_orca_input.inp
+
+# Orca needs the full path when running in parallel
+full_orca_path=$(which orca)
+
+# Run Orca
+$full_orca_path $input_file

@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load sra-tools
+
+# Sets the maximum download file size to 200GB and downloads the
+# files listed in the kart.
+prefetch -X 200G input-file.krt

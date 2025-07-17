@@ -1,0 +1,11 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load ffmpeg
+
+# Convert image(s) to video with 24 frames per second
+ffmpeg -framerate 24 -i image1.png image2.png output.mp4

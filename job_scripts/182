@@ -1,0 +1,10 @@
+#!/bin/bash
+#$ -cwd           # Set the working directory for the job to the current directory
+#$ -j y           # Join stdout and stderr
+#$ -pe smp 4      # Request 4 CPU cores
+#$ -l h_rt=1:0:0  # Request 1 hour runtime
+#$ -l h_vmem=1G   # Request 1GB RAM / core, i.e. 4GB total
+
+module load example
+
+./code --threads ${NSLOTS}

@@ -1,0 +1,298 @@
+#!/bin/sh
+#PJM -L "node=16"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=3:30:00"
+#PJM --mpi "proc=64"
+#PJM --mpi "max-proc-per-node=4"
+#PJM -s
+##PJM -j
+#
+#PJM -x PJM_LLIO_GFSCACHE=/ht43Mn2TVeHmt3yReuCS6w==
+#PJM --llio localtmp-size=4Gi
+#PJM --llio sharedtmp-size=64Gi
+#PJM --llio async-close=on
+#
+
+module purge
+module load lang/tcsds-1.2.40
+
+export XOS_MMM_L_ARENA_FREE=2
+export XOS_MMM_L_PAGING_POLICY=demand:demand:demand
+export XOS_MMM_L_ARENA_LOCK_TYPE=0
+export OMP_WAIT_POLICY=active
+export FLIB_BARRIER=HARD
+
+export PLE_MPI_STD_EMPTYFILE=off  
+
+#--------------------------------------------------------
+#--- Common Parameters
+#--------------------------------------------------------
+
+nodes=${PJM_NODE}
+procs=${PJM_MPI_PROC}
+
+
+kappa="013840"
+iconf=242
+iconf03=242
+gconf_basename=RC32x32_B1830Kud013840Ks013840C1761-1-003915.lime.gfix
+
+t_src=0
+t_src02=00
+
+L=32
+T=32
+
+bc=pbc
+
+source_dir=L${L}
+weight_dir=weights
+
+logdir=./out.execall_${iconf03}_K${kappa}_tsrc${t_src02}_p1.${PJM_JOBID}
+
+#--------------------------------------------------------
+#--- Solver Start
+#--------------------------------------------------------
+
+export PARALLEL=8
+export OMP_NUM_THREADS=${PARALLEL}
+
+#--------------------------------------------------------
+#--- job body
+#--------------------------------------------------------
+
+nlevel=19
+
+params_yaml=params_su3_K${kappa}.yaml
+plain_wave_base=plainwave_L${L}
+
+if [ $bc = "pbc" ]; then
+    arg_bc=""
+else
+    arg_bc="--DBC"
+fi
+
+prop_dir_l=${PJM_SHAREDTMP}/${gconf_basename}
+
+if [ ! -d $prop_dir_l ]; then
+    mkdir -p $prop_dir_l
+fi
+
+prog1=solver.bin
+
+SECONDS=0
+SDATE=`date +"%Y/%m/%d %H:%M:%S"`
+
+llio_transfer $prog1
+
+mpiexec -std-proc ${logdir}/%r -n ${procs} \
+    ${prog1} \
+    --conf         ${gconf_fullpath}  \
+    --params.yaml  ${params_yaml}     \
+    --wave         ${plain_wave_base} \
+    --outdir       ${prop_dir_l}      \
+    --level        ${nlevel}          \
+    ${arg_bc}                         \
+    --t_src        ${t_src}
+
+
+llio_transfer --purge ${prog1}
+
+
+#--------------------------------------------------------
+#--- Contraction Start
+#--------------------------------------------------------
+
+export PARALLEL=12
+export OMP_NUM_THREADS=${PARALLEL}
+
+NPROC=${procs}
+NPEx=1
+NPEy=2
+NPEz=32
+
+if [ ${NPROC} -ne $(( ${NPEx} * ${NPEy} * ${NPEz} )) ]; then
+    echo "Error: NPROC(${N}) != NPEx(${NPEx}) * NPEy(${NPEy}) * NPEz(${NPEz})"
+    exit 1
+fi
+
+#--------------------------------------------------------
+#--- job parameters
+#--------------------------------------------------------
+
+nlevel_list=(  7  19  )
+weight_type=flat
+
+tsnk_first=6
+tsnk_last=15
+
+# 2-spinor for src
+two_spinor_src=yes
+if [ $two_spinor_src = "yes" ]; then
+    odirsrc=nrsrc
+else
+    odirsrc=relasrc
+fi
+
+
+#--------------------------------------------------------
+#--- job body
+#--------------------------------------------------------
+
+dest_dir_base=${odirsrc}
+if [ ! -d ${dest_dir_base} ]; then
+    mkdir -p ${dest_dir_base}
+fi
+if [ ! -d ${dest_dir_base}/corr ]; then
+    mkdir ${dest_dir_base}/corr
+fi
+if [ ! -d ${dest_dir_base}/nnwave ]; then
+    mkdir ${dest_dir_base}/nnwave
+fi
+
+prog2=corr.bin
+
+echo "----------------------------------------------------------------"
+echo "host:      ${HOSTNAME}"
+echo "node:      ${PJM_NODE}"
+echo "node_core: ${PJM_NODE_CORE}"
+echo "jobid:     ${PJM_JOBID}"
+echo "jobname:   ${PJM_JOBNAME}"
+echo "workdir:   ${PJM_O_WORKDIR}"
+echo "----------------------------------------------------------------"
+
+date
+
+llio_transfer ${prog2}
+
+
+###################################
+########## p = (1,0,0) ############
+###################################
+
+momentum=(  1  0  0  )
+
+#---- mpiexec
+
+for nlevel in ${nlevel_list[@]};
+do
+    echo ""
+    echo "-------- START $nlevel --------"
+    echo ""
+
+    SECONDS=0
+    SDATE=`date +"%Y/%m/%d %H:%M:%S"`
+    echo "SDATE = ${SDATE}"
+
+    mpiexec -std-proc ${logdir}/%r -n ${NPROC}                   \
+    ${prog2}                                                     \
+	--source   ${source_dir}                                 \
+	--prop     ${prop_dir_l}                                 \
+	--destdir  ${dest_dir_base}                              \
+	--level    ${nlevel}                                     \
+	--lattice  ${L},${L},${L}                                \
+	--nt       ${T}                                          \
+	--tsrc     ${t_src}                                      \
+	--t0       ${tsnk_first}                                 \
+	--t1       ${tsnk_last}                                  \
+	--2pt      yes                                           \
+	--4pt      yes                                           \
+	--outtref  yes                                           \
+	--grid     ${NPEx},${NPEy},${NPEz}                       \
+	--momentum ${momentum[0]},${momentum[1]},${momentum[2]}  \
+	--weight   ${weight_dir}/${weight_type}${nlevel}         \
+	--nrsrc    ${two_spinor_src}
+	
+    RT=$SECONDS
+    EDATE=`date +"%Y/%m/%d %H:%M:%S"`
+    echo "EDATE = ${EDATE}"
+    H=`expr ${RT} / 3600`
+    RT=`expr ${RT} % 3600`
+    M=`expr ${RT} / 60`
+    S=`expr ${RT} % 60`
+    echo "@@@ RUNTIME for nlevel=${nlevel}:  ${H}:${M}:${S}"
+    echo ""
+    
+    echo "-------- FINISHED $nlevel --------"
+    echo ""
+done
+
+# check results
+
+. check_corr_exists.sh
+retv1=$?
+
+###################################
+######## p = (0,0,0) 2pt ##########
+###################################
+
+unset nlevel_list
+unset momentum
+nlevel_list=(  1  7  19  )
+momentum=(  0  0  0  )
+
+#---- mpiexec
+
+for nlevel in ${nlevel_list[@]};
+do
+    echo ""
+    echo "-------- START $nlevel --------"
+    echo ""
+
+    SECONDS=0
+    SDATE=`date +"%Y/%m/%d %H:%M:%S"`
+    echo "SDATE = ${SDATE}"
+
+    mpiexec -std-proc ${logdir}/%r -n ${NPROC}                   \
+    ${prog2}                                                     \
+	--source   ${source_dir}                                 \
+	--prop     ${prop_dir_l}                                 \
+	--destdir  ${dest_dir_base}                              \
+	--level    ${nlevel}                                     \
+	--lattice  ${L},${L},${L}                                \
+	--nt       ${T}                                          \
+	--tsrc     ${t_src}                                      \
+	--t0       ${tsnk_first}                                 \
+	--t1       ${tsnk_last}                                  \
+	--2pt      yes                                           \
+	--4pt      no                                            \
+	--outtref  yes                                           \
+	--grid     ${NPEx},${NPEy},${NPEz}                       \
+	--momentum ${momentum[0]},${momentum[1]},${momentum[2]}  \
+	--weight   ${weight_dir}/${weight_type}${nlevel}         \
+	--nrsrc    ${two_spinor_src}
+	
+    RT=$SECONDS
+    EDATE=`date +"%Y/%m/%d %H:%M:%S"`
+    echo "EDATE = ${EDATE}"
+    H=`expr ${RT} / 3600`
+    RT=`expr ${RT} % 3600`
+    M=`expr ${RT} / 60`
+    S=`expr ${RT} % 60`
+    echo "@@@ RUNTIME for nlevel=${nlevel}:  ${H}:${M}:${S}"
+    echo ""
+    
+    echo "-------- FINISHED $nlevel --------"
+    echo ""
+done
+
+# check results (and remove propagators)
+
+. ${jobdir}/scripts/check_corr_exists_2ptonly.sh 
+retv2=$?
+
+
+
+llio_transfer --purge ${prog2}
+
+if [ $retv1 -eq 0 ] && [ $retv2 -eq 0 ]; then
+    echo "results successfully obtained!"
+else
+    echo "Warning: Some of the expected results (corr/nnwave) are missing."
+    echo "retv1 = ${retv1}, retv2 = ${retv2}"
+fi
+
+# end time
+date
+
+#EOF

@@ -1,0 +1,131 @@
+#!/bin/bash -x
+#PJM -L "rscgrp=small"
+#PJM -L "node=258"
+#PJM -L "elapse=20:00:00"
+#PJM --mpi "shape=258"
+#PJM --mpi "proc=1032"
+##PJM --mpi "max-proc-per-node=4"
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -S
+
+export FLIB_BARRIER=HARD
+export OMP_NUM_THREADS=12
+#export OMP_NUM_THREADS=1
+export PLE_MPI_STD_EMPTYFILE=off
+
+CASEDIR=.
+
+export OMP_NUM_THREADS=12
+export PLE_MPI_STD_EMPTYFILE=off
+
+
+SOLVER="../advsolid-p_omp-lsky-crackv"
+LOGSOLV=LOG1
+PRECONDITIONER=bdd-scl
+#npart=26000
+#export PRECONDITIONER=bdd-diag
+#export PRECONDITIONER=bdd-scl
+export TOTAL_TIME_STEP=200
+export RESOUT_INTERVAL=200
+export RESTART_STEP=3000
+export START_STEP=$((${RESTART_STEP} + 1))
+
+export LANG=C
+
+echo "${START_STEP} / ${TOTAL_TIME_STEP} : TIMER job start"
+date
+
+echo "${START_STEP} / ${TOTAL_TIME_STEP} : TIMER solver start"
+date
+
+#                         -time-result --disp --accel --estr-n .
+#                         -time-step ${TOTAL_TIME_STEP} --dt 0.01 --output-interval 1 --resout-interval 12  \
+#                         -use-time-resin 8 \
+#                         -solver ${PRECONDITIONER} --use-local-crd \
+mpiexec -stdout-proc out -stderr-proc miya%j.err \
+ ${SOLVER}               -dynamic -file-para \
+                         -ep -use-extended-material -cg-norm-update -newton-tol 1.e-4 -newton-max 10 \
+                         -solver ${PRECONDITIONER} \
+                         -pLU para --nproc 72 -on-cglog \
+                         -cg-tol 1e-2 \
+                         -time-step ${TOTAL_TIME_STEP} --dt 0.01 \
+                         --output-interval 1 \
+                         --resout-interval ${RESOUT_INTERVAL} \
+                         -condition-id 2 \
+                         -depend-bc-adv time_history_acc_1_2mag_210824.adv \
+                         -damping \
+			 -use-time-resin ${RESTART_STEP} \
+                         -time-result --disp --accel --estr-n --stra-n --eqplstra-n --dbgv --str-n .
+
+
+date
+echo "${START_STEP} / ${TOTAL_TIME_STEP} : TIMER solver end"
+
+echo "${START_STEP} / ${TOTAL_TIME_STEP} : TIMER pickup_minmax start"
+date
+
+. ./pickup_minmax.sh
+
+date
+echo "${START_STEP} / ${TOTAL_TIME_STEP} : TIMER pickup_minmax end"
+
+
+export OMP_NUM_THREADS=1
+export TIME_STEPS=${TOTAL_TIME_STEP}
+if [ ${START_STEP} -eq 1 ]; then
+    export START_STEP=0
+    export TIME_STEPS=$(( ${TOTAL_TIME_STEP} + 1 ))
+fi
+
+echo "${START_STEP} / ${TOTAL_TIME_STEP} : TIMER wovis start"
+date
+
+###################################################################
+# Visualization of crack
+. ./wovis-cracv.sh
+###################################################################
+
+# estr 0-200MPa / deform x1.0 / watch point
+ESTR_MAX=200
+DEFORM_FACTOR=1
+WATCH_OPTS=" -usewatch -watchaccel "
+
+# estr 0-50MPa / deform x5.0
+ESTR_MAX=50
+DEFORM_FACTOR=100
+#WATCH_OPTS=""
+WATCH_OPTS=" -usewatch -watchaccel "
+KOVIS=../kovis
+PPMNAMEADD=""
+. ./wovis-1f1nobinary.sh
+KOVIS=../kovispstra
+PPMNAMEADD="PSTRA"
+ESTR_MAX=0.01
+. ./wovis-1f1nobinary.sh
+
+# estr 0-50MPa / deform x10.0
+ESTR_MAX=50
+DEFORM_FACTOR=10
+WATCH_OPTS=""
+#. ./wovis-1f1nobinary.sh
+
+if [ ! -d CSV${START_STEP} ]
+then
+    mkdir CSV${START_STEP}
+fi
+if [ ! -d FILELIST${START_STEP} ]
+then
+    mkdir FILELIST${START_STEP}
+fi
+mv *.csv CSV${START_STEP}/.
+mv filelist* FILELIST${START_STEP}/.
+mv *.pnm dynapnm${START_STEP}/.
+
+date
+echo "${START_STEP} / ${TOTAL_TIME_STEP} : TIMER wovis end"
+
+#tar is prohibited on fugaku compute node.
+#remove result directory
+if compgen -G "./watch*.csv" > /dev/null ; then
+    rm -r result
+fi

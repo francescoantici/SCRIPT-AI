@@ -1,0 +1,16 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load samtools bcftools
+
+samtools view -@ ${NSLOTS} -b -S -o genome_reads_aligned.bam \
+    genome_reads_aligned.sam
+
+samtools sort -@ ${NSLOTS} genome_reads_aligned.bam \
+    > genome_reads_aligned.sorted.bam
+
+samtools index genome_reads_aligned.sorted.bam

@@ -1,0 +1,30 @@
+#!/bin/sh
+#PJM -N X_Ab000000000000
+#PJM -L node=12x6x16:torus
+###PJM -L freq=2200
+#PJM -L node-mem=28Gi
+#PJM -L elapse=01:30:00
+#PJM --mpi proc=4608
+#PJM --mpi rank-map-bynode
+#PJM -L retention_state=0
+#PJM -o WKDIR/Log.%j.stdout
+#PJM -e WKDIR/Log.%j.stderr
+#PJM -S 
+#PJM --spath WKDIR/Log.%j.stats
+
+export NWPDIR=Realtime/ExpLf1km_LFM2403/nwp
+export NWP_NUM_NODES=1152
+export PLE_MPI_STD_EMPTYFILE=off
+export FLIB_USE_STOPCODE=1
+export FLIB_BARRIER=HARD
+export FLIB_CNTL_BARRIER_ERR=FALSE
+export OMPI_MCA_coll_base_reduce_commute_safe=1
+export OMPI_MCA_mpi_preconnect_mpi=1
+
+sh data_check.sh
+RC=$?
+if [ ${RC} -ne 0 ]; then
+  exit 1
+fi
+
+. Sh/Lf/Lf03

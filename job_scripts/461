@@ -1,0 +1,214 @@
+#!/bin/bash
+#PJM -L "node=1"
+#PJM -L "rscunit=rscunit_ft01"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=2:00:00"
+#PJM --llio cn-cache-size=4096Mi
+#PJM --llio localtmp-size=80Gi
+#PJM -x PJM_LLIO_GFSCACHE='/jG5wuqbRoLbDgsh4U8DNjg==:/fSjXVWZ9gBglklF02ESwoQ==:/RAvG7tRc8R3QSe+OEfBL9Q==:/b63OA2tCbZlyAGvjQVfoHw==:/ht43Mn2TVeHmt3yReuCS6w=='
+#PJM --mpi max-proc-per-node=4
+#PJM -L freq=2200
+#PJM -L throttling_state=0
+#PJM -L issue_state=0
+#PJM -L ex_pipe_state=0
+#PJM -L eco_state=0
+#PJM -L retention_state=0
+#PJM -j
+
+set +e	#commands returning non-zero exit codes will not cause the entire script to fail
+set -x
+if ! lscpu | grep 'sve' >/dev/null 2>&1; then echo "ERR: not on login node"; exit 1; fi
+
+function try_to_build() {
+	ARGS=(${@})
+	echo -e "\n\nBUILDING: ${ARGS[@]}"
+	#try first in ramdisk and hope its big enough
+	export TMP=/worktmp ; export TMPDIR=/worktmp ;
+	${ARGS[@]} && return ;
+	#if not work, then llio disk
+	export TMP=/local ; export TMPDIR=/local ;
+	${ARGS[@]} || cp -r ${TMP}/$(whoami)/spack-stage ${HOME}/
+}
+
+SPACKVERS="0.22.2"
+CLANGVERS="19.1.4"
+CLANGSVERS="$(echo ${CLANGVERS} | sed -e 's@\..*@@')"
+CLANGCOMP="clang@${CLANGVERS}"
+
+if [[ -z "${SPACK_PATH}" ]]; then
+	FIRST_GROUP="$(/bin/groups | cut -d' ' -f1)"
+	[ -d /RAvG7tRc8R3QSe+OEfBL9Q== ] && SPACK_PATH="$(/bin/find /vol*/data/${FIRST_GROUP}/ -maxdepth 1 -name $(whoami) | head -1)/.spack-llvm-v${CLANGVERS}" || SPACK_PATH="${HOME}/.spack-llvm-v${CLANGVERS}"
+fi
+SPACK_PATH="$(readlink -f "${SPACK_PATH}")"
+SPACK_REPOS="${SPACK_PATH}/var/spack/repos"
+
+export SPACK_USER_CONFIG_PATH="${SPACK_PATH}/user_config"
+export SPACK_SYSTEM_CONFIG_PATH="${SPACK_PATH}/sys_config"
+export SPACK_USER_CACHE_PATH="${SPACK_PATH}/user_cache"
+export TMP="${PJM_LOCALTMP:=/tmp}"
+export TMPDIR="${PJM_LOCALTMP}"
+
+#XXX: on compute node
+[ -e "${SPACK_PATH}" ] && { echo "wont rm ${SPACK_PATH}; please do it yourself" ; exit 1; }
+mkdir -p "${SPACK_USER_CONFIG_PATH}/linux" || exit 1
+mkdir -p "${SPACK_SYSTEM_CONFIG_PATH}" || exit 1
+mkdir -p "${SPACK_USER_CACHE_PATH}" || exit 1
+cd "${TMPDIR}" || exit 1
+wget https://github.com/spack/spack/archive/refs/tags/v${SPACKVERS}.tar.gz && tar xzf v${SPACKVERS}.tar.gz && mv "spack-${SPACKVERS}"/* "${SPACK_PATH}"/ || exit 1
+
+. "${SPACK_PATH}/share/spack/setup-env.sh"
+spack compilers
+
+# pin the spack instance to exactly this isolated config
+sed -i -e "/^export _sp_initializing/a export SPACK_USER_CONFIG_PATH=\"${SPACK_PATH}/user_config\"\nexport SPACK_SYSTEM_CONFIG_PATH=\"${SPACK_PATH}/sys_config\"\nexport SPACK_USER_CACHE_PATH=\"${SPACK_PATH}/user_cache\"" "${SPACK_PATH}/share/spack/setup-env.sh"
+
+cat <<'EOF' > ${SPACK_USER_CONFIG_PATH}/linux/packages.yaml
+packages:
+  all:
+    compiler: [clang]
+    providers:
+      mpi: [fujitsu-mpi]
+      blas: [fujitsu-ssl2, openblas]
+      lapack: [fujitsu-ssl2, openblas]
+      scalapack: [fujitsu-ssl2, netlib-scalapack]
+    permissions:
+      write: group
+  htslib:
+    version: [1.12]
+  openssh:
+    permissions:
+      write: user
+  mpi:
+    buildable: False
+  fujitsu-mpi:
+    version: [head, 4.11.1]
+    buildable: False
+    externals:
+      - spec: "fujitsu-mpi@head%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/mpi
+      - spec: "fujitsu-mpi@4.11.1%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/mpi
+  fujitsu-ssl2:
+    version: [head, 4.11.1]
+    buildable: False
+    externals:
+      - spec: "fujitsu-ssl2@head%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/ssl2
+      - spec: "fujitsu-ssl2@4.11.1%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/ssl2
+  elfutils:
+    externals:
+      - spec: "elfutils@0.186%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/crosstools/aarch64-none-linux-gnu/libc/usr
+  pmix:
+    externals:
+      - spec: "pmix@2.1.4%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/crosstools/aarch64-none-linux-gnu/libc/usr
+  hwloc:
+    externals:
+      - spec: "hwloc@2.2.0%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/crosstools/aarch64-none-linux-gnu/libc/usr
+  libevent:
+    externals:
+      - spec: "libevent@2.1.8%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/crosstools/aarch64-none-linux-gnu/libc/usr
+  papi:
+    externals:
+      - spec: "papi@5.6.0%CLANGCOMP arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT/crosstools/aarch64-none-linux-gnu/libc/usr
+  binutils:
+    externals:
+      - spec: "binutils@2.41%CLANGCOMP+gold arch=linux-rhel8-a64fx"
+        prefix: CLANGROOT
+        extra_attributes:
+          environment:
+            append_path:
+              PATH: CLANGROOT/crosstools/aarch64-none-linux-gnu
+EOF
+
+#spack compiler find
+cat <<'EOF' > ${SPACK_USER_CONFIG_PATH}/linux/compilers.yaml
+compilers:
+- compiler:
+    spec: clang@=CLANGVERS
+    paths:
+      cc: CLANGROOT/bin/clang
+      cxx: CLANGROOT/bin/clang++
+      f77: CLANGROOT/bin/flang
+      fc: CLANGROOT/bin/flang
+    flags: {}
+    operating_system: rhel8
+    target: aarch64
+    modules: []
+    environment: {}
+    extra_rpaths: []
+EOF
+
+. /home/apps/oss/llvm-v${CLANGVERS}/init.sh
+CLANGROOT="$(readlink -f "$(dirname "$(which clang)")/../")"
+sed -i -e "s@CLANGROOT@${CLANGROOT}@g" -e "s@CLANGVERS@${CLANGVERS}@g" -e "s@clang-${CLANGSVERS}@clang@g" \
+       -e "s@fc: null@fc: $(which flang)@g" -e "s@f77: null@f77: $(which flang)@g" \
+       -e "s@environment: {}@environment:\n      append_path:\n        PATH: $(dirname $(which clang))\n        LD_LIBRARY_PATH: $(dirname $(which clang))/../mpi/lib64@g" "${SPACK_USER_CONFIG_PATH}/linux/compilers.yaml"
+#XXX: for llama and others in sve256 we cannot target sve512
+sed -i -e 's@flags: {}@flags:\n      cflags: -msve-vector-bits=scalable\n      cxxflags: -msve-vector-bits=scalable\n      fflags: -msve-vector-bits=scalable@g' "${SPACK_USER_CONFIG_PATH}/linux/compilers.yaml"
+
+sed -i -e "s@CLANGROOT@${CLANGROOT}@g" -e "s#CLANGCOMP#${CLANGCOMP}#g" "${SPACK_USER_CONFIG_PATH}/linux/packages.yaml"
+sed -i -e "s@SYSTEM_PATHS = \[\(.*\)\]@SYSTEM_PATHS = [\1, \"$(readlink -f "$(dirname "$(which clang)")/../")/crosstools/aarch64-none-linux-gnu/libc/usr\"]@g" "${SPACK_PATH}/lib/spack/spack/util/environment.py"
+
+#get newer/fixed spack files
+#wget https://raw.githubusercontent.com/jdomke/spack/RIKEN_CCS_fugaku5/lib/spack/spack/util/libc.py -O workspace/spack/lib/spack/spack/util/libc.py
+for PP in fujitsu-mpi hpcg ; do
+	curl "https://raw.githubusercontent.com/spack/spack/develop/var/spack/repos/builtin/packages/${PP}/package.py" -o "${SPACK_REPOS}/builtin/packages/${PP}/package.py"
+	[ -f "${SPACK_REPOS}/local/packages/${PP}/package.py" ] && cp "${SPACK_REPOS}/builtin/packages/${PP}/package.py" "${SPACK_REPOS}/local/packages/${PP}/package.py"
+done
+for PP in hpl; do
+	curl "https://raw.githubusercontent.com/jdomke/spack/RIKEN_CCS_fugaku10/var/spack/repos/builtin/packages/${PP}/package.py" -o "${SPACK_REPOS}/builtin/packages/${PP}/package.py"
+	[ -f "${SPACK_REPOS}/local/packages/${PP}/package.py" ] && cp "${SPACK_REPOS}/builtin/packages/${PP}/package.py" "${SPACK_REPOS}/local/packages/${PP}/package.py"
+done
+for PP in fujitsu-ssl2; do
+	curl "https://raw.githubusercontent.com/jdomke/spack/RIKEN_CCS_fugaku11/var/spack/repos/builtin/packages/${PP}/package.py" -o "${SPACK_REPOS}/builtin/packages/${PP}/package.py"
+done
+
+#XXX: not taken automatically without pre-registering (stupid stack falls back to stuff from other repo) XXX: issue!!! https://github.com/spack/spack/issues/46058
+COMPPATH="$(readlink -f "$(dirname "$(which clang)")/../../")"
+for PP in fujitsu-mpi@head fujitsu-mpi@4.11.1 fujitsu-ssl2@head fujitsu-ssl2@4.11.1 elfutils@0.186 pmix@2.1.4 hwloc@2.2.0 libevent@2.1.8 papi@5.6.0 binutils@2.41; do
+	while true; do
+		try_to_build spack install --reuse --deprecated ${PP} %${CLANGCOMP}
+		#test if correct
+		if spack find -p ${PP} %${CLANGCOMP} | /bin/grep -q " ${COMPPATH}/"; then break; fi
+		spack uninstall --yes-to-all ${PP} %${CLANGCOMP}
+	done
+done
+
+#fix some known bad packages
+sed -i -e '/spec.satisfies("%fj")/i\        if spec.satisfies("%clang@19:"):\n            for f in find(self.prefix, "FindBLAS.cmake", recursive=True):\n                filter_file("_blas_openblas_lib}", "_blas_openblas_lib};FortranRuntime;FortranDecimal", f, string=True)' -e 's@%fj"):@%fj") or (spec.target == "a64fx" and spec.satisfies("%clang\@11:")):@g' ${SPACK_REPOS}/{local,builtin}/packages/cmake/package.py
+sed -i -e '/version("develop/a\    version("0.3.28", sha256="f1003466ad074e9b0c8d421a204121100b0751c96fc6fcf3d1456bd12f8a00a1")' -e '/satisfies("%fj"/i\        if self.spec.satisfies("%clang@19:"):\n            make_defs.append("LDFLAGS=-lFortranRuntime -lFortranDecimal")' ${SPACK_REPOS}/{local,builtin}/packages/openblas/package.py
+cat <<'EOF' > ${SPACK_REPOS}/builtin/packages/scorep/fugaku.patch
+diff --color -Nur scorep-8.4.old/src/tools/config/scorep_config.cpp scorep-8.4.new/src/tools/config/scorep_config.cpp
+--- scorep-8.4.old/src/tools/config/scorep_config.cpp   2024-03-15 15:42:11.898159471 +0900
++++ scorep-8.4.new/src/tools/config/scorep_config.cpp   2024-08-27 19:32:26.946194787 +0900
+@@ -1015,7 +1015,7 @@
+ static std::deque<std::string>
+ remove_system_path( const std::deque<std::string>& path_list )
+ {
+-    std::string             dlsearch_path = SCOREP_BACKEND_SYS_LIB_DLSEARCH_PATH;
++    std::string             dlsearch_path = std::string(SCOREP_BACKEND_SYS_LIB_DLSEARCH_PATH) + std::string(" /lib64 /usr/lib64");
+     std::deque<std::string> system_paths  = string_to_deque( dlsearch_path, " " );
+     std::deque<std::string> result_paths;
+
+EOF
+sed -i -e 's@spec.satisfies("^openmpi") @spec.satisfies("^openmpi") or spec.satisfies("^fujitsu-mpi") @g' -e 's@depends_on("llvm@#depends_on("llvm@g' -e '/patch("gcc10/a\    patch("fugaku.patch", when="@8.4")' -e '/satisfies("^binutils/a\            config_args.append("--with-libbfd=download")' -e '/with-libbfd-lib/d' -e '/with-libbfd-include/d' ${SPACK_REPOS}/{local,builtin}/packages/scorep/package.py
+sed -i -e '/configure_args = \["--enable-shared/a\        configure_args.append("--with-nocross-compiler-suite=clang")' ${SPACK_REPOS}/{local,builtin}/packages/cubew/package.py
+sed -i -e '/configure_args = \["--enable-shared/a\        configure_args.append("--with-nocross-compiler-suite=clang")' ${SPACK_REPOS}/{local,builtin}/packages/cubelib/package.py
+sed -i -e 's@enable-shared"]@enable-shared", "--with-compiler-suite=clang"]@g' ${SPACK_REPOS}/{local,builtin}/packages/opari2/package.py
+sed -i -e '/FileFilter/i\        CCFLAGS.extend(["-Wno-implicit-function-declaration"])' ${SPACK_REPOS}/{local,builtin}/packages/batchedblas/package.py
+sed -i -e '/append(self.define("CMAKE_C_FLAGS/a\        options.append(self.define("CMAKE_EXE_LINKER_FLAGS", "-fopenmp"))' ${SPACK_REPOS}/{local,builtin}/packages/netlib-scalapack/package.py
+sed -i -e 's@%fj"):@%fj") or spec.satisfies("%clang"):@g' -e '/elf.spec.satisfies("@1.78 %intel/i\        if self.spec.satisfies("%clang"):\n            filter_file("FALSE=1", "FALSE=1; B2_DONT_EMBED_MANIFEST=1", "tools/build/src/engine/build.sh")' ${SPACK_REPOS}/{local,builtin}/packages/boost/package.py
+sed -i -e '/version("1.17"/i\    version("1.17-cp2k", commit="6f883620f58afdeebab28039fc9cf580e76a5ec6")' -e '/requires("target=x86_64:", when="@:1")/d' -e 's@SYM=1@PLATFORM=1@g' -e '/def build/i\    def edit(self, spec, prefix):\n        cp = FileFilter("Makefile.inc")\n        cp.filter("-fdata-sections -ffunction-sections", "")\n' ${SPACK_REPOS}/{local,builtin}/packages/libxsmm/package.py
+sed -i -e 's@%apple-clang")@%apple-clang") or spec.satisfies("%clang")@g' ${SPACK_REPOS}/{local,builtin}/packages/superlu-dist/package.py
+sed -i -e '/return args/i\        args.append(self.define("CMAKE_CXX_FLAGS", "-Wno-missing-template-arg-list-after-template-kw -Wno-infinite-recursion"))' ${SPACK_REPOS}/{local,builtin}/packages/sirius/package.py
+sed -i -e '/parallel = False/d' ${SPACK_REPOS}/{local,builtin}/packages/plumed/package.py
+sed -i -e '/maintainers("jeffhammond/a\    version("7.2.3", sha256="8cb4ec065215bc0316d8e01f67f1674a572f7d0f565c52e4a327975c04ddb6eb", url="https://github.com/nwchemgit/nwchem/releases/download/v7.2.3-release/nwchem-7.2.3-release.revision-d690e065-srconly.2024-08-27.tar.bz2")' -e '/"FC=/a\                "FLANG_NEW=true",\n                "VERBOSE=1",' -e '/def install/a\        cp = FileFilter(join_path("src", "geom", "GNUmakefile"))\n        cp.filter("-fno-recursive -fno-openmp", "")' -e 's@7.2.0:7.2.2@7.2.0:7.2.3@g' -e '/def install/a\        cp = FileFilter(join_path("src", "nwpw", "nwpwlib", "ion", "ion.F"))\n        cp.filter("OMP SINGLE", "OMP MASTER")\n        cp.filter("OMP END SINGLE.*", "OMP END MASTER")' -e 's@all python gwmol"])@driver"]) #all python gwmol"])@g' ${SPACK_REPOS}/{local,builtin}/packages/nwchem/package.py
+
+echo "Setup complete, load via:"
+echo "    . \"${SPACK_PATH}/share/spack/setup-env.sh\""

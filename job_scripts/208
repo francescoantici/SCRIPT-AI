@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load phonemizer
+
+# Phonemize phrase using English (GB) dialect within the espeak backend engine
+echo 'The quick brown fox jumps over the lazy dog' \
+  | phonemizer -l en-gb -b espeak

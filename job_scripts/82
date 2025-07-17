@@ -1,0 +1,24 @@
+#!/bin/tcsh
+### Job Name
+#PBS -N mpi_gpu_job
+### Charging account
+#PBS -A <project_code>
+### Request two resource chunks, each with 4 CPUs, GPUs, MPI ranks, and 40 GB of memory
+#PBS -l select=2:ncpus=4:mpiprocs=4:ngpus=4:mem=40GB
+### Specify that the GPUs will be V100s
+#PBS -l gpu_type=v100
+### Allow job to run up to 1 hour
+#PBS -l walltime=01:00:00
+### Route the job to the casper queue
+#PBS -q casper
+### Join output and error streams into single file
+#PBS -j oe
+
+setenv TMPDIR ${SCRATCH}/temp
+mkdir -p ${TMPDIR}
+
+### Provide CUDA runtime libraries
+module load cuda
+
+### Run program
+mpirun ./executable_name

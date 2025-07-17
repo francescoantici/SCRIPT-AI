@@ -1,0 +1,18 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load plink/1.9-beta6.27-gcc-12.2.0
+
+plink --threads ${NSLOTS} \
+      --silent \
+      --dummy 387 1112 0.03 scalar-pheno \
+      --out dummy1
+
+plink --threads ${NSLOTS} \
+      --bfile dummy1 \
+      --recode \
+      --out dummy1.new_recode

@@ -1,0 +1,13 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load miniforge
+mamba activate maker_env
+
+maker maker_opts.ctl \
+      maker_bopts.ctl \
+      maker_exe.ctl

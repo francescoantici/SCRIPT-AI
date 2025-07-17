@@ -1,0 +1,49 @@
+# !/bin/bash
+#PJM -L "node=4"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=48:00:00"
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM --mpi "proc=48"
+#PJM --mpi "max-proc-per-node=12" 
+#PJM --name "vasp_std"
+#PJM -s
+ 
+module purge
+module load lang/tcsds-1.2.38
+#export OMP_NUM_THREADS=$thread
+export UTOFU_DUMP_ON_ERROR=1
+cd $PJM_O_WORKDIR
+ 
+
+export vaspcommand='mpiexec -stdout vasp.log -stderr vasp.err --mca btl_tofu_eager_limit 128000 vasp_std'
+
+for i in POSCAR_* 
+do
+if test -f "CONTCAR_${i#POSCAR_}"; then 
+    continue
+fi 
+cp $i POSCAR 
+cp INCAR_1 INCAR 
+$vaspcommand
+if [ -s CONTCAR ]; then 
+   cp CONTCAR POSCAR 
+else 
+   cp $i POSCAR
+fi
+cp INCAR_2 INCAR 
+$vaspcommand
+if [ -s CONTCAR ]; then
+   cp CONTCAR POSCAR    
+else        
+   cp $i POSCAR
+fi          
+cp INCAR_3 INCAR
+$vaspcommand
+if [ -s CONTCAR ]; then
+   cp CONTCAR CONTCAR_${i#POSCAR_}
+else 
+   cp POSCAR CONTCAR_${i#POSCAR_}
+fi
+cp OUTCAR OUTCAR_${i#POSCAR_}
+done
+touch .done. 

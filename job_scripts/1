@@ -1,0 +1,32 @@
+#!/bin/bash
+#SBATCH --job-name=LIGPAIR
+#SBATCH -o ./%x.%j.out
+#SBATCH -e ./%x.%j.err
+#SBATCH -D ./
+#SBATCH --nodes=13
+#SBATCH --tasks-per-node=45
+#SBATCH --no-requeue
+#SBATCH --export=NONE
+#SBATCH --get-user-env
+#SBATCH --account=XXX
+#SBATCH --partition=micro
+#SBATCH --time=10:00:00
+
+module load slurm_setup
+module load namd/2.14-gcc8-impi
+
+#--nodes and nodes_per_namd can be scaled up for large simulations
+nodes_per_namd=1
+cpus_per_namd=45
+
+#change this line to point to your project
+ties_dir=/hppfs/work/pn98ve/di67rov/test_TIES/study/prot/ties-l2-l1/com
+cd $ties_dir/replica-confs
+
+for stage in {0..3}; do
+for lambda in 0.00 0.05 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.95 1.0; do
+        srun -N $nodes_per_namd -n $cpus_per_namd namd2 +replicas 5 --tclmain run$stage-replicas.conf $lambda&
+        sleep 1
+done
+wait
+done

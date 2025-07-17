@@ -1,0 +1,17 @@
+#!/bin/sh
+#PJM --rsc-list "node=1"
+#PJM --rsc-list "elapse=20:00"
+#PJM --mpi "proc=4"
+#PJM --stgin "fftw-3.3.6-pl2-build.tar.gz ./"
+#PJM -s
+
+source /work/system/Env_base
+
+export FLIB_FASTOMP=FALSE
+export FLIB_CNTL_BARRIER_ERR=FALSE
+
+tar xfz fftw-3.3.6-pl2-build.tar.gz
+
+pushd fftw-3.3.6-pl2
+make check
+popd

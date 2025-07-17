@@ -1,0 +1,13 @@
+#!/bin/bash
+#PJM -L node=72
+#PJM -L elapse=0:30:00
+#PJM --mpi max-proc-per-node=4
+#PJM -j
+#PJM -S
+#PJM -L "freq=2200,eco_state=2"
+
+export OMP_NUM_THREADS=12
+export OMP_STACKSIZE=512m
+
+mpiexec -std-proc log_ni62_transit_0_n11_b120_2_n16_b120 ./transit_mpi wave_ni62_0_n11_b120.rwf wave_ni62_2_n16_b120.rwf
+mv log_ni62_transit_0_n11_b120_2_n16_b120.1.0 log_ni62_transit_0_n11_b120_2_n16_b120

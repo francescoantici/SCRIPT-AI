@@ -1,0 +1,27 @@
+#!/bin/sh
+#PJM -L  "node=12x12x10:torus"
+#PJM -L  "rscgrp=large"
+#PJM -L  "elapse=00:20:00"
+#PJM --mpi "max-proc-per-node=4"
+#PJM -x PJM_LLIO_GFSCACHE=/fSjXVWZ9gBglklF02ESwoQ==
+#PJM -S
+#PJM --name "Cu_gs"
+#------- Program execution -------#
+
+export PARALLEL=12
+export OMP_NUM_THREADS=${PARALLEL}
+
+ulimit -s unlimited
+export OMP_SCHEDULE=static
+export OMPI_MCA_plm_ple_memory_allocation_policy=bind_local
+export XOS_MMM_L_PAGING_POLICY=demand:demand:demand
+
+cd $PJM_O_WORKDIR
+
+EXEC=salmon
+IN=./Cu_gs.inp
+LOG=./GS.log
+
+rm -rf $LOG
+mpiexec -n ${PJM_MPI_PROC} -stdin $IN -std $LOG $EXEC
+mv data_for_restart restart

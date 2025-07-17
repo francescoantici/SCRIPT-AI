@@ -1,0 +1,36 @@
+#!/usr/bin/bash
+#PJM -N fjtorch_build
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=08:00:00
+#PJM -L "node=1"
+#PJM --mpi "proc=1"
+#PJM -j
+#PJM -S
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+# #PJM -o
+# #PJM -e
+# #PJM --llio sharedtmp-size=80Gi
+
+git clone https://github.com/fujitsu/pytorch.git
+cd pytorch
+git checkout fujitsu_v1.10.1_for_a64fx
+
+cd scripts/fujitsu
+
+sed -i -e '/https:\/\/github.com/a\ \ \ \ sed -i -e s/3.9.16+/3.9.16+fj/ ${DOWNLOAD_PATH}/${PYTHON_DIR}/Include/patchlevel.h' 1_python.sh
+sed -i -e "s!#\\(TCSDS_PATH=.*FX1\\)!\\1!g"       env.src
+sed -i -e "s!\\(TCSDS_PATH=.*FX7\\)!#\\1!"        env.src
+sed -i -e "s!\\(VENV_PATH=\\).*!\\1${ROOT}/venv!" env.src
+sed -i -e "s!\\(PREFIX=\\).*!\\1${ROOT}/opt!"     env.src 
+if [[ ${KFAST} = "true" ]]; then
+  echo "USING KFAST!!!"
+  sed -i -e "s!CFLAGS=-O3 CXXFLAGS=-O3!CFLAGS=-Kfast!"     5_pytorch.sh
+fi
+
+bash 1_python.sh
+bash 3_venv.sh
+bash 4_numpy_scipy.sh
+bash 5_pytorch.sh
+bash 6_vision.sh
+bash 7_horovod.sh
+bash 8_libtcmalloc.sh

@@ -1,0 +1,12 @@
+#!/bin/bash
+#PJM -L "rscgrp=ito-g-1-dbg"
+#PJM -L "rscunit=ito-b"
+#PJM -L "elapse=1:00:00"
+#PJM -j -X -S
+
+tar xvzf cavity.tar.gz
+mkdir ../WORK
+mv cavity ../WORK
+cd ../WORK/cavity
+blockMesh
+decomposePar

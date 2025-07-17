@@ -1,0 +1,31 @@
+#!/bin/bash
+#PJM -L "node=1"               
+#PJM -L "rscgrp=small"         
+#PJM -L "elapse=00:30:00"        
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q== 
+#PJM -S                        
+#export OMP_NUM_THREADS=12      
+
+# execute job
+export VENVDIR=venv
+
+source ${VENVDIR}/bin/activate
+
+pip install --upgrade pip
+pip install -U pip setuptools
+pip install numpy
+pip install scipy
+pip install pandas
+pip install matplotlib
+pip install cython
+pip install sklearn
+pip install torch
+pip install networkx
+pip install os
+pip install pickle
+pip install csv
+
+
+. setup-env.sh
+
+

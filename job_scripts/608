@@ -1,0 +1,17 @@
+#!/bin/sh
+#PJM -L  "node=385"                      
+#PJM -L  "elapse=11:59:59"                
+#PJM --mpi "max-proc-per-node=4"           
+#PJM -g                           
+#PJM -x PJM_LLIO_GFSCACHE=/b63OA2tCbZlyAGvjQVfoHw==         
+#PJM -s                                    
+
+
+export OMP_NUM_THREADS=12
+export OMP_STACKSIZE=1G
+export OMP_WAIT_POLICY=ACTIVE
+export FLIB_BARRIER=HARD
+
+lmp=src/lmp_fj
+
+mpiexec -np 1540 ${lmp} -in in.swave -sf omp -pk omp 12

@@ -1,0 +1,47 @@
+#PBS -S /bin/csh
+#PBS -j oe
+#PBS -l select=3:ncpus=10:model=ivy
+#PBS -l walltime=4:00:00
+
+module load mpi-hpe/mpt
+setenv MPI_SHEPHERD true
+
+# Set MPI_DSM_DISTRIBUTED=0 to spread out the 10 serial processes 
+# across the 20 cores on each Ivy Bridge node
+setenv MPI_DSM_DISTRIBUTE 0
+
+cd $PBS_O_WORKDIR
+
+# This will start up 30 serial jobs 10 per node at a time.
+# There are 64 jobs to be run total, only 30 at a time.
+
+# The number to run in total defaults here to 64 or the value
+# of PROCESS_COUNT that is passed in via the qsub line like:
+# qsub -v PROCESS_COUNT=48 serial2.pbs
+
+# The total number to run at once is automatically determined
+# at runtime by the number of CPUs available.
+# qsub -v PROCESS_COUNT=64 -l select=4:ncpus=3:model=has serial2.pbs
+# would make this 12 per pass not 30. No changes to script needed.
+
+if ( $?PROCESS_COUNT ) then
+ set total_runs=$PROCESS_COUNT
+else
+ set total_runs=64
+endif
+
+set batch_count=`wc -l < $PBS_NODEFILE`
+
+set count=0
+
+while ($count < $total_runs)
+  @ rank_base = $count
+  @ count += $batch_count
+  @ remain = $total_runs - $count
+  if ($remain < 0) then
+    @ run_count = $total_runs % $batch_count
+  else
+    @ run_count = $batch_count
+  endif
+  mpiexec -np $run_count wrapper.csh $rank_base
+end

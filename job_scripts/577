@@ -1,0 +1,16 @@
+#!/bin/bash -x
+#PJM -L elapse=01:00:00
+#PJM -L "node=21"
+#PJM --mpi "proc=21"
+#PJM --mpi "max-proc-per-node=1"
+#PJM -j
+#PJM -S
+
+source pytorch_setting.sh
+
+MPI="mpirun -stdout-proc stdout -stderr-proc stderr -mca mpi_print_stats 2"
+PYTHON="python3"
+LD="infer_decoded_field.py"
+PARAM="param_infer_decoded_field.toml"
+
+${MPI} ${PYTHON} ${LD} ${PARAM}

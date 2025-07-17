@@ -1,0 +1,22 @@
+#!/bin/bash -l
+#SBATCH --job-name=job-array2        # Job name
+#SBATCH --time=1:1:0                 # Maximum runtime (D-HH:MM:SS)
+#SBATCH --array=1-20                 # Defines a job array from task ID 1 to 20
+#SBATCH --ntasks=1                   # Number of tasks (in this case, one task per array element)
+#SBATCH -p shared                      # Partition or queue name
+#SBATCH --reservation=Training       # Reservation name
+#SBATCH                              # This is an empty line to separate Slurm directives from the job commands
+
+#run your job
+
+echo "Start Job $SLURM_ARRAY_TASK_ID on $HOSTNAME"  # Display job start information
+
+sleep 10  # Sleep for 10 seconds
+
+export alpha=1  # Set an environment variable alpha to 1
+export beta=2   # Set an environment variable beta to 2
+
+module load matlab  # Load the Matlab module
+
+matlab -nodisplay -singleCompThread -r "myRand($SLURM_ARRAY_TASK_ID, $alpha, $beta), pause(20), exit"
+#Run a Matlab script with parameters: $SLURM_ARRAY_TASK_ID, $alpha, and $beta, and then exit

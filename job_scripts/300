@@ -1,0 +1,14 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 9
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load trimgalore
+
+trim_galore input.fastq \
+            --fastqc \
+            --cores 2 \
+            --fastqc_args '--nogroup --outdir outdir' \
+            --output_dir outdir

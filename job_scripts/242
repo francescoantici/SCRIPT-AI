@@ -1,0 +1,15 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load miniforge
+mamba activate vep_env
+
+vep -i homo_sapiens_GRCh38.vcf \
+    --cache \
+    --dir /output/path/to/GRCh38/vep \
+    --offline \
+    --output_file results

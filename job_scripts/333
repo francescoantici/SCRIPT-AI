@@ -1,0 +1,10 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe parallel 96
+#$ -l h_rt=240:0:0
+#$ -l infiniband=ddy-i
+#$ -l ansys=96
+
+module load ansys
+ansys232 -dis -np ${NSLOTS} -b < SIM-FILE

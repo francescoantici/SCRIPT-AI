@@ -1,0 +1,17 @@
+#!/bin/sh
+#PJM -L "node=144"
+#PJM -L "rscgrp=small"
+##PJM -L "elapse=06:00:00"
+#PJM -L "elapse=72:00:00"
+##PJM --mpi "shape=16"
+#PJM --mpi "max-proc-per-node=4"
+#PJM -N "lax_hea"
+#PJM -x PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q==
+#PJM -S
+
+. setup-env.sh
+spack load /jwqv5x    ## py-torch-1.13.0
+
+export OMP_NUM_THREADS=12
+
+mpiexec -n 576 lax/build/lax > stdout 2>errout

@@ -1,0 +1,68 @@
+#!/bin/bash -x
+#PJM -L rscgrp=small
+#PJM -L elapse=01:00:00
+#PJM -L node=2x8x4
+#PJM --mpi proc=256
+#PJM --mpi max-proc-per-node=4
+#PJM --mpi rank-map-bychip
+#PJM -j
+#PJM -S
+
+export OMP_NUM_THREADS=4
+
+. GMXRC
+GMXPREFIX="/bpQotbd62TkSIGuy3pF6kg==/data/MD/gromacs/gromacs/gromacs-2021.2"
+export GMXLDLIB=${GMXPREFIX}/lib
+export GMXDATA=${GMXPREFIX}/share/gromacs
+export PATH=${GMXBIN}:${PATH}
+export LD_LIBRARY_PATH=${GMXLDLIB}:${LD_LIBRARY_PATH}
+export PLE_MPI_STD_EMPTYFILE="off"
+
+setidx=0
+setidy=0
+setidz=0
+
+setidx0=`printf "%03d" $setidx`
+setidy0=`printf "%03d" $setidy`
+setidz0=`printf "%03d" $setidz`
+
+### FEP PART
+rfile="setid$setidx0.$setidy0.$setidz0/ref.gro"
+cfile="setid$setidx0.$setidy0.$setidz0/init_coord.gro"
+topfile="small.top"
+ndxfile="index.ndx"
+
+cd 01FEP/
+
+gmx --version
+
+
+gmx grompp -f inps/NVT_FEP_300K_00.mdp -c $cfile -r $rfile -p $topfile -n $ndxfile -maxwarn 1 -o fep00/run.tpr -pp fep00/pp.top
+mpiexec mdrun_mpi -s fep00/run.tpr -deffnm fep00/output
+#fi
+
+for PNUM in {00..02}
+do
+  NUM=`printf "%02d" $((PNUM+1))`
+#  if [ -f fep$NUM/output.gro ]; then
+#  echo "fep$NUM is already done"
+#  else 
+  gmx grompp -f inps/NVT_FEP_300K_$NUM.mdp -c fep$PNUM/output.gro -r $rfile -p $topfile -n $ndxfile -maxwarn 1 -o fep$NUM/run.tpr 
+  mpiexec mdrun_mpi -s fep$NUM/run.tpr -deffnm fep$NUM/output 
+#  fi
+done
+
+
+cat 05_01NVT_1atm_300K_eq_hear.dat <( bash do_in_loop.bash $setidx $setidy $setidz ) >  sim01.mdp
+
+rfile="setid$setidx0.$setidy0.$setidz0/ref.gro"
+cfile="output.gro" 
+topfile="small.top"
+ndxfile="index.ndx"
+
+gmx grompp -f sim01.mdp \
+   -c $cfile  -r $rfile -p $topfile -n $ndxfile -o md01 -pp pp.top  -maxwarn 1
+mpiexec mdrun_mpi -s md01.tpr -deffnm  md01
+
+echo 0 | gmx trjconv -f md01.gro -s md01.tpr -o md01_pbc_mol.gro -pbc mol
+

@@ -1,0 +1,37 @@
+#!/bin/bash -x
+#PJM -L "elapse=00:30:00"
+#PJM -L "freq=2200"
+#PJM -L "node=8x6x16:strict-io"
+#PJM --mpi "max-proc-per-node=4"
+#PJM --llio perf
+#PJM -j
+#PJM -S
+
+. env.src
+. ${PREFIX}/${VENV_NAME}/bin/activate
+
+export OMP_NUM_THREADS=11
+EPOCHS=1
+BSIZE=48
+LR=0.0125
+
+STDDIR="./out_${PJM_JOBNAME}/${PJM_NODE}n${PJM_MPI_PROC}p_bch${BSIZE}lr${LR}.${PJM_JOBID}"
+STD="${STDDIR}/%/${PJM_JOBNAME}.${PJM_JOBID}.out"
+
+export HOROVOD_MPI_THREADS_DISABLE=1
+
+ulimit -s 8092
+
+export XOS_MMM_L_HPAGE_TYPE=none
+export PLE_MPI_STD_EMPTYFILE="off"
+
+
+LD_PRELOAD=libtcmalloc.so mpirun -np ${PJM_MPI_PROC} -std-proc $STD python3 -u pytorch_imagenet_resnet50_wds.py \
+	--batch-size $BSIZE \
+	--log-dir log \
+	--train-dir train \
+	--val-dir val \
+	--warmup-epochs 5 \
+	--epochs $EPOCHS \
+	--base-lr $LR
+

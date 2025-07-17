@@ -1,0 +1,18 @@
+#PBS -l nodes=1:ppn=8
+#PBS -l walltime=1:00:00
+#PBS -N Local_storage
+
+# First define a directory location as a variable, create the directory once the job has started, move data there, then cd to it and run  
+TEMP_DIR=/tmp/$USER/$PBS_JOBID
+mkdir -p “$TEMP_DIR”
+cp -r ${PBS_O_WORKDIR}/large_input_data.dat “$TEMP_DIR” 
+cd $TEMP_DIR
+
+# Now run my program
+run_my_program  
+
+# Now job has finished, so mv data back to where it came
+cp -r  $TEMP_DIR/* $PBS_O_WORKDIR
+
+# Finally clean up the temporary directory
+rm -r $TEMP_DIR

@@ -1,0 +1,15 @@
+#!/bin/bash
+#PBS -N wordcount
+#PBS -l nodes=2:ppn=8
+#PBS -l walltime=00:05:00
+SCRATCHDIR=/wheeler/scratch/$USER/spark
+module load spark-2.1.0-gcc-4.8.5-lifnga6
+export SPARK_HOME=$SPARK_DIR
+cd $PBS_O_WORKDIR
+cp wordcount.py $SCRATCHDIR
+cp big.txt $SCRATCHDIR
+cp -r conf $SCRATCHDIR
+cd $SCRATCHDIR
+$PBS_O_WORKDIR/pbs-spark-submit wordcount.py       
+$SCRATCHDIR/big.txt > wordcount.log
+cp wordcount.log $PBS_O_WORKDIR

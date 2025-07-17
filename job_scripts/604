@@ -1,0 +1,33 @@
+#!/bin/bash -x
+##PJM -L elapse=16:00:00
+#PJM -L elapse=01:00:00
+#PJM -L "node=10"
+#PJM --mpi "proc=10"
+#PJM -L "retention_state=0"
+#PJM --mpi "max-proc-per-node=1"
+#PJM -j
+#PJM -S
+
+export OMP_NUM_THREADS=48
+export XOS_MMM_L_HPAGE_TYPE=none
+#
+
+export XOS_MMM_L_PAGING_POLICY=demand:demand:demand
+
+
+COMM_MODE="-mca common_tofu_max_fastmode_procs 0 -mca common_tofu_memory_saving_method 2"
+#MRQ_ENTRY="-mca common_tofu_num_mrq_entries 524288"
+MRQ_ENTRY="-mca common_tofu_num_mrq_entries 2097152"
+#PRINT_STA="-mca mpi_print_stats 2"
+MCA_PARAM="${PRINT_STA} ${MRQ_ENTRY} ${COMM_MODE}"
+
+STDO_STDE="-stdout-proc ./std/job%j/%/1000r/stdout -stderr-proc ./std/job%j/%/1000r/stderr"
+
+MPI="mpirun ${STDO_STDE} ${MCA_PARAM}"
+
+# Transfer to cache area of 2nd layer storage
+time llio_transfer ./mdcnnae
+time llio_transfer data/xmean.ary
+
+# Launch training
+time ${MPI} ./mdcnnae

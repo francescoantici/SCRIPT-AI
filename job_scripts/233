@@ -1,0 +1,16 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load bucky
+
+# Read all output from MrBayes and creates a translate section
+# and a list of tree indicines, trees and their counts.
+mbsum /path/*.t -o /path/input.in
+
+# Perform analysis
+bucky -o bucky_output_dir \
+      /path/input.in

@@ -1,0 +1,13 @@
+#!/bin/bash
+#PJM -L "rscgrp=small"
+#PJM -L elapse=00:30:00
+#PJM -L "node=1:noncont"
+#PJM --mpi "shape=1,proc=4"
+#PJM -j
+#PJM -S
+
+llio_transfer ./from_def_pytorch.sif
+
+singularity run -B tcsds-1.2.38 -B libs ./from_def_pytorch.sif
+
+llio_transfer --purge ./from_def_pytorch.sif

@@ -1,0 +1,15 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 8
+#$ -l gpu=1
+#$ -l h_rt=240:0:0
+
+# Load a GPU compatible version of VASP. Replace VERSION with
+# the actual version of VASP you intend to run
+module load vasp-gpu/VERSION
+
+# Ensure the number of MPI ranks is less than or equal to the
+# number of GPUs being requested. See the above notice for
+# more information
+mpirun -np 1 vasp_std

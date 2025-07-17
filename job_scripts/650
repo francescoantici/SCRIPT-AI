@@ -1,0 +1,21 @@
+#!/bin/sh
+#PJM -L "node=16"
+#PJM -L "rscgrp=small"
+#PJM -L "elapse=72:00:00"
+#PJM --mpi "max-proc-per-node=48"
+#PJM -x PJM_LLIO_GFSCACHE=/ht43Mn2TVeHmt3yReuCS6w==
+#PJM -S
+
+export OMP_NUM_THREADS=1
+
+source GMXRC
+
+mpiexec -np 1 gmx_mpi_d grompp -f npt_39.mdp -c initial.gro -n .index.ndx -p topol.top -o npt.tpr
+mpiexec -np 768 gmx_mpi_d mdrun -s npt.tpr -deffnm npt -noappend
+cp npt.cpt npt.part0001.cpt
+for i in {0002..0005}
+do
+  mpiexec -np 1 gmx_mpi_d convert-tpr -s npt.tpr -extend 1000 -o npt.tpr
+  mpiexec -np 768 gmx_mpi_d mdrun -s npt.tpr -deffnm npt -cpi npt.cpt -noappend
+  cp npt.cpt npt.part${i}.cpt
+done

@@ -1,0 +1,39 @@
+#!/bin/bash
+#PBS -l select=3:ncpus=16:model=bro
+#PBS -q normal
+#PBS -l walltime=1:00:00
+#PBS -j oe
+#PBS -o node_3_test.log
+#PBS -N multinodetest
+
+#change to nobackup
+#cd $PBS_O_WORKDIR
+BASE=$(pwd)
+
+echo "The base node is:"
+hostname
+printf "\n\n"
+
+#get node information from nodefile
+NODES=($( cat $PBS_NODEFILE | uniq ))
+NUM_OF_NODES=${#NODES[@]}
+#worker number for other nodes
+C=1
+
+# for each node that's not the current node
+for node in ${NODES[@]}
+do
+  if [[ $node != $(eval hostname) ]]  
+  then
+    # ssh into each node and run the .sh script with node info
+    # run in background
+    ssh $node "$BASE/run_vgg.sh $C ${NODES[*]}" &
+    C=$(($C+1))
+    sleep 2
+  fi
+done
+
+#run the main worker node
+$BASE/run_vgg.sh 0 ${NODES[*]}
+
+echo "Done with PBS"

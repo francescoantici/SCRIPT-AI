@@ -1,0 +1,14 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=4G
+#$ -l abaqus=8
+
+module load abaqus
+abaqus job=SIM-FILE \
+       cpus=${NSLOTS} \
+       mp_mode=THREADS \
+       scratch=SCRATCH-LOCATION \
+       interactive

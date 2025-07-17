@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH --nodes=2
+#SBATCH --ntasks-per-node=4
+#SBATCH --gres=gpu:4
+#SBATCH --cpus-per-task=1
+#SBATCH --ntasks-per-core=1
+#SBATCH --threads-per-core=1
+#SBATCH --mem=1T
+#SBATCH --exclusive
+#SBATCH --time 00:05:00
+
+module purge all
+module add spack
+module add cuda/10.1
+module load openmpi/3.1.4-pmi-cuda-ucx

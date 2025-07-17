@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=01:00:00
+#PBS -N test
+#PBS -o test_out
+#PBS -e test_error
+#PBS -m bae
+#PBS -M user@unm.edu
+
+cd $PBS_O_WORKDIR/
+python test.py

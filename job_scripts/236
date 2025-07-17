@@ -1,0 +1,14 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 4
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load miniforge
+mamba activate busco_env
+
+busco -i [SEQUENCE_FILE] \
+      -m [MODE] \
+      -c ${NSLOTS} \
+      [OTHER OPTIONS]

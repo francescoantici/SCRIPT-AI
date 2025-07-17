@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -N hello_pbs
+#PBS -A <project_code>
+#PBS -j oe
+#PBS -k eod
+#PBS -q main
+#PBS -l walltime=00:05:00
+#PBS -l select=2:ncpus=128:mpiprocs=128
+
+### Set temp to scratch
+export TMPDIR=${SCRATCH}/${USER}/temp && mkdir -p $TMPDIR
+
+### specify desired module environment
+module purge
+module load ncarenv/23.09 gcc/12.2.0 cray-mpich/8.1.25
+module list
+
+### Compile & Run MPI Program
+mpicxx -o hello_world_derecho /glade/u/home/benkirk/hello_world_mpi.C -fopenmp
+mpiexec -n 256 -ppn 128 ./hello_world_derecho

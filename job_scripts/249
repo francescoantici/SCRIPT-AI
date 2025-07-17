@@ -1,0 +1,12 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=2G
+
+module load gatk
+
+# Run HaplotypeCaller in default mode on a single input BAM file containing
+# sequence data and outputs a VCF file containing variant calls.
+gatk HaplotypeCaller -R reference.fasta -I sample1.bam -O variants.vcf

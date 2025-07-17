@@ -1,0 +1,15 @@
+#!/bin/bash
+#$ -cwd
+#$ -j y
+#$ -pe smp 8
+#$ -l h_rt=240:0:0
+#$ -l h_vmem=11G
+#$ -l gpu=1
+
+module load relion
+relion_refine --angpix 1 \
+              --gpu \
+              --i example.mrcs \
+              --iter 5 \
+              --j ${NSLOTS} \
+              --o output

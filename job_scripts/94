@@ -1,0 +1,22 @@
+#/bin/bash
+#PBS -N Gnu_parallel_test
+#PBS -l nodes=2:ppn=4
+#PBS -l walltime=01:00:00
+
+
+# load GNU-parallel module
+module load parallel-20170322-intel-18.0.2-4pa2ap6
+
+# load anaconda python
+module load anaconda
+
+# activate python environment
+source activate numpy_py3   #you need to have numpy_py3 environment with numpy installed. Refer to Anaconda quickbytes. 
+
+# change to directory PBS script was submitted. 
+cd $PBS_O_WORKDIR
+
+# set jobs per node, which is core per node for galles
+JOBSPERNODE=8
+
+/usr/bin/time -o time.log parallel --joblog logfile --wd $PBS_O_WORKDIR -j $JOBSPERNODE --sshloginfile $PBS_NODEFILE --env PATH -a mat_in python matrix_inv.py

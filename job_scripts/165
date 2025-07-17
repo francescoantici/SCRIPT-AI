@@ -1,0 +1,12 @@
+#!/bin/csh -fe
+#PBS -lselect=16:ncpus=4:model=san
+#PBS -lwalltime=4:00:00
+date
+mkdir -p run_$1
+cd run_$1
+
+setenv OMP_NUM_THREADS 16
+
+echo "Executing run $1 on" `hostname` "in $PWD"
+
+$HOME/bin/a.out < ../input_$1 > output_$1

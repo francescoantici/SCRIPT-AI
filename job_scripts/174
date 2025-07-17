@@ -1,0 +1,9 @@
+#!/bin/bash
+#$ -cwd
+#$ -pe smp 1
+#$ -l h_rt=1:0:0
+#$ -l h_vmem=1G
+
+module load python
+source ~/pytorchcpu/bin/activate
+python two_layer_net_tensor_cpu.py

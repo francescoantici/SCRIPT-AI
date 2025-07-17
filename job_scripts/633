@@ -1,0 +1,30 @@
+#!/bin/bash
+#PJM --rsc-list "rscgrp=small"
+#PJM --rsc-list "freq=2200,eco_state=2,retention_state=0"
+#
+#PJM --vset "NUM_NODES=8"
+#PJM --vset "NUM_MPI_PER_NODE=8"
+#PJM --vset "NUM_THREADS=6"
+#PJM --vset "TIME_REQ=71:30:00"
+#PJM --rsc-list "node=${NUM_NODES}"
+#PJM --rsc-list "elapse=${TIME_REQ}"
+#PJM --mpi "max-proc-per-node=${NUM_MPI_PER_NODE}"
+#PJM --name "jlst"
+#
+#PJM -x "NUM_NODES=${NUM_NODES}"
+#PJM -x "NUM_CORES=${NUM_MPI_PER_NODE}"
+#PJM -x "NUM_THREADS=${NUM_THREADS}"
+#PJM -x "TIME_REQ=${TIME_REQ}"
+#PJM -x "PJM_LLIO_GFSCACHE=/RAvG7tRc8R3QSe+OEfBL9Q=="
+#
+#PJM -s
+
+jlst_file=./jlst.txt
+
+job_scr_path=`head -n ${PJM_BULKNUM} $jlst_file | tail -n 1`
+job_scr_file=`echo $job_scr_path | awk -F/ '{print $NF}'`
+job_scr_dir=${job_scr_path//$job_scr_file/}
+
+pushd $job_scr_dir > /dev/null
+  sh $job_scr_file
+popd > /dev/null
